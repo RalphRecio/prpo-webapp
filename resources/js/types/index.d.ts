@@ -1,0 +1,315 @@
+import { LucideIcon } from 'lucide-react';
+import type { Config } from 'ziggy-js';
+
+export interface Auth {
+    user: User;
+}
+
+export interface BreadcrumbItem {
+    title: string;
+    href: string;
+}
+
+export interface NavGroup {
+    title: string;
+    items: NavItem[];
+}
+
+export interface NavItem {
+    title: string;
+    href: string;
+    icon?: LucideIcon | null;
+    isActive?: boolean;
+    permissions?: string[] | null;
+    subItems?: NavItem[];
+}
+
+export interface SharedData {
+    name: string;
+    quote: { message: string; author: string };
+    auth: Auth;
+    ziggy: Config & { location: string };
+    [key: string]: unknown;
+}
+
+export interface User {
+    id: number;
+    name: string;
+    email: string;
+    avatar?: string;
+    email_verified_at: string | null;
+    created_at: string;
+    updated_at: string;
+    [key: string]: unknown;
+}
+
+export interface InboundInv extends PageProps {
+    id: number;
+    product_id: number;
+    mfg_date: string;
+    exp_date: string;
+    image: string;
+    supplier_id: number;
+    date_received: string;
+    status: string;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+}
+
+interface PageProps {
+    [key: string]: any;
+}
+
+export interface Paginated<T> {
+    data: T[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+}
+
+export interface Transactions {
+    id: number;
+    supplier_id: number;
+    dr_no: string;
+    invoice_no: string;
+    gr_no: string | null;
+    lot_code: string | null;
+    date_received: string;
+    is_confirmed: number;
+    is_putaway: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    status: string;
+    transaction_item: TransactionItem[];
+    supplier: Supplier;
+}
+
+export interface Supplier {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface TransactionItem {
+    id: number;
+    transaction_id: number;
+    product_id: number;
+    location_id: number;
+    lot_code: string;
+    status: string;
+    mfg_date: string;
+    shelf_exp_date: string;
+    exp_date: string;
+    is_putaway: number;
+    quantity: string;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+    location: Location;
+    products: Product;
+    latest_location_movement: LatestLocationMovement;
+    remarks: string;
+}
+
+export interface Product {
+    id: number;
+    barcode: string;
+    item_code: string;
+    item_description: string;
+    uom: string;
+    stock_type: string;
+    origin: string;
+    packing: string;
+    shelf_life_value: number;
+    shelf_life_unit: string;
+    quantity: string;
+    tl_order_qty: string;
+    cnsgmnt_buff_qty: string;
+    image: string;
+    type_id: string;
+    created_at: string | null;
+    updated_at: string | null;
+    deleted_at: string | null;
+}
+
+export interface TransactionOut {
+    id: number;
+    customer_id: number;
+    po: string;
+    customer: {
+        id: number;
+        name: string;
+    };
+    transaction_type: string;
+
+    status: string;
+    is_confirm: number;
+    is_picked: number;
+    is_dispatched: number;
+    transaction_out_items: TransctionOutItem[];
+    date_dispatched: string;
+    created_at: string;
+    location: Location;
+}
+
+export interface TransctionOutItem {
+    id: number;
+    product: Product;
+    lot_code: string;
+    mfg_date: string;
+    exp_date: string;
+    shelf_exp_date: string;
+    truck: Truck;
+    quantity: number;
+    location: Location;
+    status: string;
+    is_dispatched: number;
+}
+
+export interface Location {
+    id: number;
+    name: string;
+    code: string;
+    type: string;
+    capacity: string;
+    zone: string;
+    is_active: boolean;
+    description: string;
+}
+
+export interface LatestLocationMovement {
+    id: number;
+    trnsc_item_id: number;
+    from_location_id: number | null;
+    to_location_id: number;
+    quantity: string;
+    movement_type: string;
+    remarks: string | null;
+    created_at: string;
+    updated_at: string;
+    to_location: Location | null;
+    from_location: Location | null;
+}
+
+export interface Customer {
+    id: number;
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    state: string;
+    postal_code: string;
+    country: string;
+    created_at: string;
+}
+
+export interface ProductInventory {
+    id: number;
+    product_id: number;
+    location_id: number;
+    mfg_date: date | null;
+    exp_date: date | null;
+    quantity: number;
+    locarion: string;
+    created_at: string;
+    lot_code: string;
+    shelf_exp_date: string;
+    product: {
+        id: number;
+        barcode: string;
+        item_code: string;
+        item_description: string;
+        uom: string;
+        packing: string;
+    };
+    location?: {
+        id: number;
+        name: string;
+    };
+}
+
+export interface Role {
+    id: number;
+    name: string;
+    slug: string;
+    created_at: string;
+    permissions: [];
+}
+
+export interface Truck {
+    id: number;
+    truck_number: string;
+    origin: string;
+    destination: string;
+    departure_time: string;
+    arrival_time: string;
+    status: string;
+    cargo_description: string;
+    created_at: string;
+}
+
+export interface PurchaseRequisition {
+    id: number;
+    pr_no: string;
+    requestor_id: number;
+    date_issue: string;
+    date_needed: string;
+    bu_id: number;
+    department_id: number;
+    prod_end_user: string;
+    classification_id: number;
+    remarks: string;
+    is_it_related: boolean;
+    is_approve_it_manager: boolean;
+    is_approve_im_supervisor: boolean;
+    status: string;
+    requestor: Requestor;
+}
+
+export interface Requestor {
+    id: number;
+    fname: string;
+    mname: String;
+    lname: string;
+}
+
+export interface Classification {
+    id: number;
+    name: string;
+    it_related: number;
+}
+
+export interface User {
+    id: number;
+    fname: string;
+    mname: string;
+    last_name: string;
+    bu_id: number;
+    dept_id: number;
+    business_unit: BusinessUnit;
+    department: Department;
+    immediate_head: {
+        fname: string;
+        mname: string;
+        lname: string;
+    };
+}
+
+export interface Vendor {
+    id: number;
+    business_type: string;
+    supplier_name: string;
+    address: string;
+    contact_number: string;
+    email: string;
+    contact_person: string;
+    payment_terms: string;
+}
