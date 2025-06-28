@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create('purchase_order', function (Blueprint $table) {
             $table->id();
             $table->string('po_no');
-            $table->foreignId('vendor_id')->constrained('vendor');
+            $table->foreignId('vendor_id')->constrained('vendors');
 
             $table->integer('is_approve1')->default(0);
             $table->integer('is_approve2')->default(0);
@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('vendor_email_address');
             $table->string('vendor_tel_no');
             $table->string('vendor_name');
+            $table->string('vendor_address');
 
             $table->string('ship_via');
             $table->string('terms');

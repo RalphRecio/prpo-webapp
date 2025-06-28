@@ -267,11 +267,54 @@ export interface PurchaseRequisition {
     prod_end_user: string;
     classification_id: number;
     remarks: string;
-    is_it_related: boolean;
-    is_approve_it_manager: boolean;
-    is_approve_im_supervisor: boolean;
+    is_it_related: number;
+    is_approve_it_manager: number;
+    is_approve_im_supervisor: number;
+    im_supervisor_id: number;
+    currency: string;
+    budgeted: number;
+    isCapexOpex: string | null;
+    budget_amount: number | null;
+    finance_remarks: string | null;
+    is_finance_verified: number;
+    finance_verified_id: number;
+    is_approve1_unbudgeted: number;
+    approver1_unbgtd_id: number;
+    is_approve2_unbudgeted: number;
+    approver2_unbgtd_id: number;
+    is_overbudget: number;
+    is_approve1_overbudgeted: number;
+    approver1_bgtd_id: number;
+    is_approve2_overbudgeted: number;
+    approver2_bgtd_id: number;
+    is_procurement_verified: number;
+    procurement_verified_id: number;
+    supplier_name: string | null;
+    actual_amount: number | null;
+    procurement_remarks: string | null;
     status: string;
-    requestor: Requestor;
+
+    approvers_list: Approver[];
+    classification: Classification;
+    bu: BusinessUnit;
+}
+
+export interface Approver {
+    id: number;
+    approver_level: number | string;
+    is_approve: number;
+    remarks?: string;
+    approve_date: string;
+    approver?: {
+        user_id?: number | string;
+        job_title?: string;
+        approver_name?: string;
+    };
+}
+
+export interface BusinessUnit {
+    id: number;
+    name: string;
 }
 
 export interface Requestor {
@@ -312,4 +355,37 @@ export interface Vendor {
     email: string;
     contact_person: string;
     payment_terms: string;
+}
+
+export interface PurchaseOrder {
+    id: number;
+    vendor_id: number;
+    ship_via: string;
+    terms: string;
+    status: string;
+    buyer: string;
+    confirming_to: string;
+    pr_id: number;
+    freight: string;
+    remarks: string;
+    prepared_by: number;
+    is_approve1: number;
+    is_approve2: number;
+    vendor_contact_person: string;
+    vendor_email_address: string;
+    vendor_tel_no: string;
+    vendor_name: string;
+    vendor_address: string;
+}
+
+export interface PurchaseOrderDetails {
+    id: number;
+    qty_ordered: number;
+    unit_of_measure: string;
+    unit_price: number;
+    extended_price: number;
+    description1: string;
+    description2: string;
+    created_at?: string;
+    updated_at?: string;
 }

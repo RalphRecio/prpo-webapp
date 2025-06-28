@@ -17,7 +17,7 @@ interface Approver {
     approver_level: string;
 }
 
-export default function PoApproverTable({ itRelated }: DataTableProps) {
+export default function PoApproverTable() {
     const page = usePage<SharedData & { auth: { user: User } }>();
     const [approvers, setApprovers] = useState<Approver[]>([]);
     const { auth } = page.props;

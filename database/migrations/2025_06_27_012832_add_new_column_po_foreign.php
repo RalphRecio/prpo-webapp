@@ -11,18 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('purchase_order_details', function (Blueprint $table) {
-            $table->id();
-            $table->integer('qty_ordered');
-            $table->string('unit_of_measure');
-            $table->decimal('unit_price', 10, 2);
-            $table->decimal('extended_price', 10, 2);
-            $table->text('description1')->nullable();
-            $table->text('description2')->nullable();
+        Schema::table('purchase_order_details', function (Blueprint $table) {
+            $table->text('description')->nullable();
             $table->foreignId('po_id')->constrained('purchase_order');
             $table->foreignId('pr_id')->constrained('purchase_requisition');
             $table->foreignId('pr_details_id')->constrained('purchase_req_details');
-            $table->timestamps();
         });
     }
 
@@ -31,6 +24,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('purchase_order_details');
+        Schema::table('purchase_order_details', function (Blueprint $table) {
+            $table->dropForeign(['po_id']);
+            $table->dropForeign(['pr_id']);
+            $table->dropForeign(['pr_details_id']);
+            $table->dropColumn(['description']);
+        });
     }
 };

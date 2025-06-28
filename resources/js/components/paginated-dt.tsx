@@ -671,7 +671,7 @@ export function PaginatedDt({
                     </table>
                 </div>
 
-                <div className="m-4 flex items-center justify-end">
+                {/* <div className="m-4 flex items-center justify-end">
                     <button
                         onClick={() => handlePageChange(data.current_page - 1)}
                         disabled={data.current_page === 1}
@@ -687,7 +687,7 @@ export function PaginatedDt({
                     >
                         Next
                     </button>
-                </div>
+                </div> */}
             </div>
 
             {loading && (

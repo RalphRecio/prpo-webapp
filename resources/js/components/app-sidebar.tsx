@@ -9,7 +9,7 @@ import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'PRPO',
+        title: 'transactions',
         href: '/',
         icon: Folder,
         permissions: ['view_prpo'],

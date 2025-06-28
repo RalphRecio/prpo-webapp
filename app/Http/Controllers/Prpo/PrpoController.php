@@ -11,6 +11,7 @@ use App\Models\ApproverList;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ApproveEmail;
 use App\Models\Approver;
+use Carbon\Carbon;
 
 class PrpoController extends Controller
 {
@@ -73,23 +74,25 @@ class PrpoController extends Controller
             )
             ->with(['requestor', 'bu', 'department', 'classification','approversList']);
     }
-    public function index(Request $request)
+    public function index()
     {
-     
+        return Inertia::render('prpo/purchase_requisition');
+    }
+    
+    public function myPurchaseRequest(Request $request){
         $page = $request->input('page', 1);
         $pr = $this->buildPurchaseRequisitionQuery($request)
             ->where('requestor_id', auth()->user()->id)
             ->paginate(10, ['*'], 'page', $page);
-
-        return Inertia::render('prpo/purchase_requisition', [
-            'purchaseRequisition' => [
-                'data' => $pr->items(),
-                'current_page' => $pr->currentPage(),
-                'last_page' => $pr->lastPage(),
-                'total' => $pr->total(),
-            ],
-        ]);
-    }    
+            return response()->json([
+                'purchaseRequisition' => [
+                    'data' => $pr->items(),
+                    'current_page' => $pr->currentPage(),
+                    'last_page' => $pr->lastPage(),
+                    'total' => $pr->total(),
+                ],
+            ]);
+    }
     public function allRequests(Request $request)
     {
         $page = $request->input('page', 1);
@@ -144,22 +147,24 @@ class PrpoController extends Controller
         ]);
     }
     public function createPr() {
-        $classifications = Classification::all(); // Make sure to import the Classification model
-
-        return Inertia::render('prpo/create_pr', [
-            'classification' => $classifications
-        ]);
+        return Inertia::render('prpo/create_pr');
     }
+    public function classification()
+    {
+        $classifications = Classification::all();
+
+        return response()->json([
+            'classifications' => $classifications
+        ]);
+
+    }
+
     public function store(Request $request)
     {
 
-   
+
         $validated = $request->validate([
-            'requestor_id' => 'required|integer',
-            'date_issue' => 'required|date',
             'date_needed' => 'required|date',
-            'bu_id' => 'required|integer',
-            'department_id' => 'required|integer',
             'prod_end_user' => 'required|max:255',
             'classification_id' => 'required|integer',
             'is_it_related' => 'integer',
@@ -175,8 +180,8 @@ class PrpoController extends Controller
         );
 
         $year = now()->year;
-        $deptId = $validated['department_id'];
-        $deptCode = auth()->user()->businessUnit->code;
+        $deptId = auth()->user()->department->id;
+        $deptCode = auth()->user()->department->code;
 
         $latestPR = PurchaseRequisiton::whereYear('created_at', $year)
             ->where('department_id', $deptId)
@@ -193,10 +198,16 @@ class PrpoController extends Controller
 
         $generatedPrNo = "PR-{$deptCode}-{$year}-{$nextNumber}";
         $validated['pr_no'] = $generatedPrNo;
-    
+
+        $validated['department_id'] = auth()->user()->dept_id;
+        $validated['requestor_id'] = auth()->user()->id;
+        $validated['bu_id'] = auth()->user()->bu_id;
+        $validated['date_issue'] =  Carbon::now();
+
         $purchaseRequisition = PurchaseRequisiton::create($validated);
         $purchaseRequisition->is_approve_it_manager = 0;
         $purchaseRequisition->is_approve_im_supervisor = 0;
+        $purchaseRequisition->im_supervisor_id = auth()->user()->immediate_head_id;
 
         $purchaseRequisition->status = $validated['is_it_related']  == "1" ? "Pending for IT manager approval" : "Pending for Immediate Supervisor approval";
         $purchaseRequisition->save();
@@ -205,28 +216,34 @@ class PrpoController extends Controller
             $purchaseRequisition->purchaseRequisitionItems()->createMany($validated['items']);
         }
 
-        // $data = ['message' => 'Testing Mailpit!'];
-        // Mail::to('fake@example.com')->send(new ApproveEmail($data));
-
         if ($validated['is_it_related'] == 1) {
-            // If IT related, include approver_level 1 and 2
             $approverList = Approver::whereIn('approver_level', [1, 2])->get();
         } else {
-            // If NOT IT related, only include approver_level 2
             $approverList = Approver::where('approver_level', 2)->get();
         }
+
+        $data = [
+            'request_type' => 'Purchase Request',
+            'pr_no' => $generatedPrNo,
+            'approver_name' => $approverList->first()->approver_name,
+            'submitted_by' => auth()->user()->fname,
+            'date_submitted' => Carbon::now(),
+
+           'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
+        ];
+
+        Mail::to($approverList->first()->approver_email)->send(new ApproveEmail($data));
 
         // INSERT TO APPROVERS (foreach)
         foreach ($approverList as $approver) {
             $purchaseRequisition->approversList()->create([
-                'approver_id'    => $approver->approver_type == 'immsupervisor' ? $validated['im_supervisor_id'] : $approver->user_id,
+                'approver_id'    => $approver->approver_type == 'immsupervisor' ? auth()->user()->immediate_head_id : $approver->user_id,
                 'is_approve'     => 0,
                 'is_send_count'  => 0,
                 'remarks'        => null,
                 'approver_level' => $approver->approver_level,
             ]);
         }
-
         return response()->json([
             'message' => 'Purchase Requisition created successfully.',
             'data' => $purchaseRequisition->load('purchaseRequisitionItems')
@@ -240,10 +257,11 @@ class PrpoController extends Controller
         $classifications = Classification::all();
 
         return Inertia::render('prpo/pr_details', [
-            'prDetails' => $purchaseRequisition,
+            'purchaseRequisition' => $purchaseRequisition,
             'classification' => $classifications
         ]);
     }
+
     public function approve(Request $request, $id)
     {
         $purchaseRequisition = PurchaseRequisiton::findOrFail($id);
