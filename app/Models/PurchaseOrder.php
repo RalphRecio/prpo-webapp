@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\PurchaseOrderDetails;
+use App\Models\PurchaseRequisiton;
 
 class PurchaseOrder extends Model
 {
@@ -26,6 +27,7 @@ class PurchaseOrder extends Model
         'is_approve2',
         'approver1_id',
         'approver2_id',
+        'vendor_address',
         'vendor_contact_person',
         'vendor_email_address',
         'vendor_tel_no',
@@ -34,5 +36,17 @@ class PurchaseOrder extends Model
 
     public function purchaseOrderDetails() {
         return $this->hasMany(PurchaseOrderDetails::class, 'po_id');
+    }
+
+    public function approversList() {
+        return $this->hasMany(PoApproverList::class, 'po_id');
+    }
+
+    public function purchaseRequest() {
+        return $this->belongsTo(PurchaseRequisiton::class, 'pr_id');
+    }
+
+    public function vendors() {
+        return $this->belongsTo(Vendor::class, 'vendor_id');
     }
 }

@@ -44,7 +44,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::post('purchase-order',[PurchaseOrderController::class, 'store'])->name('purchase-order.store');
 
+        Route::get('purchase-order/details/{id}', [PurchaseOrderController::class, 'viewPoDetails'])->name('purchase-order.show');
 
+
+      
+        Route::get('po_pending_approval', [PurchaseOrderController::class, 'poPendingApproval'])->name('purchase-order.my-purchase-order');
 
     });
 });

@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
-class ApproverList extends Model
+class PoApproverList extends Model
 {
-    protected $table = 'pr_approver_list';
+    protected $table = 'po_approver_list';
     protected $fillable = [
         'approver_id',
         'is_approve',
         'is_send_count',
-        'pr_id',
+        'po_id',
         'approval_date',
         'remarks',
         'approver_level',

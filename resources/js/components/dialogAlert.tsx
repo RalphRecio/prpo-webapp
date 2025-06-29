@@ -1,22 +1,23 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { useState } from 'react';
 
 interface DialogAlertProps {
     buttonName?: string;
     title?: string;
     handleSubmit: () => void;
+    loading?: boolean;
+    isDisabled?: boolean;
 }
 
-export function DialogAlert({ buttonName, title, handleSubmit }: DialogAlertProps) {
-    const [loading, setLoading] = useState<boolean>(false);
+export function DialogAlert({ buttonName, title, handleSubmit, loading, isDisabled = false }: DialogAlertProps) {
+    // const [isLoading, setIsLoading] = useState<boolean>(false);
 
     return (
         <div className="flex flex-col items-center justify-center gap-4 p-4">
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button type="submit">
+                        <Button type="submit" disabled={isDisabled}>
                             {/* <Save className="mr-1 h-4 w-4" /> */}
                             {buttonName || 'Submit'}
                         </Button>

@@ -107,22 +107,18 @@ export default function PendingApproval() {
                             return value;
                         }}
                         fetchData={fetchData}
-                        actions={[
-                            {
-                                type: 'button',
-                                label: 'View',
-                                variant: 'default',
-                                icon: <Edit className="h-4 w-4" />,
-                                onClick: (pendingAppr: any) => {
-                                    const fullItem = pendingForApproval.data.find((item) => item.id === pendingAppr.id);
-                                    if (fullItem) {
-                                        Inertia.visit(`/prpo/purchase-request/details/${fullItem.id}`);
-                                    } else {
-                                        console.error('Item not found');
-                                    }
+                        actions={(purchasePo: any) => {
+                            const fullItem = pendingForApproval.data.find((item) => item.id === purchasePo.id);
+                            return [
+                                {
+                                    type: 'link',
+                                    label: 'View',
+                                    variant: 'default',
+                                    icon: <Edit className="h-4 w-4" />,
+                                    href: `/prpo/purchase-request/details/${fullItem?.id}`,
                                 },
-                            },
-                        ]}
+                            ];
+                        }}
                     />
                 </div>
             </div>

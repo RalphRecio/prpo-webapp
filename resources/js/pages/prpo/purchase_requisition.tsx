@@ -93,42 +93,24 @@ export default function PurchaseRequisitionPage() {
                             <Link
                                 href="/prpo/create_pr"
                                 className="inline-flex items-center rounded-md bg-blue-500 px-2 text-center text-white hover:bg-blue-600"
-                                onClick={handleClick}
+                                // onClick={handleClick}
                             >
                                 {isLoading ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />} New PR
                             </Link>,
                         ]}
                         fetchData={fetchData}
-                        actions={[
-                            {
-                                type: 'button',
-                                label: 'View',
-                                variant: 'default',
-                                icon: <Edit className="h-4 w-4" />,
-                                onClick: (purchaseReq: any) => {
-                                    const fullItem = purchaseRequisition.data.find((item) => item.id === purchaseReq.id);
-                                    if (fullItem) {
-                                        Inertia.visit(`/prpo/purchase-request/details/${fullItem.id}`);
-                                    } else {
-                                        console.error('Item not found');
-                                    }
+                        actions={(purchaseReq: any) => {
+                            const fullItem = purchaseRequisition?.data.find((item) => item.id === purchaseReq.id);
+                            return [
+                                {
+                                    type: 'link',
+                                    label: 'View',
+                                    variant: 'default',
+                                    icon: <Edit className="h-4 w-4" />,
+                                    href: `/prpo/purchase-request/details/${fullItem?.id}`,
                                 },
-                            },
-                            {
-                                type: 'button',
-                                label: 'Create PO',
-                                variant: 'default',
-                                icon: <Edit className="h-4 w-4" />,
-                                onClick: (purchaseReq: any) => {
-                                    const fullItem = purchaseRequisition.data.find((item) => item.id === purchaseReq.id);
-                                    if (fullItem) {
-                                        Inertia.visit(`/prpo/purchase-order/${fullItem.id}`);
-                                    } else {
-                                        console.error('Item not found');
-                                    }
-                                },
-                            },
-                        ]}
+                            ];
+                        }}
                     />
                 </div>
             </div>

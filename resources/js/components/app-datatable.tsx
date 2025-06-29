@@ -1,12 +1,13 @@
 import { Button } from '@/components/ui/button';
+import { PurchaseRequisitionItem } from '@/types';
 import { Pen, Plus, Trash } from 'lucide-react';
 import React, { useState } from 'react';
 
 interface DataTableProps extends React.ComponentProps<'div'> {
     variant?: 'header' | 'sidebar';
-    items: Item[];
-    setItems: React.Dispatch<React.SetStateAction<Item[]>>;
-    showAddRow: boolean;
+    items: PurchaseRequisitionItem[];
+    setItems?: React.Dispatch<React.SetStateAction<Item[]>>;
+    showAddRow?: boolean;
 }
 
 type Item = {

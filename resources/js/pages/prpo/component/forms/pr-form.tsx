@@ -23,10 +23,10 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
         <>
             <div className="mt-2 flex w-full justify-end gap-4 rounded border bg-white px-6 py-4 shadow">
                 <TextField
-                    label="PO No"
-                    id="po_no"
+                    label="PR No"
+                    id="pr_no"
                     type="text"
-                    name="po_no"
+                    name="pr_no"
                     value={''}
                     isReadOnly={true}
                     placeholder="--Auto Generated--"

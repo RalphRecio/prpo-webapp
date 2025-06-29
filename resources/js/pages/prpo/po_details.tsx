@@ -6,7 +6,7 @@ import { defaultPurchaseOrderDetails } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
 import { Head, usePage } from '@inertiajs/react';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Swal from 'sweetalert2';
 import PoForm from './component/forms/po-form';
 import PoApproverTable from './component/po-approver-table';
@@ -26,21 +26,6 @@ export default function PurchaseOrderPage() {
 
     const [items, setItems] = useState<PurchaseOrderDetails[]>([]);
     const [purchaseOrderDetails, setPurchaseOrderDetails] = useState<PurchaseOrder>(defaultPurchaseOrderDetails);
-
-    const [purchaseOrder, setPurchaseOrder] = useState<PurchaseOrder | null>(null);
-
-    const fetchPurchaseOrder = async (id: number) => {
-        try {
-            const response = await axios.get(`/prpo/purchase-order/details/${id}`);
-            setPurchaseOrder(response.data);
-        } catch (error) {
-            console.error('Error fetching purchase order details:', error);
-        }
-    };
-
-    useEffect(() => {
-        fetchPurchaseOrder;
-    }, [purchaseOrder]);
 
     const handleSubmit = async () => {
         try {

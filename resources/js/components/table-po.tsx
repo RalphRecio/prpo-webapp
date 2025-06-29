@@ -20,6 +20,9 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
 
     const [itemDescription, setItemDescription] = useState<string>();
     const [itemDescriptionText, setItemDescriptionText] = useState<string>();
+    const [prDetailsId, setPrDetailsId] = useState<number>();
+    const [qtyInFigures, setQtyInFigures] = useState<number>();
+
     const [newRow, setNewRow] = useState({
         qty_ordered: 0,
         unit_of_measure: '',
@@ -27,6 +30,7 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
         description2: '',
         unit_price: 0,
         extended_price: 0,
+        qty_in_figures: 0,
     });
 
     const handleAddRow = () => {
@@ -36,6 +40,9 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
             {
                 ...newRow,
                 description1: itemDescriptionText,
+
+                qty_in_figures: qtyInFigures,
+                pr_details_id: prDetailsId,
                 id: Date.now(),
             },
         ]);
@@ -46,6 +53,7 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
             description2: '',
             unit_price: 0,
             extended_price: 0,
+            qty_in_figures: 0,
         });
     };
 
@@ -59,6 +67,8 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
                 value: string;
                 label: string;
                 description: string;
+                pr_details_id: number;
+                qty_in_figures: number;
             },
         ]
     >();
@@ -71,6 +81,8 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
                 value: item.id,
                 label: item.description,
 
+                qty_in_figures: item.qty_in_figures,
+                pr_details_id: item.id,
                 uom: item.uom,
             }));
 
@@ -113,6 +125,7 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
                                 <tr className="hover:bg-gray-50">
                                     <td></td>
                                     <td className="px-4 py-2">
+                                        <span className="text-xs">{qtyInFigures ? `Requested Qty: ${qtyInFigures}` : ''}</span>
                                         <input
                                             name="quantity"
                                             type="number"
@@ -151,6 +164,8 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
                                             onChange={(selectedOption: any) => {
                                                 setItemDescription(selectedOption.value);
                                                 setItemDescriptionText(selectedOption.label);
+                                                setPrDetailsId(selectedOption.pr_details_id);
+                                                setQtyInFigures(selectedOption.qty_in_figures);
                                             }}
                                         />
                                         <Textarea
@@ -199,7 +214,10 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
                             {items.map((item, index) => (
                                 <tr key={item.id} className="hover:bg-gray-50">
                                     <td className="px-4 py-2 font-bold">{0}</td>
-                                    <td className="px-4 py-2">{item.qty_ordered}</td>
+                                    <td className="px-4 py-2">{`
+                                   
+                                    
+                                    ${item.qty_ordered}`}</td>
                                     <td className="px-4 py-2">{item.unit_of_measure}</td>
                                     <td className="px-4 py-2">{`${item.description1} ${item.description2}`}</td>
                                     <td className="px-4 py-2">{item.unit_price}</td>

@@ -3,9 +3,9 @@ import { usePaginationService } from '@/hooks/use-pagination-service';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, Paginated, PurchaseRequisition, Transactions } from '@/types';
 import { Inertia } from '@inertiajs/inertia';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import axios from 'axios';
-import { Edit, Loader, Plus } from 'lucide-react';
+import { Edit } from 'lucide-react';
 import { useState } from 'react';
 
 const capitalizeFirstLetter = (str: string) => {
@@ -63,6 +63,7 @@ export default function PurchaseRequisitionAllPage() {
                 <div className="overflow-x-auto">
                     <PaginatedDt
                         columnNames={[
+                            'id',
                             'Status',
                             'Requestor',
                             'Date Issue',
@@ -73,23 +74,27 @@ export default function PurchaseRequisitionAllPage() {
                             'Classification',
                             'Remarks',
                         ]}
-                        items={purchaseRequisition.data.map((item) => ({
-                            status: item.status,
-                            requestor_id: item.requestor_id,
-                            date_issue: item.date_issue,
-                            date_needed: item.date_needed,
-                            bu_id: item.bu_id || '',
-                            department_id: item.department_id,
-                            prod_end_user: item.prod_end_user,
-                            classification_id: item.classification_id,
-                            remarks: item.remarks,
-                        }))}
+                        items={
+                            purchaseRequisition?.data?.map((item) => ({
+                                id: item.id,
+                                status: item.status,
+                                requestor_id: item.requestor_id,
+                                date_issue: item.date_issue,
+                                date_needed: item.date_needed,
+                                bu_id: item.bu.name || '',
+                                department_id: item.department.name,
+                                prod_end_user: item.prod_end_user,
+                                classification_id: item.classification.name,
+                                remarks: item.remarks,
+                            })) ?? []
+                        }
                         checkBox={false}
                         data={purchaseRequisition}
                         loading={loading}
+                        hiddenColumns={[0]}
                         handlePageChange={handlePageChange}
                         renderCell={(column, value) => {
-                            if (column === 0) {
+                            if (column === 1) {
                                 return (
                                     <strong
                                         className={`rounded-xl border border-1 px-2 py-1 ${
@@ -103,33 +108,30 @@ export default function PurchaseRequisitionAllPage() {
 
                             return value;
                         }}
-                        headerActions={[
-                            <Link
-                                href="/prpo/create_pr"
-                                className="inline-flex items-center rounded-md bg-blue-500 px-2 text-center text-white hover:bg-blue-600"
-                                onClick={handleClick}
-                            >
-                                {isLoading ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />} New PR
-                            </Link>,
-                        ]}
                         fetchData={fetchData}
-                        actions={[
-                            {
-                                type: 'button',
-                                label: 'View',
-                                variant: 'default',
-                                icon: <Edit className="h-4 w-4" />,
-                                onClick: (item: any) => {
-                                    const fullItem = purchaseRequisition.data.find((item) => item.id === item.id);
-                                    console.log(fullItem);
-                                    if (fullItem) {
-                                        Inertia.visit(`/prpo/purchase-request/details/${fullItem.id}`);
-                                    } else {
-                                        console.error('Item not found');
-                                    }
+                        actions={(purchaseReq: any) => {
+                            const fullItem = purchaseRequisition.data.find((item) => item.id === purchaseReq.id);
+                            return [
+                                {
+                                    type: 'link',
+                                    label: 'View',
+                                    variant: 'default',
+                                    icon: <Edit className="h-4 w-4" />,
+                                    href: `/prpo/purchase-request/details/${fullItem?.id}`,
                                 },
-                            },
-                        ]}
+                                ...(fullItem && fullItem.status === 'open'
+                                    ? [
+                                          {
+                                              type: 'link',
+                                              label: 'Create PO',
+                                              variant: 'default',
+                                              icon: <Edit className="h-4 w-4" />,
+                                              href: `/prpo/purchase-order/${fullItem.id}`,
+                                          },
+                                      ]
+                                    : []),
+                            ];
+                        }}
                     />
                 </div>
             </div>

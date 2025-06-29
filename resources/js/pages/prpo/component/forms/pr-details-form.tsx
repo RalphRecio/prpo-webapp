@@ -13,11 +13,11 @@ export default function PrDetailsForm({ PurchaseRequisition }: PrFormProps) {
         <>
             <div className="mt-2 flex w-full justify-end gap-4 rounded border bg-white px-6 py-4 shadow">
                 <TextField
-                    label="PO No"
-                    id="po_no"
+                    label="PR No"
+                    id="pr_no"
                     type="text"
-                    name="po_no"
-                    value={''}
+                    name="pr_no"
+                    value={PurchaseRequisition.pr_no ?? null}
                     isReadOnly={true}
                     placeholder="--Auto Generated--"
                     customClass="max-w-2xs font-bold"

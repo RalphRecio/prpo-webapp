@@ -1,7 +1,9 @@
 import { DialogAlert } from '@/components/dialogAlert';
 import { PurchaseRequisition } from '@/types';
 import { useAuthId } from '@/util/util';
+import { Inertia } from '@inertiajs/inertia';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 interface ApproverIMTableProps {
     purchaseRequisition: PurchaseRequisition;
@@ -13,10 +15,11 @@ export default function ApproverIMTable({ purchaseRequisition }: ApproverIMTable
             await axios.post('/prpo/purchase-request/approve/' + purchaseRequisition.id, {
                 approver_level: approverLevel,
             });
-            // Inertia.visit('/prpo/pending_approval');
-        } catch (error) {
-            // alert('Error saving data.');
-        }
+
+            Swal.fire('Success!', 'Your purchase request has been submitted.', 'success').then(() => {
+                Inertia.reload(); // Rerender the component with updated data
+            });
+        } catch (error) {}
     };
 
     return (
@@ -45,7 +48,22 @@ export default function ApproverIMTable({ purchaseRequisition }: ApproverIMTable
                                 .map((approverItem: any) => (
                                     <td className="px-4 py-2 align-top" key={approverItem.id}>
                                         <div className="space-y-1">
-                                            <div className="flex justify-between">
+                                            <div className="flex flex-col text-center">
+                                                {approverItem.is_approve == 1 ? (
+                                                    <>
+                                                        <span className="text-sm text-gray-800">Approve {approverItem.approval_date}</span>
+                                                        <span className="text-xs text-gray-700 italic">System Generated</span>
+                                                    </>
+                                                ) : (
+                                                    <span className="text-sm text-gray-800">Pending</span>
+                                                )}
+
+                                                <span className="font-bold">
+                                                    {approverItem.approver?.fname || ''} {approverItem.approver?.mname || ''}{' '}
+                                                    {approverItem.approver?.lname || ''}
+                                                </span>
+                                            </div>
+                                            {/* <div className="flex justify-between">
                                                 <span className="font-semibold text-gray-700">Name:</span>
                                                 <span>
                                                     {approverItem.approver
@@ -63,7 +81,7 @@ export default function ApproverIMTable({ purchaseRequisition }: ApproverIMTable
                                             <div className="flex justify-between">
                                                 <span className="font-semibold text-gray-700">Remarks:</span>
                                                 <span>{approverItem.remarks || ''}</span>
-                                            </div>
+                                            </div> */}
                                         </div>
 
                                         {approverItem.approver_id == useAuthId() && approverItem.is_approve == 0 && (

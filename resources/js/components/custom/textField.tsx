@@ -7,7 +7,7 @@ interface TextFieldProps {
     label: string;
     name: string;
     type?: string;
-    value?: string;
+    value?: string | number;
     placeholder?: string;
     isReadOnly?: boolean;
     onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;

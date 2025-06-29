@@ -6,8 +6,10 @@ import { defaultPurchaseRequisitionDetails } from '@/util/util';
 import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 import ApproverTable from './component/approver-table';
 import PrForm from './component/forms/pr-form';
+import TotalItem from './component/total-item';
 
 import { fetchClassification } from '@/hooks/api';
 
@@ -20,14 +22,36 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function CreatePr() {
     const [purchaseRequestDetails, setPurchaseRequestDetails] = useState<PurchaseRequisition>(defaultPurchaseRequisitionDetails);
-
     const [classification, setClassification] = useState<Classification[]>([]);
+    const [itRelated, setItRelated] = useState<number>(0);
+    const [items, setItems] = useState<any[]>([]);
+    const [loading, setLoading] = useState<boolean>();
+    const [submitting, setSubmitting] = useState(false);
 
     const handlePurchaseRequestFieldChange = (field: string, value: any) => {
         setPurchaseRequestDetails((prev) => ({
             ...prev,
             [field]: value,
         }));
+    };
+
+    const handleSubmit = async () => {
+        const payload = {
+            ...purchaseRequestDetails,
+            items: items,
+        };
+        if (submitting) return; // Prevent double trigger
+        setSubmitting(true);
+        try {
+            await axios.post('/prpo/purchase-request', payload);
+            Swal.fire('Success!', 'Your purchase request has been submitted.', 'success');
+            setPurchaseRequestDetails(defaultPurchaseRequisitionDetails);
+            setItems([]);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     useEffect(() => {
@@ -38,23 +62,6 @@ export default function CreatePr() {
         };
         fetchData();
     }, []);
-
-    const [itRelated, setItRelated] = useState<number>(0);
-    const [items, setItems] = useState<any[]>([]);
-
-    const [loading, setLoading] = useState<boolean>();
-
-    const handleSubmit = async () => {
-        const payload = {
-            ...purchaseRequestDetails,
-            items: items,
-        };
-        try {
-            const response = await axios.post('/prpo/purchase-request', payload);
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     return (
         <div className="flex h-screen flex-col">
@@ -67,8 +74,11 @@ export default function CreatePr() {
                         handlePurchaseRequestFieldChange={handlePurchaseRequestFieldChange}
                     />
                     <DataTable items={items} setItems={setItems} showAddRow={true}></DataTable>
+
+                    <TotalItem total={items.length} />
                     <ApproverTable itRelated={purchaseRequestDetails.is_it_related} />
                     <DialogAlert
+                        loading={submitting}
                         handleSubmit={() => {
                             handleSubmit();
                         }}

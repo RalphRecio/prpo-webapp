@@ -610,7 +610,7 @@ export function PaginatedDt({
                                             canDelete ||
                                             canEdit) && (
                                             <td
-                                                className="bg-white px-6 py-4 text-sm whitespace-nowrap text-gray-500"
+                                                className="flex flex-col gap-2 bg-white px-6 py-4 text-sm whitespace-nowrap text-gray-500"
                                                 style={{ position: 'sticky', right: 0, zIndex: 1 }}
                                             >
                                                 {(typeof actions === 'function' ? actions(item) : actions)?.map((action, actionIndex) => {
@@ -619,7 +619,7 @@ export function PaginatedDt({
                                                             <Link
                                                                 key={actionIndex}
                                                                 href={action.href}
-                                                                className="mx-1 inline-flex items-center rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                                                                className="mx-1 inline-flex items-center justify-center rounded-md bg-blue-500 px-4 py-2 text-center text-white hover:bg-blue-600"
                                                             >
                                                                 {action.icon && <span className="mr-2">{action.icon}</span>}
                                                                 <span>{action.label}</span>

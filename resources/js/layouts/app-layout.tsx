@@ -11,9 +11,7 @@ interface AppLayoutProps {
 export default ({ children, breadcrumbs, ...props }: AppLayoutProps) => (
     <PermissionProvider>
         <AppLayoutTemplate breadcrumbs={breadcrumbs} {...props}>
-            <div className="h-full bg-blue-50">
-                <div className="flex h-screen flex-col"> {children}</div>
-            </div>
+            {children}
         </AppLayoutTemplate>
     </PermissionProvider>
 );

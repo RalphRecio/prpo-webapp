@@ -294,22 +294,42 @@ export interface PurchaseRequisition {
     procurement_remarks: string | null;
     status: string;
 
-    approvers_list: Approver[];
+    approvers_list: ApproverList[];
     classification: Classification;
+    purchase_requisition_items: PurchaseRequisitionItem[];
     bu: BusinessUnit;
+}
+
+export interface PurchaseRequisitionItem {
+    id: number;
+    pr_id: number;
+    qty_in_figures: number;
+    uom: string;
+    description: string;
+    status: string;
+}
+
+export interface ApproverList {
+    id: number;
+    approver_id: string;
+    is_approve: string;
+    is_send_count: string;
+    pr_id: string;
+    remarks: string | null;
+    approver_level: string;
+    approval_date: string;
+    created_at: string;
+    updated_at: string;
+    approver: Approver;
+
+    approve_date_formatted: string | null;
 }
 
 export interface Approver {
     id: number;
-    approver_level: number | string;
-    is_approve: number;
-    remarks?: string;
-    approve_date: string;
-    approver?: {
-        user_id?: number | string;
-        job_title?: string;
-        approver_name?: string;
-    };
+    fname: string;
+    mname: string | null;
+    lname: string;
 }
 
 export interface BusinessUnit {
@@ -380,12 +400,15 @@ export interface PurchaseOrder {
 
 export interface PurchaseOrderDetails {
     id: number;
+    pr_details_id: number | undefined;
     qty_ordered: number;
     unit_of_measure: string;
     unit_price: number;
     extended_price: number;
-    description1: string;
+    description1: string | undefined;
     description2: string;
     created_at?: string;
     updated_at?: string;
+
+    qty_in_figures: number | undefined;
 }

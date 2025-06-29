@@ -20,9 +20,14 @@ const mainNavItems: NavItem[] = [
                 permissions: ['view_my_pr'],
             },
             {
-                title: 'Pending for Approval',
+                title: 'Purchase Request for Approval',
                 href: '/prpo/pending_approval',
                 permissions: ['view_pending_approval'],
+            },
+            {
+                title: 'Purchase Order for Approval',
+                href: '/prpo/po_pending_approval',
+                permissions: ['view_po_pending_approval'],
             },
             {
                 title: 'All Purchase Requests',
@@ -53,7 +58,7 @@ export function AppSidebar({ userPermissions }: { userPermissions: string[] }) {
         return requiredPermissions.some((permission) => userPermissions.includes(permission));
     };
 
-    const exemptedMenus = ['Pending for Approval', 'My Purchase Request'];
+    const exemptedMenus = ['Purchase Request for Approval', 'My Purchase Request'];
 
     const filteredNavItems = mainNavItems
         .map((item: any) => {
