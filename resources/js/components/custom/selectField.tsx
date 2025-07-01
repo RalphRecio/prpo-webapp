@@ -12,6 +12,8 @@ interface SelectFieldProps {
     isClearable?: boolean;
     isDisabled?: boolean;
     onChange: (selectedOption: any) => void;
+
+    isRequired?: boolean;
 }
 
 export function SelectField({
@@ -25,11 +27,13 @@ export function SelectField({
     isClearable = true,
     isDisabled = false,
     onChange,
+    isRequired,
 }: SelectFieldProps) {
     return (
         <div className={`flex-1 ${customClass || ''}`}>
             <Label htmlFor={id} className="mb-1 block font-bold text-gray-800">
                 {label}
+                {isRequired && <span className="text-sm text-red-500"> * </span>}
             </Label>
             <Select
                 inputId={id}

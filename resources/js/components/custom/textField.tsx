@@ -13,13 +13,16 @@ interface TextFieldProps {
     onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     customClass?: string;
     [key: string]: any; // Allow any other prop
+
+    isRequired?: boolean;
 }
 
-export function TextField({ label, id, name, type, value, placeholder, customClass, isReadOnly, onChange, ...rest }: TextFieldProps) {
+export function TextField({ label, id, name, type, value, placeholder, customClass, isReadOnly, onChange, isRequired, ...rest }: TextFieldProps) {
     return (
         <div className={`flex-1 ${customClass}`}>
             <Label htmlFor={id} className="mb-1 block font-bold text-gray-800">
                 {label}
+                {isRequired && <span className="text-sm text-red-500"> * </span>}
             </Label>
             <Input
                 id={id}
@@ -36,11 +39,12 @@ export function TextField({ label, id, name, type, value, placeholder, customCla
     );
 }
 
-export function TextAreaField({ label, id, name, value, placeholder, customClass, isReadOnly, onChange, ...rest }: TextFieldProps) {
+export function TextAreaField({ label, id, name, value, placeholder, customClass, isReadOnly, onChange, isRequired, ...rest }: TextFieldProps) {
     return (
         <div className={`flex-1 ${customClass}`}>
             <Label htmlFor={id} className="mb-1 block font-bold text-gray-800">
                 {label}
+                {isRequired && <span className="text-sm text-red-500"> * </span>}
             </Label>
             <Textarea
                 id={id}

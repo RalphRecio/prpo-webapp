@@ -10,15 +10,26 @@ interface DialogAlertProps {
     loading?: boolean;
     isDisabled?: boolean;
     remarks?: string;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
-export function DialogAlert({ buttonName, title, handleSubmit, loading, isDisabled = false, remarks: initialRemarks }: DialogAlertProps) {
+export function DialogAlert({
+    buttonName,
+    title,
+    handleSubmit,
+    loading,
+    isDisabled = false,
+    remarks: initialRemarks,
+    open,
+    onOpenChange,
+}: DialogAlertProps) {
     const [remarks, setRemarks] = useState(initialRemarks || '');
 
     return (
         <div className="flex flex-col items-center justify-center gap-4 p-2">
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
-                <Dialog>
+                <Dialog open={open} onOpenChange={onOpenChange}>
                     <DialogTrigger asChild>
                         <Button type="button" disabled={isDisabled}>
                             {buttonName || 'Submit'}

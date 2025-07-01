@@ -27,7 +27,16 @@ export default function CreatePr() {
     const [items, setItems] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>();
     const [submitting, setSubmitting] = useState(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
+    function hasEmptyRequiredFields(requiredFields: string[], details: Record<string, any>): boolean {
+        return requiredFields.some(
+            (field) => details[field] === '' || details[field] === null || details[field] === undefined || details[field] === 0,
+        );
+    }
+    const requiredFields = ['date_needed', 'prod_end_user', 'classification_id', 'remarks'];
+
+    const isDisabled = hasEmptyRequiredFields(requiredFields, purchaseRequestDetails) || items.length === 0;
     const handlePurchaseRequestFieldChange = (field: string, value: any) => {
         setPurchaseRequestDetails((prev) => ({
             ...prev,
@@ -77,12 +86,8 @@ export default function CreatePr() {
 
                     <TotalItem total={items.length} />
                     <ApproverTable itRelated={purchaseRequestDetails.is_it_related} />
-                    <DialogAlert
-                        loading={submitting}
-                        handleSubmit={() => {
-                            handleSubmit();
-                        }}
-                    />
+
+                    <DialogAlert loading={submitting} handleSubmit={handleSubmit} isDisabled={isDisabled} />
                 </div>
             </AppLayout>
         </div>

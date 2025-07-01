@@ -92,6 +92,7 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
                         customClass="max-w-2xs"
                         min={new Date().toISOString().split('T')[0]}
                         onChange={(e) => handlePurchaseRequestFieldChange('date_needed', e.target.value)}
+                        isRequired
                     />
                     <TextField
                         label="Product End User"
@@ -104,6 +105,7 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
                         onChange={(e) => {
                             handlePurchaseRequestFieldChange('prod_end_user', e.target.value);
                         }}
+                        isRequired
                     />
                     <SelectField
                         id="classification"
@@ -116,13 +118,14 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
                             handlePurchaseRequestFieldChange('classification_id', selected ? selected.value : '');
                             handlePurchaseRequestFieldChange('is_it_related', selected ? selected.is_it_related : '');
                         }}
+                        isRequired
                     />
                 </div>
             </div>
 
             <div className="flex w-full gap-4 rounded bg-white p-4 shadow">
                 <TextAreaField
-                    label="Remarks"
+                    label="Remarks/Justification"
                     id="remarks"
                     name="remarks"
                     value={purchaseRequestDetails.remarks}
@@ -131,6 +134,7 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
                     onChange={(e) => {
                         handlePurchaseRequestFieldChange('remarks', e.target.value);
                     }}
+                    isRequired
                 />
             </div>
         </>
