@@ -23,9 +23,11 @@ export default function ApproverIMTable({ purchaseRequisition }: ApproverIMTable
     };
 
     const handleDisapprove = async (approverItem: any, remarks: string) => {
+        // console.log(approverItem);
+        // return;
         try {
             await axios.post('/prpo/purchase-request/disapprove/' + purchaseRequisition.id, {
-                approverItem,
+                ...approverItem,
                 remarks,
             });
 
@@ -108,24 +110,26 @@ export default function ApproverIMTable({ purchaseRequisition }: ApproverIMTable
                                             </div> */}
                                         </div>
 
-                                        {approverItem.approver_id == useAuthId() && approverItem.is_approve == 0 && (
-                                            <div className="flex flex-row items-center justify-center text-center">
-                                                <DialogAlert
-                                                    buttonName="Approve"
-                                                    title="Approve Purchase Request"
-                                                    handleSubmit={() => {
-                                                        handleApprove(approverItem.approver_level);
-                                                    }}
-                                                />
-                                                <DialogAlert
-                                                    buttonName="Disapprove"
-                                                    title="Disapprove Purchase Request"
-                                                    handleSubmit={(remarks) => {
-                                                        handleDisapprove(approverItem, remarks);
-                                                    }}
-                                                />
-                                            </div>
-                                        )}
+                                        {!purchaseRequisition.status?.toLowerCase().includes('disapprove') &&
+                                            approverItem.approver_id == useAuthId() &&
+                                            approverItem.is_approve == 0 && (
+                                                <div className="flex flex-row items-center justify-center text-center">
+                                                    <DialogAlert
+                                                        buttonName="Approve"
+                                                        title="Approve Purchase Request"
+                                                        handleSubmit={() => {
+                                                            handleApprove(approverItem.approver_level);
+                                                        }}
+                                                    />
+                                                    <DialogAlert
+                                                        buttonName="Disapprove"
+                                                        title="Disapprove Purchase Request"
+                                                        handleSubmit={(remarks) => {
+                                                            handleDisapprove(approverItem, remarks);
+                                                        }}
+                                                    />
+                                                </div>
+                                            )}
                                     </td>
                                 ))}
                         </tr>

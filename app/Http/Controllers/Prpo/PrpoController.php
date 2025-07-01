@@ -10,6 +10,7 @@ use App\Models\Classification;
 use App\Models\ApproverList;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ApproveEmail;
+use App\Mail\DisapprovedEmail;
 use App\Models\Approver;
 use Carbon\Carbon;
 
@@ -208,7 +209,7 @@ class PrpoController extends Controller
         $purchaseRequisition->is_approve_im_supervisor = 0;
         $purchaseRequisition->im_supervisor_id = auth()->user()->immediate_head_id;
 
-        $purchaseRequisition->status = $validated['is_it_related']  == "1" ? "Pending for IT manager approval" : "Pending for Immediate Supervisor approval";
+        $purchaseRequisition->status = $validated['is_it_related']  == "1" ? "For approval of IT Manager" : "For approval of Immediate Head";
         $purchaseRequisition->save();
 
         if ($request->has('items')) {
@@ -675,7 +676,10 @@ class PrpoController extends Controller
         $approver->save();
 
         if($purchaseRequisition) {
-            switch ($request->input('approver_level')) {
+
+        
+
+            switch ((int)$request->input('approver_level')) {
                 case 1:
                     $purchaseRequisition->status = 'Disapproved By IT Manager';
                     break;
@@ -706,7 +710,7 @@ class PrpoController extends Controller
                 'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
             ];
 
-            Mail::to($purchaseRequisition->requestor->email)->send(new ApproveEmail($data));
+            Mail::to($purchaseRequisition->requestor->email)->send(new DisapprovedEmail($data));
         }
     }
 }

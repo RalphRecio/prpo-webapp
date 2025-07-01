@@ -13,6 +13,8 @@ import TotalItem from './component/total-item';
 
 import { fetchClassification } from '@/hooks/api';
 
+import { useLoading } from '../../../context/LoadingContext';
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Purchase Requisition',
@@ -25,7 +27,6 @@ export default function CreatePr() {
     const [classification, setClassification] = useState<Classification[]>([]);
     const [itRelated, setItRelated] = useState<number>(0);
     const [items, setItems] = useState<any[]>([]);
-    const [loading, setLoading] = useState<boolean>();
     const [submitting, setSubmitting] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -43,6 +44,7 @@ export default function CreatePr() {
             [field]: value,
         }));
     };
+    const { setLoading } = useLoading();
 
     const handleSubmit = async () => {
         const payload = {
@@ -51,7 +53,9 @@ export default function CreatePr() {
         };
         if (submitting) return; // Prevent double trigger
         setSubmitting(true);
+
         try {
+            setLoading(true);
             await axios.post('/prpo/purchase-request', payload);
             Swal.fire('Success!', 'Your purchase request has been submitted.', 'success');
             setPurchaseRequestDetails(defaultPurchaseRequisitionDetails);
@@ -60,10 +64,13 @@ export default function CreatePr() {
             console.error(error);
         } finally {
             setSubmitting(false);
+            setLoading(false);
         }
     };
 
     useEffect(() => {
+        // setSubmitting(true);
+        setLoading(true);
         const fetchData = async () => {
             const response = await fetchClassification();
             setClassification(response.data.classifications);
@@ -87,7 +94,7 @@ export default function CreatePr() {
                     <TotalItem total={items.length} />
                     <ApproverTable itRelated={purchaseRequestDetails.is_it_related} />
 
-                    <DialogAlert loading={submitting} handleSubmit={handleSubmit} isDisabled={isDisabled} />
+                    <DialogAlert loading={submitting} handleSubmit={handleSubmit} isDisabled={isDisabled} remarkFields={false} />
                 </div>
             </AppLayout>
         </div>

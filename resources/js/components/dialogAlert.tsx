@@ -12,6 +12,7 @@ interface DialogAlertProps {
     remarks?: string;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
+    remarkFields?: boolean;
 }
 
 export function DialogAlert({
@@ -22,6 +23,7 @@ export function DialogAlert({
     isDisabled = false,
     remarks: initialRemarks,
     open,
+    remarkFields = true,
     onOpenChange,
 }: DialogAlertProps) {
     const [remarks, setRemarks] = useState(initialRemarks || '');
@@ -40,8 +42,12 @@ export function DialogAlert({
                         <DialogDescription>
                             <div className="flex flex-col">
                                 Are you sure you want to proceed?
-                                <span className="mt-2 p-2">Remarks</span>
-                                <Textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} placeholder="Enter remarks here" />
+                                {remarkFields && (
+                                    <>
+                                        <span className="mt-2 p-2">Remarks</span>
+                                        <Textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} placeholder="Enter remarks here" />
+                                    </>
+                                )}
                             </div>
                         </DialogDescription>
                         <DialogFooter className="gap-2">

@@ -6,6 +6,9 @@ import { type BreadcrumbItem } from '@/types';
 import { type PropsWithChildren } from 'react';
 import { usePermissions } from '../../../context/PermissionContext';
 
+import { GlobalLoadingOverlay } from '@/components/Loading-overlay';
+import { LoadingProvider } from '../../../context/LoadingContext';
+
 export default function AppSidebarLayout({ children, breadcrumbs = [] }: PropsWithChildren<{ breadcrumbs?: BreadcrumbItem[] }>) {
     // const [userPermissions, setUserPermissions] = useState<string>('');
 
@@ -24,7 +27,10 @@ export default function AppSidebarLayout({ children, breadcrumbs = [] }: PropsWi
             <AppSidebar userPermissions={usePermissions()} />
             <AppContent variant="sidebar" className="h-full w-full overflow-y-auto">
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
-                {children}
+                <LoadingProvider>
+                    <GlobalLoadingOverlay />
+                    {children}
+                </LoadingProvider>
             </AppContent>
         </AppShell>
     );
