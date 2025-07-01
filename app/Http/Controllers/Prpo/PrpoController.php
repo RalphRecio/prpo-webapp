@@ -114,6 +114,7 @@ class PrpoController extends Controller
         $page = $request->input('page', 1);
         $pr = $this->buildPurchaseRequisitionQuery($request)
         // Only show PRs where the current user is an approver and has not yet approved
+        ->whereRaw('LOWER(status) NOT LIKE ?', ['%disapproved%'])
         ->whereHas('approversList', function($query) {
             $query->where('approver_id', auth()->user()->id)
                 ->where('is_send_count', 1)
