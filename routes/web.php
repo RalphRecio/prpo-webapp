@@ -46,9 +46,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('purchase-order/details/{id}', [PurchaseOrderController::class, 'viewPoDetails'])->name('purchase-order.show');
 
-
-      
         Route::get('po_pending_approval', [PurchaseOrderController::class, 'poPendingApproval'])->name('purchase-order.my-purchase-order');
+
+        Route::post('purchase-request/disapprove/{id}', [PrpoController::class, 'disapprove'])->name('purchase-request.disapprove');
 
     });
 });

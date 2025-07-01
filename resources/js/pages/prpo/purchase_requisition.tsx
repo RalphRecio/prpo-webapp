@@ -49,7 +49,7 @@ export default function PurchaseRequisitionPage() {
                             'Requestor',
                             'Date Issue',
                             'Date Needed',
-                            'BU',
+                            'Business Unit',
                             'Department',
                             'Product End User',
                             'Classification',
@@ -59,7 +59,7 @@ export default function PurchaseRequisitionPage() {
                             purchaseRequisition?.data?.map((item) => ({
                                 id: item.id,
                                 status: item.status,
-                                requestor_id: item.requestor_id,
+                                requestor_id: `${item.requestor.fname} ${item.requestor.lname}`,
                                 date_issue: item.date_issue,
                                 date_needed: item.date_needed,
                                 bu_id: item.bu.name || '',
@@ -79,7 +79,11 @@ export default function PurchaseRequisitionPage() {
                                 return (
                                     <strong
                                         className={`rounded-xl border border-1 px-2 py-1 ${
-                                            value == 0 ? 'bg-gray-100 text-yellow-800' : 'bg-gray-100 text-gray-800'
+                                            value === 'open'
+                                                ? 'bg-green-100 text-green-800'
+                                                : value.toLowerCase().includes('disapprove')
+                                                  ? 'bg-red-100 text-sm text-red-800'
+                                                  : 'bg-gray-100 text-sm text-gray-800'
                                         }`}
                                     >
                                         {value}

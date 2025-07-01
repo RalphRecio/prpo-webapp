@@ -17,9 +17,24 @@ export default function ApproverIMTable({ purchaseRequisition }: ApproverIMTable
             });
 
             Swal.fire('Success!', 'Your purchase request has been submitted.', 'success').then(() => {
-                Inertia.reload(); // Rerender the component with updated data
+                Inertia.reload();
             });
         } catch (error) {}
+    };
+
+    const handleDisapprove = async (approverItem: any, remarks: string) => {
+        try {
+            await axios.post('/prpo/purchase-request/disapprove/' + purchaseRequisition.id, {
+                approverItem,
+                remarks,
+            });
+
+            Swal.fire('Success!', 'Purchase request has been disapproved.', 'success').then(() => {
+                Inertia.reload();
+            });
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
@@ -51,7 +66,16 @@ export default function ApproverIMTable({ purchaseRequisition }: ApproverIMTable
                                             <div className="flex flex-col text-center">
                                                 {approverItem.is_approve == 1 ? (
                                                     <>
-                                                        <span className="text-sm text-gray-800">Approve {approverItem.approval_date}</span>
+                                                        <span className="text-sm font-semibold text-green-700">
+                                                            Approved {approverItem.approval_date}
+                                                        </span>
+                                                        <span className="text-xs text-gray-700 italic">System Generated</span>
+                                                    </>
+                                                ) : approverItem.is_approve == 2 ? (
+                                                    <>
+                                                        <span className="text-sm font-semibold text-red-700">
+                                                            Disapproved {approverItem.approval_date}
+                                                        </span>
                                                         <span className="text-xs text-gray-700 italic">System Generated</span>
                                                     </>
                                                 ) : (
@@ -85,13 +109,22 @@ export default function ApproverIMTable({ purchaseRequisition }: ApproverIMTable
                                         </div>
 
                                         {approverItem.approver_id == useAuthId() && approverItem.is_approve == 0 && (
-                                            <DialogAlert
-                                                buttonName="Approve"
-                                                title="Approve Purchase Request"
-                                                handleSubmit={() => {
-                                                    handleApprove(approverItem.approver_level);
-                                                }}
-                                            />
+                                            <div className="flex flex-row items-center justify-center text-center">
+                                                <DialogAlert
+                                                    buttonName="Approve"
+                                                    title="Approve Purchase Request"
+                                                    handleSubmit={() => {
+                                                        handleApprove(approverItem.approver_level);
+                                                    }}
+                                                />
+                                                <DialogAlert
+                                                    buttonName="Disapprove"
+                                                    title="Disapprove Purchase Request"
+                                                    handleSubmit={(remarks) => {
+                                                        handleDisapprove(approverItem, remarks);
+                                                    }}
+                                                />
+                                            </div>
                                         )}
                                     </td>
                                 ))}

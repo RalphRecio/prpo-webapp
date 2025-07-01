@@ -15,7 +15,7 @@ const mainNavItems: NavItem[] = [
         permissions: ['view_prpo'],
         subItems: [
             {
-                title: 'My Purchase Request',
+                title: 'Purchase Request',
                 href: '/prpo/purchase-request',
                 permissions: ['view_my_pr'],
             },
@@ -58,7 +58,7 @@ export function AppSidebar({ userPermissions }: { userPermissions: string[] }) {
         return requiredPermissions.some((permission) => userPermissions.includes(permission));
     };
 
-    const exemptedMenus = ['Purchase Request for Approval', 'My Purchase Request'];
+    const exemptedMenus = ['Purchase Request for Approval', 'Purchase Request'];
 
     const filteredNavItems = mainNavItems
         .map((item: any) => {

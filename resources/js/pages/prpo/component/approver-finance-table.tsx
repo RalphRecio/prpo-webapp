@@ -6,7 +6,6 @@ import { PurchaseRequisition } from '@/types';
 import { formatWithCommas, useAuthId } from '@/util/util';
 import { Inertia } from '@inertiajs/inertia';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
 import { ApproverStamp } from './approver-stamp';
@@ -17,13 +16,11 @@ interface ApproverFinanceTableProps {
 }
 
 export default function ApproverFinanceTable({ purchaseRequisition, handlePurchaseRequestFieldChange }: ApproverFinanceTableProps) {
-    const [selectedCurrency, setSelectedCurrency] = useState('PHP');
-
-    useEffect(() => {
-        handlePurchaseRequestFieldChange('currency', 'PHP');
-        handlePurchaseRequestFieldChange('budgeted', '1');
-        handlePurchaseRequestFieldChange('isCapexOpex', 'opex');
-    }, []);
+    // useEffect(() => {
+    //     handlePurchaseRequestFieldChange('currency', 'PHP');
+    //     handlePurchaseRequestFieldChange('budgeted', '1');
+    //     handlePurchaseRequestFieldChange('isCapexOpex', 'opex');
+    // }, []);
 
     const handleVerify = async () => {
         try {
@@ -77,6 +74,7 @@ export default function ApproverFinanceTable({ purchaseRequisition, handlePurcha
                                         disabled={
                                             !purchaseRequisition.approvers_list?.some(
                                                 (approver: any) =>
+                                                    Number(approver?.approver_level) == 3 &&
                                                     Number(approver.approver_id) === Number(useAuthId()) &&
                                                     Number(purchaseRequisition.is_finance_verified) !== 1, // not already approved
                                             )
@@ -102,6 +100,7 @@ export default function ApproverFinanceTable({ purchaseRequisition, handlePurcha
                                             disabled={
                                                 !purchaseRequisition.approvers_list?.some(
                                                     (approver: any) =>
+                                                        Number(approver?.approver_level) == 3 &&
                                                         Number(approver.approver_id) === Number(useAuthId()) &&
                                                         Number(purchaseRequisition.is_finance_verified) !== 1, // not already approved
                                                 )
@@ -133,8 +132,10 @@ export default function ApproverFinanceTable({ purchaseRequisition, handlePurcha
                                             disabled={
                                                 !purchaseRequisition.approvers_list?.some(
                                                     (approver: any) =>
+                                                        Number(approver?.approver_level) == 3 &&
                                                         Number(approver.approver_id) === Number(useAuthId()) &&
-                                                        Number(purchaseRequisition.is_finance_verified) !== 1, // not already approved
+                                                        Number(purchaseRequisition.is_finance_verified) !== 1 &&
+                                                        Number(purchaseRequisition.budgeted) == 1, // not already approved
                                                 )
                                             }
                                             onKeyDown={(e) => {
@@ -169,6 +170,7 @@ export default function ApproverFinanceTable({ purchaseRequisition, handlePurcha
                                         disabled={
                                             !purchaseRequisition.approvers_list?.some(
                                                 (approver: any) =>
+                                                    Number(approver?.approver_level) == 3 &&
                                                     Number(approver.approver_id) === Number(useAuthId()) &&
                                                     Number(purchaseRequisition.is_finance_verified) !== 1, // not already approved
                                             )
@@ -202,6 +204,7 @@ export default function ApproverFinanceTable({ purchaseRequisition, handlePurcha
                                         disabled={
                                             !purchaseRequisition.approvers_list?.some(
                                                 (approver: any) =>
+                                                    Number(approver?.approver_level) == 3 &&
                                                     Number(approver.approver_id) === Number(useAuthId()) &&
                                                     Number(purchaseRequisition.is_finance_verified) !== 1, // not already approved
                                             )
@@ -210,12 +213,14 @@ export default function ApproverFinanceTable({ purchaseRequisition, handlePurcha
                                 </td>
                             </tr>
 
-                            {purchaseRequisition.approvers_list?.some((approver: any) => Number(approver?.approver_id) === Number(useAuthId())) &&
+                            {purchaseRequisition.approvers_list?.some(
+                                (approver: any) => Number(approver?.approver_id) === Number(useAuthId()) && Number(approver?.approver_level) == 3,
+                            ) &&
                                 Number(purchaseRequisition.is_finance_verified) !== 1 && (
                                     <tr>
                                         <td colSpan={3} className="text-center">
                                             <DialogAlert
-                                                buttonName="Approve"
+                                                buttonName="Verify"
                                                 title="Approve Purchase Request"
                                                 handleSubmit={() => {
                                                     handleVerify();

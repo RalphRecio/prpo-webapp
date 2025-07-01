@@ -1,41 +1,48 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { useState } from 'react';
 
 interface DialogAlertProps {
     buttonName?: string;
     title?: string;
-    handleSubmit: () => void;
+    handleSubmit: (remarks: string) => void;
     loading?: boolean;
     isDisabled?: boolean;
+    remarks?: string;
 }
 
-export function DialogAlert({ buttonName, title, handleSubmit, loading, isDisabled = false }: DialogAlertProps) {
-    // const [isLoading, setIsLoading] = useState<boolean>(false);
+export function DialogAlert({ buttonName, title, handleSubmit, loading, isDisabled = false, remarks: initialRemarks }: DialogAlertProps) {
+    const [remarks, setRemarks] = useState(initialRemarks || '');
 
     return (
-        <div className="flex flex-col items-center justify-center gap-4 p-4">
+        <div className="flex flex-col items-center justify-center gap-4 p-2">
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button type="submit" disabled={isDisabled}>
-                            {/* <Save className="mr-1 h-4 w-4" /> */}
+                        <Button type="button" disabled={isDisabled}>
                             {buttonName || 'Submit'}
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="z-99999">
                         <DialogTitle>{title || 'Purchase Request'}</DialogTitle>
-                        <DialogDescription>Are you sure you want to proceed?</DialogDescription>
+                        <DialogDescription>
+                            <div className="flex flex-col">
+                                Are you sure you want to proceed?
+                                <span className="mt-2 p-2">Remarks</span>
+                                <Textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} placeholder="Enter remarks here" />
+                            </div>
+                        </DialogDescription>
                         <DialogFooter className="gap-2">
                             <DialogClose asChild>
                                 <Button variant="secondary">Cancel</Button>
                             </DialogClose>
-
                             <DialogClose asChild>
                                 <Button asChild>
                                     <button
-                                        type="submit"
+                                        type="button"
                                         onClick={() => {
-                                            handleSubmit();
+                                            handleSubmit(remarks);
                                         }}
                                     >
                                         {loading ? 'Please wait.' : 'Confirm'}

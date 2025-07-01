@@ -34,7 +34,10 @@ class ApproverList extends Model
         : '';
     }
 
-    // Always sort by approver_level
+    public function purchaseRequest(){
+        return $this->belongsTo(User::class, 'purchase_requisition', 'pr_id');
+    }
+
     // protected static function booted()
     // {
     //     static::addGlobalScope('orderByApproverLevel', function ($query) {
