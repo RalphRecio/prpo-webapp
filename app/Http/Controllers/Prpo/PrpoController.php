@@ -223,15 +223,16 @@ class PrpoController extends Controller
             $approverList = Approver::where('approver_level', 2)->get();
         }
 
-        // INSERT TO APPROVERS (foreach)
+        $isFirst = true;
         foreach ($approverList as $approver) {
             $purchaseRequisition->approversList()->create([
                 'approver_id'    => $approver->approver_type == 'immsupervisor' ? auth()->user()->immediate_head_id : $approver->user_id,
                 'is_approve'     => 0,
-                'is_send_count'  => 1,
+                'is_send_count'  => $isFirst ? 1 : 0,
                 'remarks'        => null,
                 'approver_level' => $approver->approver_level,
             ]);
+            $isFirst = false;
         }
 
         $data = [
@@ -271,6 +272,7 @@ class PrpoController extends Controller
 
             $approverList = ApproverList::where('pr_id', $id)
                 ->where('approver_level',   1)
+                ->where('approver_id', auth()->user()->id)
                 ->first();
 
             if ($approverList) {
@@ -305,6 +307,7 @@ class PrpoController extends Controller
 
             $approverList = ApproverList::where('pr_id', $id)
                 ->where('approver_level', 2)
+                ->where('approver_id', auth()->user()->id)
                 ->first();
             if ($approverList) {
                 $approverList->is_approve = 1;
@@ -351,6 +354,7 @@ class PrpoController extends Controller
 
             $approverList = ApproverList::where('pr_id', $id)
                 ->where('approver_level', 3)
+                ->where('approver_id', auth()->user()->id)
                 ->first();
             if ($approverList) {
                 $approverList->is_approve = 1;
@@ -420,6 +424,7 @@ class PrpoController extends Controller
 
         $approverList = ApproverList::where('pr_id', $id)
                 ->where('approver_id', auth()->user()->id)
+
                 ->first();
                 
             if ($approverList) {
@@ -455,7 +460,7 @@ class PrpoController extends Controller
                 'submitted_by' => $purchaseRequisition->requestor->fname,
                 'date_submitted' => $purchaseRequisition->date_issue,
     
-               'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
+                'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
             ];
 
             Mail::to($financeApprover->approver_email)->send(new ApproveEmail($data));

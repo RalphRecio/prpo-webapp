@@ -7,35 +7,45 @@ import Swal from 'sweetalert2';
 
 interface ApproverIMTableProps {
     purchaseRequisition: PurchaseRequisition;
+    loading: boolean;
+    setLoading: (loading: boolean) => void;
 }
 
-export default function ApproverIMTable({ purchaseRequisition }: ApproverIMTableProps) {
-    const handleApprove = async (approverLevel: any) => {
+export default function ApproverIMTable({ purchaseRequisition, loading, setLoading }: ApproverIMTableProps) {
+    const handleApprove = async (approverLevel: any, remarks: string) => {
+        setLoading(true);
         try {
             await axios.post('/prpo/purchase-request/approve/' + purchaseRequisition.id, {
                 approver_level: approverLevel,
+                remarks,
             });
 
             Swal.fire('Success!', 'Your purchase request has been submitted.', 'success').then(() => {
                 Inertia.reload();
             });
-        } catch (error) {}
+
+            setLoading(false);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleDisapprove = async (approverItem: any, remarks: string) => {
-        // console.log(approverItem);
-        // return;
+        setLoading(true);
         try {
             await axios.post('/prpo/purchase-request/disapprove/' + purchaseRequisition.id, {
                 ...approverItem,
                 remarks,
             });
-
             Swal.fire('Success!', 'Purchase request has been disapproved.', 'success').then(() => {
                 Inertia.reload();
             });
         } catch (error) {
             console.error(error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -89,36 +99,18 @@ export default function ApproverIMTable({ purchaseRequisition }: ApproverIMTable
                                                     {approverItem.approver?.lname || ''}
                                                 </span>
                                             </div>
-                                            {/* <div className="flex justify-between">
-                                                <span className="font-semibold text-gray-700">Name:</span>
-                                                <span>
-                                                    {approverItem.approver
-                                                        ? `${approverItem.approver.nname || ''} ${approverItem.approver.fname || ''} ${approverItem.approver.lname || ''}`.trim() ||
-                                                          'N/A'
-                                                        : 'N/A'}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="font-semibold text-gray-700">Status:</span>
-                                                <span className="text-sm font-bold">
-                                                    {approverItem.is_approve == 1 ? `Approved ${approverItem.approval_date}` : 'Pending'}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="font-semibold text-gray-700">Remarks:</span>
-                                                <span>{approverItem.remarks || ''}</span>
-                                            </div> */}
                                         </div>
 
                                         {!purchaseRequisition.status?.toLowerCase().includes('disapprove') &&
                                             approverItem.approver_id == useAuthId() &&
+                                            approverItem.is_send_count == 1 &&
                                             approverItem.is_approve == 0 && (
                                                 <div className="flex flex-row items-center justify-center text-center">
                                                     <DialogAlert
                                                         buttonName="Approve"
                                                         title="Approve Purchase Request"
-                                                        handleSubmit={() => {
-                                                            handleApprove(approverItem.approver_level);
+                                                        handleSubmit={(remarks) => {
+                                                            handleApprove(approverItem.approver_level, remarks);
                                                         }}
                                                     />
                                                     <DialogAlert
