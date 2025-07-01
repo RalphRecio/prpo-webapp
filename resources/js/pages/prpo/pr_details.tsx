@@ -28,7 +28,7 @@ export default function purchaseRequisition() {
 
     const [localPurchaseRequisition, setLocalPurchaseRequisition] = useState(purchaseRequisition);
 
-    const [loading, setLoading] = useState();
+    const [loading, setLoading] = useState<boolean>(false);
 
     const handlePurchaseRequestFieldChange = (field: string, value: any) => {
         setLocalPurchaseRequisition((prev) => ({

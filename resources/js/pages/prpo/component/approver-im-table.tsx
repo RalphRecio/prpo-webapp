@@ -27,8 +27,6 @@ export default function ApproverIMTable({ purchaseRequisition, loading, setLoadi
             setLoading(false);
         } catch (error) {
             console.error(error);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -39,13 +37,10 @@ export default function ApproverIMTable({ purchaseRequisition, loading, setLoadi
                 ...approverItem,
                 remarks,
             });
-            Swal.fire('Success!', 'Purchase request has been disapproved.', 'success').then(() => {
-                Inertia.reload();
-            });
+            Swal.fire('Success!', 'Purchase request has been disapproved.', 'success');
+            Inertia.reload();
         } catch (error) {
             console.error(error);
-        } finally {
-            setLoading(false);
         }
     };
 

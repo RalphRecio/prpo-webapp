@@ -22,6 +22,23 @@ export default function ApproverUnbudgeted({ purchaseRequisition }: ApproverFina
         }
     };
 
+    const handleDisapprove = async (approverItem: any, remarks: string) => {
+        // setLoading(true);
+        try {
+            await axios.post('/prpo/purchase-request/disapprove/' + purchaseRequisition.id, {
+                ...approverItem,
+                remarks,
+            });
+            Swal.fire('Success!', 'Purchase request has been disapproved.', 'success').then(() => {
+                Inertia.reload();
+            });
+        } catch (error) {
+            console.error(error);
+        } finally {
+            // setLoading(false);
+        }
+    };
+
     return (
         <>
             {Number(purchaseRequisition.is_finance_verified) === 1 && Number(purchaseRequisition.budgeted) === 0 && (
@@ -61,12 +78,19 @@ export default function ApproverUnbudgeted({ purchaseRequisition }: ApproverFina
                                                 (Number(approver.approver_level) === 6 &&
                                                     purchaseRequisition.is_approve1_unbudgeted == 1 &&
                                                     purchaseRequisition.is_approve2_unbudgeted == 0)) && (
-                                                <div className="flex flex-col text-center">
+                                                <div className="flex flex-row items-center justify-center text-center">
                                                     <DialogAlert
                                                         buttonName="Approve"
                                                         title="Approve Purchase Request"
                                                         handleSubmit={() => {
                                                             handleApproveUnbugeted();
+                                                        }}
+                                                    />
+                                                    <DialogAlert
+                                                        buttonName="Disapprove"
+                                                        title="Disapprove Purchase Request"
+                                                        handleSubmit={(remarks) => {
+                                                            // handleDisapprove(approverItem, remarks);
                                                         }}
                                                     />
                                                 </div>

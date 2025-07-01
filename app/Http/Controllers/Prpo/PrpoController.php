@@ -287,6 +287,17 @@ class PrpoController extends Controller
             $purchaseRequisition->status = 'For approval of Immediate Head';
             $purchaseRequisition->save();
 
+            $approverList2 = ApproverList::where('pr_id', $id)
+                ->where('approver_level', 2)
+                ->first();
+
+            if ($approverList2) {
+                $approverList2->is_approve = 0;
+                $approverList2->is_send_count = 1;
+                $approverList2->approval_date = \Carbon\Carbon::now();
+                $approverList2->remarks = '';
+                $approverList2->save();
+            }
 
             $data = [
                 'request_type' => 'Purchase Request',
@@ -674,6 +685,7 @@ class PrpoController extends Controller
 
         $approver = ApproverList::where('pr_id', $id)
             ->where('approver_id', auth()->user()->id)
+            ->where('approver_level', $request->input('approver_level'))
             ->first();
 
         $approver->is_approve = 2;
@@ -682,9 +694,6 @@ class PrpoController extends Controller
         $approver->save();
 
         if($purchaseRequisition) {
-
-        
-
             switch ((int)$request->input('approver_level')) {
                 case 1:
                     $purchaseRequisition->status = 'Disapproved By IT Manager';
