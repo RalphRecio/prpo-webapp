@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer("qty_in_figures");
             $table->string("uom");
             $table->string("description");
-            $table->string("status");
+            $table->string("status")->nullable();
             $table->timestamps();
         });
     }

@@ -42,7 +42,7 @@ export function DataTable({ variant = 'header', items, setItems, showAddRow, ...
     };
 
     const handleAddRow = () => {
-        if (!newRow.qty_in_figures || !newRow.uom || !newRow.description || !newRow.status) return;
+        if (!newRow.qty_in_figures || !newRow.uom || !newRow.description) return;
         setItems([...items, { ...newRow, id: Date.now() }]);
         setNewRow({
             pr_id: '',
@@ -146,7 +146,7 @@ export function DataTable({ variant = 'header', items, setItems, showAddRow, ...
                                     </td>
                                     <td className="px-4 py-2 text-center">
                                         <Button onClick={handleAddRow} type="button" variant="outline" size="sm">
-                                            <Plus />
+                                            <Plus /> Add
                                         </Button>
                                     </td>
                                 </tr>
