@@ -16,7 +16,7 @@ export const capitalizeFirstLetter = (str: string) => {
 export function useAuthFullname(): string {
     const page = usePage<SharedData & { auth: { user: User } }>();
     const { auth } = page.props;
-    return `${auth.user.fname} ${auth.user.mname} ${auth.user.lname}`;
+    return `${auth.user.fname} ${auth.user.lname}`;
 }
 
 export function useAuthBusinessUnit(): string {
