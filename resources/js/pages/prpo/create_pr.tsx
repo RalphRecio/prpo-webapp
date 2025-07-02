@@ -61,7 +61,7 @@ export default function CreatePr() {
             setPurchaseRequestDetails(defaultPurchaseRequisitionDetails);
             setItems([]);
         } catch (error) {
-            console.error(error);
+            Swal.fire('Error!', 'There was an error submitting your purchase request.', 'error');
         } finally {
             setSubmitting(false);
             setLoading(false);

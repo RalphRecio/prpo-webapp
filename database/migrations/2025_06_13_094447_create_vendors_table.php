@@ -15,13 +15,13 @@ return new class extends Migration
 
         Schema::create('vendors', function (Blueprint $table) {
             $table->id();
-            $table->string('business_type')->nullable();
-            $table->string('supplier_name')->nullable();
-            $table->string('address')->nullable();
-            $table->string('contact_number')->nullable();
-            $table->string('email')->nullable();
-            $table->string('contact_person')->nullable();
-            $table->string('payment_terms')->nullable();
+            $table->string('business_type',500)->nullable();
+            $table->string('supplier_name',500)->nullable();
+            $table->string('address',500)->nullable();
+            $table->string('contact_number',500)->nullable();
+            $table->string('email',500)->nullable();
+            $table->string('contact_person',500)->nullable();
+            $table->string('payment_terms',500)->nullable();
             $table->timestamps();
         });
     }

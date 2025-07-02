@@ -9,10 +9,12 @@ use App\Models\PurchaseRequisiton;
 use App\Models\Classification; 
 use App\Models\ApproverList;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use App\Mail\ApproveEmail;
 use App\Mail\DisapprovedEmail;
 use App\Models\Approver;
 use Carbon\Carbon;
+use Exception;
 
 class PrpoController extends Controller
 {
@@ -78,6 +80,25 @@ class PrpoController extends Controller
     public function index()
     {
         return Inertia::render('prpo/purchase_requisition');
+    }
+    public function destroy(Request $request, $id){
+        $pr = PurchaseRequisiton::find($id);
+        if ($pr) {
+            $pr->delete();
+
+            $prData = $this->buildPurchaseRequisitionQuery($request)
+            ->where('department_id', auth()->user()->dept_id);
+
+            return response()->json([
+                'purchaseRequisition' => [
+                    'data' => $prData->get(),
+                    // 'current_page' => $pr->currentPage(),
+                    // 'last_page' => $pr->lastPage(),
+                    // 'total' => $pr->total(),
+                ],
+            ]);
+        }
+        return response()->json(['message' => 'Purchase Requisition not found.'], 404);
     }
     public function myPurchaseRequest(Request $request){
         $page = $request->input('page', 1);
@@ -205,47 +226,62 @@ class PrpoController extends Controller
         $validated['bu_id'] = auth()->user()->bu_id;
         $validated['date_issue'] =  Carbon::now();
 
-        $purchaseRequisition = PurchaseRequisiton::create($validated);
-        $purchaseRequisition->is_approve_it_manager = 0;
-        $purchaseRequisition->is_approve_im_supervisor = 0;
-        $purchaseRequisition->im_supervisor_id = auth()->user()->immediate_head_id;
 
-        $purchaseRequisition->status = $validated['is_it_related']  == "1" ? "For approval of IT Manager" : "For approval of Immediate Head";
-        $purchaseRequisition->save();
+        DB::beginTransaction();
 
-        if ($request->has('items')) {
-            $purchaseRequisition->purchaseRequisitionItems()->createMany($validated['items']);
+
+        try {
+            $purchaseRequisition = PurchaseRequisiton::create($validated);
+            $purchaseRequisition->is_approve_it_manager = 0;
+            $purchaseRequisition->is_approve_im_supervisor = 0;
+            $purchaseRequisition->im_supervisor_id = auth()->user()->immediate_head_id;
+    
+            $purchaseRequisition->status = $validated['is_it_related']  == "1" ? "For approval of IT Manager" : "For approval of Immediate Head";
+            $purchaseRequisition->save();
+    
+            if ($request->has('items')) {
+                $purchaseRequisition->purchaseRequisitionItems()->createMany($validated['items']);
+            }
+    
+            if ($validated['is_it_related'] == 1) {
+                $approverList = Approver::whereIn('approver_level', [1, 2])->get();
+            } else {
+                $approverList = Approver::where('approver_level', 2)->get();
+            }
+    
+            $isFirst = true;
+            foreach ($approverList as $approver) {
+                $purchaseRequisition->approversList()->create([
+                    'approver_id'    => $approver->approver_type == 'immsupervisor' ? auth()->user()->immediate_head_id : $approver->user_id,
+                    'is_approve'     => 0,
+                    'is_send_count'  => $isFirst ? 1 : 0,
+                    'remarks'        => null,
+                    'approver_level' => $approver->approver_level,
+                ]);
+                $isFirst = false;
+            }
+    
+            $data = [
+                'request_type' => 'Purchase Request',
+                'pr_no' => $generatedPrNo,
+                'approver_name' => $approver->approver_type == 'immsupervisor' ? $purchaseRequisition->requestor->immediateHead->fname :  $approverList->first()->approver_name,
+                'submitted_by' => auth()->user()->fname,
+                'date_submitted' => Carbon::now(),
+    
+               'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
+            ];
+    
+            Mail::to($approver->approver_type == 'immsupervisor' ? $purchaseRequisition->requestor->immediateHead->email : $approverList->approver_email)->send(new ApproveEmail($data));
+
+            DB::commit();
+
+        }catch(Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to create Purchase Requisition.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        if ($validated['is_it_related'] == 1) {
-            $approverList = Approver::whereIn('approver_level', [1, 2])->get();
-        } else {
-            $approverList = Approver::where('approver_level', 2)->get();
-        }
-
-        $isFirst = true;
-        foreach ($approverList as $approver) {
-            $purchaseRequisition->approversList()->create([
-                'approver_id'    => $approver->approver_type == 'immsupervisor' ? auth()->user()->immediate_head_id : $approver->user_id,
-                'is_approve'     => 0,
-                'is_send_count'  => $isFirst ? 1 : 0,
-                'remarks'        => null,
-                'approver_level' => $approver->approver_level,
-            ]);
-            $isFirst = false;
-        }
-
-        $data = [
-            'request_type' => 'Purchase Request',
-            'pr_no' => $generatedPrNo,
-            'approver_name' => $approver->approver_type == 'immsupervisor' ? $purchaseRequisition->requestor->immediateHead->fname :  $approverList->first()->approver_name,
-            'submitted_by' => auth()->user()->fname,
-            'date_submitted' => Carbon::now(),
-
-           'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
-        ];
-
-        Mail::to($approver->approver_type == 'immsupervisor' ? $purchaseRequisition->requestor->immediateHead->email : $approverList->approver_email)->send(new ApproveEmail($data));
 
         return response()->json([
             'message' => 'Purchase Requisition created successfully.',
@@ -678,8 +714,6 @@ class PrpoController extends Controller
 
             Mail::to($approverOverbudget->approver_email)->send(new ApproveEmail($data));
     }
-
-
     public function disapprove(Request $request,$id){
         $purchaseRequisition = PurchaseRequisiton::findOrFail($id);
 

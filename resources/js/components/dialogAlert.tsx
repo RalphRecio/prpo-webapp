@@ -13,6 +13,7 @@ interface DialogAlertProps {
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
     remarkFields?: boolean;
+    body?: string;
 }
 
 export function DialogAlert({
@@ -25,6 +26,7 @@ export function DialogAlert({
     open,
     remarkFields = true,
     onOpenChange,
+    body,
 }: DialogAlertProps) {
     const [remarks, setRemarks] = useState(initialRemarks || '');
 
@@ -41,7 +43,7 @@ export function DialogAlert({
                         <DialogTitle>{title || 'Purchase Request'}</DialogTitle>
                         <DialogDescription>
                             <div className="flex flex-col">
-                                Are you sure you want to proceed?
+                                {body ?? 'Are you sure you want to proceed?'}
                                 {remarkFields && (
                                     <>
                                         <span className="mt-2 p-2">Remarks</span>

@@ -72,16 +72,24 @@ class PurchaseRequisiton extends Model
 
     public function getDateIssueAttribute($value)
     {
-        return Carbon::parse($value)->format('Y-m-d');
+        return Carbon::parse($value)->format('m/d/Y');
     }
 
     public function getDateNeededAttribute($value)
     {
-        return Carbon::parse($value)->format('Y-m-d');
+        return Carbon::parse($value)->format('m/d/Y');
     }
 
     public function approversList()
     {
         return $this->hasMany(ApproverList::class, 'pr_id');
     }
+
+
+
+    
 }
+
+
+
+

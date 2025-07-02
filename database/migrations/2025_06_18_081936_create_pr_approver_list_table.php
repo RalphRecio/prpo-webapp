@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer("approver_id");
             $table->integer('is_approve')->default(0);
             $table->integer('is_send_count')->default(0);
-            $table->foreignId('pr_id')->constrained("purchase_requisition");
+            $table->foreignId('pr_id')->constrained("purchase_requisition")->onDelete('cascade');
             $table->text("remarks")->nullable();
             $table->integer('approver_level');
             $table->dateTime("approval_date")->nullable();

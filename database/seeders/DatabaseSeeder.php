@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             // ApproverSeeder::class,
-            // ClassificationSeeder::class,
+            ClassificationSeeder::class,
             VendorSeeder::class
         ]);
     }

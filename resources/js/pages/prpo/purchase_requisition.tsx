@@ -1,13 +1,15 @@
+import { DialogAlert } from '@/components/dialogAlert';
 import { PaginatedDt } from '@/components/paginated-dt';
 import { fetchPurchaseRequisition } from '@/hooks/api';
 import { usePaginationService } from '@/hooks/use-pagination-service';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, Paginated, PurchaseRequisition } from '@/types';
-import { Inertia } from '@inertiajs/inertia';
+import { BreadcrumbItem, PurchaseRequisition } from '@/types';
+import { useAuthId } from '@/util/util';
 import { Head, Link } from '@inertiajs/react';
-import { Edit, Loader, Plus } from 'lucide-react';
-
+import axios from 'axios';
+import { Edit, Loader, Plus, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -17,32 +19,41 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function PurchaseRequisitionPage() {
-    const [purchaseRequisition, setPurchaseRequisition] = useState<Paginated<PurchaseRequisition>>();
+    const [purchaseRequisition, setPurchaseRequisition] = useState<PurchaseRequisition[]>([]);
 
     const { loading, fetchData, handlePageChange } = usePaginationService('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [prId, setPrId] = useState<number | undefined>();
 
     useEffect(() => {
         const fetchData = async () => {
             const response = await fetchPurchaseRequisition();
-            setPurchaseRequisition(response.data.purchaseRequisition);
-            console.log(response.data);
+            setPurchaseRequisition(response.data.purchaseRequisition.data || []);
+            console.log(response.data.purchaseRequisition);
         };
         fetchData();
     }, []);
 
-    function handleClick(event: React.MouseEvent<Element, MouseEvent>): void {
-        event.preventDefault();
-        setIsLoading(true);
+    const confirmDelete = async () => {
+        setDialogOpen(false);
 
-        Inertia.visit('/prpo/create_pr');
-    }
+        try {
+            const response = await axios.delete(`/prpo/purchase-request/delete/${prId}`);
+            Swal.fire('Success!', 'Purchase Request Deleted.', 'success');
+            setPurchaseRequisition(response.data.purchaseRequisition.data || []);
+        } catch (e) {
+            Swal.fire('Error!', 'Failed to delete Purchase Request.', 'error');
+        }
+    };
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Transaction" />
             <div className="flex h-full flex-1 flex-col rounded-xl">
                 <div className="overflow-x-auto bg-white">
                     <PaginatedDt
+                        loading={loading}
                         columnNames={[
                             'id',
                             'Status',
@@ -56,7 +67,7 @@ export default function PurchaseRequisitionPage() {
                             'Remarks',
                         ]}
                         items={
-                            purchaseRequisition?.data?.map((item) => ({
+                            purchaseRequisition?.map((item) => ({
                                 id: item.id,
                                 status: item.status,
                                 requestor_id: `${item.requestor.fname} ${item.requestor.lname}`,
@@ -99,12 +110,13 @@ export default function PurchaseRequisitionPage() {
                                 className="inline-flex items-center rounded-md bg-blue-500 px-2 text-center text-white hover:bg-blue-600"
                                 // onClick={handleClick}
                             >
-                                {isLoading ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />} New PR
+                                {isLoading ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />} New Purchase
+                                Request
                             </Link>,
                         ]}
                         fetchData={fetchData}
                         actions={(purchaseReq: any) => {
-                            const fullItem = purchaseRequisition?.data.find((item) => item.id === purchaseReq.id);
+                            const fullItem = purchaseRequisition?.find((item) => item.id === purchaseReq.id);
                             return [
                                 {
                                     type: 'link',
@@ -113,8 +125,36 @@ export default function PurchaseRequisitionPage() {
                                     icon: <Edit className="h-4 w-4" />,
                                     href: `/prpo/purchase-request/details/${fullItem?.id}`,
                                 },
+
+                                ...(fullItem && Number(fullItem.is_approve_it_manager) === 0 && Number(fullItem.requestor_id) == Number(useAuthId())
+                                    ? [
+                                          {
+                                              type: 'button',
+                                              label: 'Remove',
+                                              variant: 'outline',
+                                              icon: <Trash className="h-4 w-4" />,
+                                              onClick: () => {
+                                                  setDialogOpen(true);
+                                                  setPrId(fullItem?.id);
+                                              },
+                                          },
+                                      ]
+                                    : []),
                             ];
                         }}
+                    />
+                </div>
+
+                <div className="hidden">
+                    <DialogAlert
+                        open={dialogOpen}
+                        onOpenChange={setDialogOpen}
+                        title="Delete Purchase Request"
+                        body="Are you  sure, you want to delete this item?"
+                        buttonName="Delete"
+                        remarkFields={false}
+                        handleSubmit={confirmDelete}
+                        loading={false}
                     />
                 </div>
             </div>

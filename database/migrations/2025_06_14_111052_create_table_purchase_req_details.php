@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('purchase_req_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("pr_id")->constrained("purchase_requisition");
+            $table->foreignId("pr_id")->constrained("purchase_requisition")->onDelete('cascade');
             $table->integer("qty_in_figures");
             $table->string("uom");
             $table->string("description");

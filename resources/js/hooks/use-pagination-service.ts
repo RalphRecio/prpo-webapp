@@ -11,7 +11,6 @@ export function usePaginationService(endpoint?: string) {
 
     const fetchData = async (page: number, search: string = '', filter?: any) => {
         setLoading(true);
-
         setSearchTerm(search);
 
         interface FilterItem {

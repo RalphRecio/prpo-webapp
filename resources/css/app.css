@@ -175,3 +175,24 @@
 .swal-custom-z {
     z-index: 99999 !important;
 }
+
+/* For modern browsers */
+* {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #cbd5e1 #f1f5f9; /* thumb color, track color */
+}
+
+/* For Webkit browsers (Chrome, Edge, Safari) */
+*::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* thumb color */
+    border-radius: 4px;
+}
+
+*::-webkit-scrollbar-track {
+    background: #f1f5f9; /* track color */
+}

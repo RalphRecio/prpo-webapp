@@ -534,7 +534,7 @@ export function PaginatedDt({
                         <thead className="bg-gray-100">
                             <tr className="font-bold">
                                 {checkBox && (
-                                    <th className="pl-2 text-center">
+                                    <th className="pl-2 text-center whitespace-nowrap">
                                         <input
                                             type="checkbox"
                                             checked={items.length > 0 && selectedRows.length === items.length}
@@ -553,7 +553,7 @@ export function PaginatedDt({
                                     hiddenColumns.includes(index) ? null : (
                                         <th
                                             key={column}
-                                            className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase select-none"
+                                            className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500 uppercase select-none"
                                             onClick={() => handleSort(column)}
                                         >
                                             <span className="flex items-center gap-1">
@@ -565,7 +565,7 @@ export function PaginatedDt({
                                 )}
                                 {((actions && (typeof actions === 'function' || actions.length > 0)) || canDelete || canEdit) && (
                                     <th
-                                        className="bg-gray-100 px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase"
+                                        className="bg-gray-100 px-6 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500 uppercase"
                                         style={{ position: 'sticky', right: 0, zIndex: 2 }}
                                     >
                                         Actions

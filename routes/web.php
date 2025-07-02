@@ -50,6 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::post('purchase-request/disapprove/{id}', [PrpoController::class, 'disapprove'])->name('purchase-request.disapprove');
 
+        Route::delete('purchase-request/delete/{id}', [PrpoController::class, 'destroy'])->name('purchase-request.destroy');
     });
 });
 

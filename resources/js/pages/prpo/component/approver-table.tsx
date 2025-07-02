@@ -29,13 +29,13 @@ export default function ApproverTable({ itRelated }: DataTableProps) {
     }, [auth.user.bu_id]);
 
     return (
-        <div className="flex w-full gap-4 rounded bg-white p-4 shadow">
-            <table className="min-w-full divide-y divide-gray-200 rounded border text-sm text-gray-500">
+        <div className="flex w-full gap-4 rounded bg-white shadow">
+            <table className="min-w-full divide-y divide-gray-200 rounded border text-sm text-gray-800">
                 <thead className="bg-gray-100">
                     <tr>
-                        <th className="px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Requested By:</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">For IT Related Request</th>
-                        <th className="px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Immediate Supervisor</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium tracking-wider uppercase">Requested By:</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium tracking-wider uppercase">For IT Related Request</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium tracking-wider uppercase">Immediate Supervisor</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">

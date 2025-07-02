@@ -86,16 +86,17 @@ export function DataTable({ variant = 'header', items, setItems, showAddRow, ...
     };
 
     return (
-        <div className="w-full rounded bg-white shadow">
+        <div className="w-full rounded border bg-white shadow">
             <div className="relative overflow-x-auto" {...props}>
                 <div className="">
-                    <table className="min-w-full divide-y divide-gray-200">
+                    <table className="min-w-full divide-y divide-gray-200 text-gray-900">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Quantity</th>
-                                <th className="px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">UOM</th>
-                                <th className="px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Description</th>
-                                <th className="px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">Status</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium tracking-wider uppercase">#</th> {/* Row number header */}
+                                <th className="px-4 py-2 text-left text-xs font-medium tracking-wider uppercase">Quantity</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium tracking-wider uppercase">UOM</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium tracking-wider uppercase">Description</th>
+                                <th className="px-4 py-2 text-left text-xs font-medium tracking-wider uppercase">Status</th>
                                 {showAddRow && (
                                     <th className="px-4 py-2 text-center text-xs font-medium tracking-wider text-gray-500 uppercase">Actions</th>
                                 )}
@@ -105,6 +106,7 @@ export function DataTable({ variant = 'header', items, setItems, showAddRow, ...
                             {/* Inline input row for adding */}
                             {showAddRow && (
                                 <tr className="hover:bg-gray-50">
+                                    <td className="px-4 py-2"></td> {/* Empty cell for row number in add row */}
                                     <td className="px-4 py-2">
                                         <input
                                             name="qty_in_figures"
@@ -154,6 +156,7 @@ export function DataTable({ variant = 'header', items, setItems, showAddRow, ...
                                 <tr key={item.id} className="hover:bg-gray-50">
                                     {editIndex === index ? (
                                         <>
+                                            <td className="px-4 py-2">{index + 1}</td> {/* Row number */}
                                             <td className="px-4 py-2">
                                                 <input
                                                     name="qty_in_figures"
@@ -199,11 +202,11 @@ export function DataTable({ variant = 'header', items, setItems, showAddRow, ...
                                         </>
                                     ) : (
                                         <>
+                                            <td className="px-4 py-2">{index + 1}</td> {/* Row number */}
                                             <td className="px-4 py-2">{item.qty_in_figures}</td>
                                             <td className="px-4 py-2">{item.uom}</td>
                                             <td className="px-4 py-2">{item.description}</td>
                                             <td className="px-4 py-2">{item.status}</td>
-
                                             {showAddRow && (
                                                 <td className="px-4 py-2 text-center">
                                                     <div className="flex justify-center gap-2">

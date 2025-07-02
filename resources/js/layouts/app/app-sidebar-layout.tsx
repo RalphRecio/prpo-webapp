@@ -25,7 +25,7 @@ export default function AppSidebarLayout({ children, breadcrumbs = [] }: PropsWi
     return (
         <AppShell variant="sidebar">
             <AppSidebar userPermissions={usePermissions()} />
-            <AppContent variant="sidebar" className="h-full w-full overflow-y-auto">
+            <AppContent variant="sidebar" className="h-full w-full overflow-y-auto bg-blue-50">
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
                 <LoadingProvider>
                     <GlobalLoadingOverlay />

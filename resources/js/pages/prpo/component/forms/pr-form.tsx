@@ -11,7 +11,13 @@ interface PrFormProps {
 }
 
 export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFieldChange, classification }: PrFormProps) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = (() => {
+        const d = new Date();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const yyyy = d.getFullYear();
+        return `${mm}/${dd}/${yyyy}`;
+    })();
 
     const classificationOption = classification.map((option) => ({
         label: option.name,
@@ -81,7 +87,7 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
             </div>
 
             <div className="rounded border bg-white p-4 shadow">
-                <div className="mt-4 flex w-full gap-4">
+                <div className="flex w-full gap-4">
                     <TextField
                         label="Date Needed"
                         id="date_needed"
@@ -123,14 +129,13 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
                 </div>
             </div>
 
-            <div className="flex w-full gap-4 rounded bg-white p-4 shadow">
+            <div className="flex w-full gap-4 rounded border bg-white p-4 shadow">
                 <TextAreaField
                     label="Remarks/Justification"
                     id="remarks"
                     name="remarks"
                     value={purchaseRequestDetails.remarks}
                     placeholder="Enter Remarks"
-                    customClass="mt-4"
                     onChange={(e) => {
                         handlePurchaseRequestFieldChange('remarks', e.target.value);
                     }}

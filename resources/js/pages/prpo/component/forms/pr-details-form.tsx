@@ -42,7 +42,7 @@ export default function PrDetailsForm({ PurchaseRequisition }: PrFormProps) {
                         id="date_issue"
                         type="text"
                         name="date_issue"
-                        value={today}
+                        value={PurchaseRequisition.date_issue}
                         isReadOnly={true}
                         placeholder="--Auto Generated--"
                         customClass="max-w-2xs font-bold"
@@ -71,11 +71,11 @@ export default function PrDetailsForm({ PurchaseRequisition }: PrFormProps) {
             </div>
 
             <div className="rounded border bg-white p-4 shadow">
-                <div className="mt-4 flex w-full gap-4">
+                <div className="flex w-full gap-4">
                     <TextField
                         label="Date Needed"
                         id="date_needed"
-                        type="date"
+                        type="text"
                         name="date_needed"
                         value={PurchaseRequisition.date_needed}
                         placeholder="--Auto Generated--"
@@ -114,7 +114,6 @@ export default function PrDetailsForm({ PurchaseRequisition }: PrFormProps) {
                     name="remarks"
                     value={PurchaseRequisition.remarks}
                     placeholder="Enter Remarks"
-                    customClass="mt-4"
                     isReadOnly={true}
                 />
             </div>
