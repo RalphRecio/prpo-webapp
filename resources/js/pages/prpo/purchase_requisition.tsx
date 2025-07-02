@@ -4,6 +4,7 @@ import { fetchPurchaseRequisition } from '@/hooks/api';
 import { usePaginationService } from '@/hooks/use-pagination-service';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, PurchaseRequisition } from '@/types';
+import { useAuthId } from '@/util/util';
 import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
 import { Edit, Loader, Plus, Trash } from 'lucide-react';
@@ -125,7 +126,7 @@ export default function PurchaseRequisitionPage() {
                                     href: `/prpo/purchase-request/details/${fullItem?.id}`,
                                 },
 
-                                ...(fullItem && Number(fullItem.is_approve_it_manager) === 0
+                                ...(fullItem && Number(fullItem.is_approve_it_manager) === 0 && Number(fullItem.requestor_id) == Number(useAuthId())
                                     ? [
                                           {
                                               type: 'button',
