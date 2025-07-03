@@ -7,8 +7,9 @@ import { BreadcrumbItem, PurchaseRequisition } from '@/types';
 import { useAuthId } from '@/util/util';
 import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
-import { Edit, Loader, Plus, Trash } from 'lucide-react';
+import { Edit, Loader, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { FcPlus } from 'react-icons/fc';
 import Swal from 'sweetalert2';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -51,7 +52,7 @@ export default function PurchaseRequisitionPage() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Transaction" />
             <div className="flex h-full flex-1 flex-col rounded-xl">
-                <div className="overflow-x-auto bg-white">
+                <div className="m-4 overflow-x-auto bg-white">
                     <PaginatedDt
                         loading={loading}
                         columnNames={[
@@ -95,8 +96,12 @@ export default function PurchaseRequisitionPage() {
                                             value === 'open'
                                                 ? 'bg-green-100 text-green-800'
                                                 : value.toLowerCase().includes('disapprove')
-                                                  ? 'bg-red-100 text-sm text-red-800'
-                                                  : 'bg-gray-100 text-sm text-gray-800'
+                                                  ? 'bg-red-100 text-xs text-red-800'
+                                                  : value.toLowerCase().includes('finance')
+                                                    ? 'bg-lime-300 text-xs text-white'
+                                                    : value.toLowerCase().includes('procurement')
+                                                      ? 'bg-sky-500 text-xs text-white'
+                                                      : 'bg-gray-200 text-xs text-gray-500'
                                         }`}
                                     >
                                         {value}
@@ -109,10 +114,10 @@ export default function PurchaseRequisitionPage() {
                         headerActions={[
                             <Link
                                 href="/prpo/create_pr"
-                                className="inline-flex items-center rounded-md bg-blue-500 px-2 text-center text-white hover:bg-blue-600"
+                                className="animate inline-flex items-center rounded-md bg-gray-100 px-2 text-center text-sm font-bold text-gray-800 hover:bg-gray-200"
                                 // onClick={handleClick}
                             >
-                                {isLoading ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />} New Purchase
+                                {isLoading ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : <FcPlus className="mr-2 h-4 w-4" />} New Purchase
                                 Request
                             </Link>,
                         ]}

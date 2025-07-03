@@ -6,9 +6,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 import { Link } from '@inertiajs/react';
 import axios from 'axios';
-import { Edit, PlusCircleIcon, RefreshCcw, Search, Trash } from 'lucide-react';
+import { Edit, PlusCircleIcon, Trash } from 'lucide-react';
 import { useState } from 'react';
 // import Select from 'react-select';
+import { FcSearch, FcSynchronize } from 'react-icons/fc';
 import Swal from 'sweetalert2';
 
 type Item = {};
@@ -479,8 +480,8 @@ export function PaginatedDt({
 
                 <div className="flex w-full flex-row items-center justify-between">
                     <div className="flex flex-row gap-1">
-                        <Button title="Refresh" onClick={() => fetchData(data.current_page, searchTerm, filters)}>
-                            <RefreshCcw />
+                        <Button title="Refresh" variant={'secondary'} onClick={() => fetchData(data.current_page, searchTerm, filters)}>
+                            <FcSynchronize />
                         </Button>
                         {/* <Button title="Export to Excel">
                             <FileSpreadsheet />
@@ -522,7 +523,7 @@ export function PaginatedDt({
                             className="flex h-9 items-center justify-center rounded-r-md border border-l-0 bg-blue-600 px-4 py-1.5 text-white transition hover:bg-blue-700"
                             style={{ minWidth: '44px', borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
                         >
-                            <Search />
+                            <FcSearch />
                         </button>
                     </div>
                 </div>
@@ -553,7 +554,7 @@ export function PaginatedDt({
                                     hiddenColumns.includes(index) ? null : (
                                         <th
                                             key={column}
-                                            className="cursor-pointer px-6 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500 uppercase select-none"
+                                            className="cursor-pointer px-6 py-3 text-left text-xs tracking-wider whitespace-nowrap text-gray-500 uppercase select-none"
                                             onClick={() => handleSort(column)}
                                         >
                                             <span className="flex items-center gap-1">
@@ -573,7 +574,7 @@ export function PaginatedDt({
                                 )}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200 bg-white">
+                        <tbody className="divide-y divide-gray-200 bg-white text-sm text-red-900">
                             {items.length > 0 ? (
                                 items.map((item: any, rowIndex) => (
                                     <tr key={rowIndex}>
@@ -595,7 +596,7 @@ export function PaginatedDt({
                                         )}
                                         {Object.values(item).map((value, colIndex) =>
                                             hiddenColumns.includes(colIndex) ? null : (
-                                                <td key={colIndex} className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
+                                                <td key={colIndex} className="px-6 py-4 text-xs whitespace-nowrap text-gray-500">
                                                     {renderCell ? (
                                                         renderCell(colIndex, value, item) // Use custom render function if provided
                                                     ) : typeof value === 'object' && value !== null ? (

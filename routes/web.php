@@ -5,6 +5,7 @@ use App\Http\Controllers\Prpo\PrpoController;
 use App\Http\Controllers\Approvers\ApproverController;
 use App\Http\Controllers\Prpo\PurchaseOrderController;
 use App\Http\Controllers\Prpo\PendingPurchaseController;
+use App\Http\Controllers\Prpo\PurchaseRequestController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -15,18 +16,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('prpo')->group(function () {
 
-        //REDIRECT TO PURCHASE REQUEST PAGE AND FETCH MY PURCHASE REQUESTS
-        Route::get('purchase-request', [PrpoController::class, 'index'])->name('purchase-request');
-        Route::get('purchase-request/my-purchase-request', [PrpoController::class, 'myPurchaseRequest'])->name('purchase-request.my-purchase-request');
         
-        //REDIRECT TO CREATE PR AND FETCH CLASSIFICATION
-        Route::get('create_pr', [PrpoController::class, 'createPr'])->name('create_pr');
-        Route::get('purchase-request/classification', [PrpoController::class, 'classification'])->name('classification');
-
+        
 
         Route::get('purchase-request/all', [PrpoController::class, 'allRequests'])->name('purchase-request.all');
         Route::get('purchase-request/details/{id}', [PrpoController::class, 'viewDetails'])->name('purchase-request.show');
-        Route::post('purchase-request', [PrpoController::class, 'store']);
+       
 
        
         Route::post('purchase-request/approve/{id}', [PrpoController::class, 'approve'])->name('purchase-request.approve');
@@ -53,6 +48,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::delete('purchase-request/delete/{id}', [PrpoController::class, 'destroy'])->name('purchase-request.destroy');
 
+     
+        //PURCHASE REQUESITON ROUTE
+        Route::get('purchase-request', [PurchaseRequestController::class, 'index'])->name('purchase-request');
+        Route::get('purchase-request/my-purchase-request', [PurchaseRequestController::class, 'myPurchaseRequest'])->name('purchase-request.my-purchase-request');
+        
+        //CREATE PR ROUTE
+        Route::get('create_pr', [PurchaseRequestController::class, 'createPr'])->name('create_pr');
+        Route::get('purchase-request/classification', [PurchaseRequestController::class, 'classification'])->name('classification');
+        Route::post('purchase-request', [PurchaseRequestController::class, 'store']);
 
         //PENDING PR ROUTE
         Route::get('pending_approval', [PendingPurchaseController::class, 'index'])->name('purchase-request.index');

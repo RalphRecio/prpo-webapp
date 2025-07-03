@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Prpo;
 
+use App\Services\PurchaseRequisitionNotificationService;
 use App\Http\Controllers\Controller;
 use App\Traits\PurchaseRequisitionQuery;
 use Illuminate\Http\Request;
@@ -20,10 +21,7 @@ use Exception;
 class PrpoController extends Controller
 {
     use PurchaseRequisitionQuery;
-    public function index()
-    {
-        return Inertia::render('prpo/purchase_requisition');
-    }
+  
     public function destroy(Request $request, $id){
         $pr = PurchaseRequisiton::find($id);
         if ($pr) {
@@ -43,21 +41,7 @@ class PrpoController extends Controller
         }
         return response()->json(['message' => 'Purchase Requisition not found.'], 404);
     }
-    public function myPurchaseRequest(Request $request){
-        $page = $request->input('page', 1);
-        $pr = $this->buildPurchaseRequisitionQuery($request)
-            ->where('department_id', auth()->user()->dept_id);
-            // ->paginate(10, ['*'], 'page', $page);
 
-            return response()->json([
-                'purchaseRequisition' => [
-                    'data' => $pr->get(),
-                    // 'current_page' => $pr->currentPage(),
-                    // 'last_page' => $pr->lastPage(),
-                    // 'total' => $pr->total(),
-                ],
-            ]);
-    }
     public function allRequests(Request $request)
     {
         $page = $request->input('page', 1);
@@ -114,122 +98,8 @@ class PrpoController extends Controller
             ],
         ]);
     }
-    public function createPr() {
-        return Inertia::render('prpo/create_pr');
-    }
-    public function classification()
-    {
-        $classifications = Classification::all();
-
-        return response()->json([
-            'classifications' => $classifications
-        ]);
-
-    }
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'date_needed' => 'required|date',
-            'prod_end_user' => 'required|max:255',
-            'classification_id' => 'required|integer',
-            'is_it_related' => 'integer',
-            'remarks' => 'nullable|string',
-            'items' => 'nullable|array',
-
-            'im_supervisor_id' => 'required|integer',
-            'items.*.qty_in_figures' => 'required_with:items|numeric',
-            'items.*.uom' => 'required_with:items|string|max:50',
-            'items.*.description' => 'required_with:items|string|max:255',
-            ]
-        );
-
-        $year = now()->year;
-        $deptId = auth()->user()->department->id;
-        $deptCode = auth()->user()->department->code;
-
-        $latestPR = PurchaseRequisiton::whereYear('created_at', $year)
-            ->where('department_id', $deptId)
-            ->where('pr_no', 'like', "PR-{$deptCode}-{$year}-%")
-            ->orderBy('id', 'desc')
-            ->first();
-
-        if ($latestPR) {
-            $lastNumber = (int) str_replace("PR-{$deptCode}-{$year}-", '', $latestPR->pr_no);
-            $nextNumber = $lastNumber + 1;
-        } else {
-            $nextNumber = 1;
-        }
-
-        $generatedPrNo = "PR-{$deptCode}-{$year}-{$nextNumber}";
-        $validated['pr_no'] = $generatedPrNo;
-
-        $validated['department_id'] = auth()->user()->dept_id;
-        $validated['requestor_id'] = auth()->user()->id;
-        $validated['bu_id'] = auth()->user()->bu_id;
-        $validated['date_issue'] =  Carbon::now();
-
-
-        DB::beginTransaction();
-
-
-        try {
-            $purchaseRequisition = PurchaseRequisiton::create($validated);
-            $purchaseRequisition->is_approve_it_manager = 0;
-            $purchaseRequisition->is_approve_im_supervisor = 0;
-            $purchaseRequisition->im_supervisor_id = auth()->user()->immediate_head_id;
-    
-            $purchaseRequisition->status = $validated['is_it_related']  == "1" ? "For approval of IT Manager" : "For approval of Immediate Head";
-            $purchaseRequisition->save();
-    
-            if ($request->has('items')) {
-                $purchaseRequisition->purchaseRequisitionItems()->createMany($validated['items']);
-            }
-    
-            if ($validated['is_it_related'] == 1) {
-                $approverList = Approver::whereIn('approver_level', [1, 2])->get();
-            } else {
-                $approverList = Approver::where('approver_level', 2)->get();
-            }
-    
-            $isFirst = true;
-            foreach ($approverList as $approver) {
-                $purchaseRequisition->approversList()->create([
-                    'approver_id'    => $approver->approver_type == 'immsupervisor' ? auth()->user()->immediate_head_id : $approver->user_id,
-                    'is_approve'     => 0,
-                    'is_send_count'  => $isFirst ? 1 : 0,
-                    'remarks'        => null,
-                    'approver_level' => $approver->approver_level,
-                ]);
-                $isFirst = false;
-            }
-    
-            $data = [
-                'request_type' => 'Purchase Request',
-                'pr_no' => $generatedPrNo,
-                'approver_name' => $approver->approver_type == 'immsupervisor' ? $purchaseRequisition->requestor->immediateHead->fname :  $approverList->first()->approver_name,
-                'submitted_by' => auth()->user()->fname,
-                'date_submitted' => Carbon::now(),
-    
-               'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
-            ];
-    
-            Mail::to($approver->approver_type == 'immsupervisor' ? $purchaseRequisition->requestor->immediateHead->email : $approverList->approver_email)->send(new ApproveEmail($data));
-
-            DB::commit();
-
-        }catch(Exception $e){
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Failed to create Purchase Requisition.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-
-        return response()->json([
-            'message' => 'Purchase Requisition created successfully.',
-            'data' => $purchaseRequisition->load('purchaseRequisitionItems')
-        ], 201);
-    }
+   
+   
     public function viewDetails($id)
     {
         $purchaseRequisition = PurchaseRequisiton::with(['approversList.approver','requestor', 'bu.buHead', 'department', 'classification','purchaseRequisitionItems','immediateHead'])
@@ -703,5 +573,31 @@ class PrpoController extends Controller
 
             Mail::to($purchaseRequisition->requestor->email)->send(new DisapprovedEmail($data));
         }
+    }
+
+
+
+    /**
+     * Send the initial approval email to the first approver.
+     */
+    private function sendInitialApprovalEmail($purchaseRequisition, $approverList, $generatedPrNo)
+    {
+        $firstApprover = $approverList->first();
+        if (!$firstApprover) {
+            return;
+        }
+
+        $to = $firstApprover->approver_type == 'immsupervisor'
+            ? $purchaseRequisition->requestor->immediateHead->email
+            : $firstApprover->approver_email;
+
+        PurchaseRequisitionNotificationService::sendApprovalEmail(
+            $to,
+            $purchaseRequisition,
+            $firstApprover->approver_type == 'immsupervisor' ? 'IT Manager' : $firstApprover->approver_type,
+            $firstApprover,
+            $approverList,
+            $generatedPrNo
+        );
     }
 }

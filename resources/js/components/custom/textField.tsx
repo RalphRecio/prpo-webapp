@@ -63,7 +63,7 @@ export function TextAreaField({ label, id, name, value, placeholder, customClass
 export function TextDetails({ label, value }: { label: string; value: string | number | undefined }) {
     return (
         <div className="flex flex-col space-y-1">
-            <label htmlFor="pr_no" className="text-xs font-medium text-gray-700">
+            <label htmlFor="pr_no" className="text-xs font-medium text-gray-500">
                 {label}
             </label>
             <span className="text-black-800 text-sm">{value}</span>
