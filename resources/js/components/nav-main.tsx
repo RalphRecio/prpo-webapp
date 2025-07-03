@@ -25,7 +25,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                         {item.subItems && item.subItems.length > 0 ? (
                             <SidebarMenuButton asChild isActive={item.href === page.url} tooltip={{ children: item.title }}>
                                 <div
-                                    className="flex w-full items-center justify-between font-bold text-gray-900"
+                                    className="flex w-full items-center justify-between text-gray-900"
                                     onClick={() => toggleCollapse(item.title)}
                                     style={{ cursor: 'pointer' }}
                                 >
@@ -41,13 +41,13 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                         ) : (
                             <SidebarMenuButton asChild isActive={item.href === page.url} tooltip={{ children: item.title }}>
                                 <Link href={item.href} prefetch className="flex w-full items-center">
-                                    {item.icon && <item.icon className="mr-2 h-4 w-4" />}
+                                    {item.icon && <item.icon className="h-4 w-4" />}
                                     <span>{item.title}</span>
                                 </Link>
                             </SidebarMenuButton>
                         )}
                         {item.subItems && item.subItems.length > 0 && collapsedItems[item.title] && (
-                            <SidebarMenu className="mt-2 ml-2 text-gray-800">
+                            <SidebarMenu className="text-gray-800">
                                 {item.subItems.map((subItem) => (
                                     <SidebarMenuItem key={subItem.title}>
                                         <SidebarMenuButton asChild isActive={subItem.href === page.url} tooltip={{ children: subItem.title }}>
