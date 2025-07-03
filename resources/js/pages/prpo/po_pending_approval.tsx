@@ -6,8 +6,12 @@ import { Head, usePage } from '@inertiajs/react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Pending for Approval',
-        href: '/transactions',
+        title: 'For Approval',
+        href: '/prpo/po_pending_approval',
+    },
+    {
+        title: 'PO for Approval',
+        href: '/prpo/po_pending_approval',
     },
 ];
 
@@ -20,7 +24,7 @@ export default function PoPendingApproval() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Pending for Approval" />
             <div className="flex h-full flex-1 flex-col rounded-xl">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto bg-white">
                     <PaginatedDt
                         columnNames={['id', 'PO No.', 'Requested By']}
                         items={purchaseOrders.map((item: any) => ({

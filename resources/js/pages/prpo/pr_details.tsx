@@ -18,6 +18,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Purchase Requisition',
         href: '/prpo/purchase-request',
     },
+    {
+        title: 'Purchase Requisition Details',
+        href: '/prpo/purchase-request',
+    },
 ];
 
 export default function purchaseRequisition() {
@@ -41,11 +45,10 @@ export default function purchaseRequisition() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Purchase Request" />
 
-            <div className="mx-auto flex max-w-[900px] flex-1 flex-col gap-4 px-4">
+            <div className="mx-auto flex max-w-[800px] min-w-[800px] flex-1 flex-col gap-4 px-4">
                 {/* <Button>View PO list</Button> */}
                 <PrDetailsForm PurchaseRequisition={purchaseRequisition} />
                 <DataTable items={purchaseRequisition.purchase_requisition_items} />
-
                 <TotalItem total={purchaseRequisition.purchase_requisition_items.length} />
                 <ApproverIMTable purchaseRequisition={purchaseRequisition} loading={loading} setLoading={setLoading} />
                 <ApproverFinanceTable

@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useState } from 'react';
 
@@ -23,22 +23,28 @@ export function DialogAlert({
     loading,
     isDisabled = false,
     remarks: initialRemarks,
-    open,
+    open: controlledOpen,
     remarkFields = true,
     onOpenChange,
     body,
 }: DialogAlertProps) {
     const [remarks, setRemarks] = useState(initialRemarks || '');
+    const [open, setOpen] = useState(false);
+
+    // Use controlled open if provided, otherwise use local state
+    const isOpen = controlledOpen !== undefined ? controlledOpen : open;
+    const handleDialogOpenChange = (val: boolean) => {
+        setOpen(val);
+        onOpenChange?.(val);
+    };
 
     return (
         <div className="flex flex-col items-center justify-center gap-4 p-2">
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
-                <Dialog open={open} onOpenChange={onOpenChange}>
-                    <DialogTrigger asChild>
-                        <Button type="button" disabled={isDisabled}>
-                            {buttonName || 'Submit'}
-                        </Button>
-                    </DialogTrigger>
+                <Button type="button" disabled={isDisabled} onClick={() => setOpen(true)}>
+                    {buttonName || 'Submit'}
+                </Button>
+                <Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
                     <DialogContent className="z-99999">
                         <DialogTitle>{title || 'Purchase Request'}</DialogTitle>
                         <DialogDescription>

@@ -20,6 +20,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Purchase Requisition',
         href: '/prpo/purchase-request',
     },
+    {
+        title: 'Create Purchase Requisition',
+        href: '/prpo/purchase-request/create_pr',
+    },
 ];
 
 export default function CreatePr() {
@@ -37,7 +41,7 @@ export default function CreatePr() {
     }
     const requiredFields = ['date_needed', 'prod_end_user', 'classification_id', 'remarks'];
 
-    const isDisabled = hasEmptyRequiredFields(requiredFields, purchaseRequestDetails) || items.length === 0;
+    // const isDisabled = hasEmptyRequiredFields(requiredFields, purchaseRequestDetails) || items.length === 0;
     const handlePurchaseRequestFieldChange = (field: string, value: any) => {
         setPurchaseRequestDetails((prev) => ({
             ...prev,
@@ -90,11 +94,9 @@ export default function CreatePr() {
                         handlePurchaseRequestFieldChange={handlePurchaseRequestFieldChange}
                     />
                     <DataTable items={items} setItems={setItems} showAddRow={true}></DataTable>
-
                     <TotalItem total={items.length} />
                     <ApproverTable itRelated={purchaseRequestDetails.is_it_related} />
-
-                    <DialogAlert loading={submitting} handleSubmit={handleSubmit} isDisabled={isDisabled} remarkFields={false} />
+                    <DialogAlert loading={submitting} handleSubmit={handleSubmit} remarkFields={false} />
                 </div>
             </AppLayout>
         </div>

@@ -17,32 +17,37 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
 
     return (
         <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel className="text-white">Menu</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-gray-900">Menu</SidebarGroupLabel>
+
             <SidebarMenu>
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild isActive={item.href === page.url} tooltip={{ children: item.title }}>
-                            <div className="flex w-full items-center justify-between font-bold text-white" onClick={() => toggleCollapse(item.title)}>
-                                {item.subItems && item.subItems.length > 0 ? (
+                        {item.subItems && item.subItems.length > 0 ? (
+                            <SidebarMenuButton asChild isActive={item.href === page.url} tooltip={{ children: item.title }}>
+                                <div
+                                    className="flex w-full items-center justify-between font-bold text-gray-900"
+                                    onClick={() => toggleCollapse(item.title)}
+                                    style={{ cursor: 'pointer' }}
+                                >
                                     <div className="flex items-center">
                                         {item.icon && <item.icon className="mr-2 h-4 w-4" />}
                                         <span>{item.title}</span>
                                     </div>
-                                ) : (
-                                    <Link href={item.href} prefetch className="flex w-full items-center">
-                                        {item.icon && <item.icon className="mr-2 h-4 w-4" />}
-                                        <span>{item.title}</span>
-                                    </Link>
-                                )}
-                                {item.subItems && item.subItems.length > 0 && (
                                     <span>
                                         {collapsedItems[item.title] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                                     </span>
-                                )}
-                            </div>
-                        </SidebarMenuButton>
+                                </div>
+                            </SidebarMenuButton>
+                        ) : (
+                            <SidebarMenuButton asChild isActive={item.href === page.url} tooltip={{ children: item.title }}>
+                                <Link href={item.href} prefetch className="flex w-full items-center">
+                                    {item.icon && <item.icon className="mr-2 h-4 w-4" />}
+                                    <span>{item.title}</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        )}
                         {item.subItems && item.subItems.length > 0 && collapsedItems[item.title] && (
-                            <SidebarMenu className="mt-2 ml-2 text-white">
+                            <SidebarMenu className="mt-2 ml-2 text-gray-800">
                                 {item.subItems.map((subItem) => (
                                     <SidebarMenuItem key={subItem.title}>
                                         <SidebarMenuButton asChild isActive={subItem.href === page.url} tooltip={{ children: subItem.title }}>

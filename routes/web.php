@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Prpo\PrpoController;
 use App\Http\Controllers\Approvers\ApproverController;
 use App\Http\Controllers\Prpo\PurchaseOrderController;
+use App\Http\Controllers\Prpo\PendingPurchaseController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -32,7 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('purchase-request/approve-unbudget/{id}', [PrpoController::class, 'approveUnbudget'])->name('purchase-request.approveUnbudget');
         Route::post('purchase-request/approve-overbudget/{id}', [PrpoController::class, 'approveOverBudget'])->name('purchase-request.approveOverBudget');
         Route::post('purchase-request/verify-finance/{id}', [PrpoController::class, 'verifyFinance'])->name('purchase-request.verifyFinance');
-        Route::get('pending_approval', [PrpoController::class, 'pendingForReview'])->name('purchase-request.pending');
+       
         Route::post('purchase-request/verify-procurement/{id}', [PrpoController::class, 'verifyProcurement'])->name('purchase-request.verifyProcurement');
 
         Route::get('approvers/{bu_id}', [ApproverController::class, 'index'])->name('approver.index');
@@ -51,6 +52,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('purchase-request/disapprove/{id}', [PrpoController::class, 'disapprove'])->name('purchase-request.disapprove');
 
         Route::delete('purchase-request/delete/{id}', [PrpoController::class, 'destroy'])->name('purchase-request.destroy');
+
+
+        //PENDING PR ROUTE
+        Route::get('pending_approval', [PendingPurchaseController::class, 'index'])->name('purchase-request.index');
+        Route::get('pending-approval/list', [PendingPurchaseController::class, 'pendingForApproval'])->name('purchase-request.pending');
     });
 });
 

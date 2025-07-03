@@ -7,7 +7,7 @@ interface TotalItemProps {
 
 export default function TotalItem({ total = 0 }: TotalItemProps) {
     return (
-        <div className="flex w-full items-center justify-between rounded border bg-white p-4 shadow">
+        <div className="flex w-full items-center justify-between rounded bg-white p-4">
             <span className="mb-2 flex-1 text-sm text-gray-900">This requisition consists of</span>
             <span className="mb-2 flex-1 text-sm font-bold text-gray-900">{toWords(total)} (Words)</span>
             <span className="mb-2 flex-1 text-sm font-bold text-gray-900">{total.toLocaleString()} (Figures)</span>

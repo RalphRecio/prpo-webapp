@@ -13,8 +13,8 @@ import Swal from 'sweetalert2';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Transaction',
-        href: '/transactions',
+        title: 'Purchase Requisition',
+        href: '/prpo/purchase-request',
     },
 ];
 
@@ -57,11 +57,12 @@ export default function PurchaseRequisitionPage() {
                         columnNames={[
                             'id',
                             'Status',
+                            'PR No',
                             'Requestor',
                             'Date Issue',
                             'Date Needed',
-                            'Business Unit',
-                            'Department',
+                            // 'Business Unit',
+                            // 'Department',
                             'Product End User',
                             'Classification',
                             'Remarks',
@@ -70,11 +71,12 @@ export default function PurchaseRequisitionPage() {
                             purchaseRequisition?.map((item) => ({
                                 id: item.id,
                                 status: item.status,
+                                pr_no: item.pr_no,
                                 requestor_id: `${item.requestor.fname} ${item.requestor.lname}`,
                                 date_issue: item.date_issue,
                                 date_needed: item.date_needed,
-                                bu_id: item.bu.name || '',
-                                department_id: item.department.name,
+                                // bu_id: item.bu.name || '',
+                                // department_id: item.department.name,
                                 prod_end_user: item.prod_end_user,
                                 classification_id: item.classification.name,
                                 remarks: item.remarks,

@@ -31,7 +31,7 @@ export function SelectField({
 }: SelectFieldProps) {
     return (
         <div className={`flex-1 ${customClass || ''}`}>
-            <Label htmlFor={id} className="mb-1 block font-bold text-gray-800">
+            <Label htmlFor={id} className="mb-1 block text-xs font-bold text-gray-500">
                 {label}
                 {isRequired && <span className="text-sm text-red-500"> * </span>}
             </Label>

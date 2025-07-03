@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { PurchaseRequisitionItem } from '@/types';
 import { Pen, Plus, Trash } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface DataTableProps extends React.ComponentProps<'div'> {
     variant?: 'header' | 'sidebar';
@@ -20,6 +20,10 @@ type Item = {
 };
 
 export function DataTable({ variant = 'header', items, setItems, showAddRow, ...props }: DataTableProps) {
+    // const [items, setItems] = useState<Item[]>(() => {
+    //     const saved = localStorage.getItem('datatable-items');
+    //     return saved ? JSON.parse(saved) : [];
+    // });
     const [newRow, setNewRow] = useState({
         pr_id: '',
         qty_in_figures: '',
@@ -36,6 +40,10 @@ export function DataTable({ variant = 'header', items, setItems, showAddRow, ...
         status: '',
     });
 
+    useEffect(() => {
+        localStorage.setItem('datatable-items', JSON.stringify(items));
+    }, [items]);
+
     const handleNewRowChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setNewRow({ ...newRow, [name]: value });
@@ -44,6 +52,9 @@ export function DataTable({ variant = 'header', items, setItems, showAddRow, ...
     const handleAddRow = () => {
         if (!newRow.qty_in_figures || !newRow.uom || !newRow.description) return;
         setItems([...items, { ...newRow, id: Date.now() }]);
+
+        //
+
         setNewRow({
             pr_id: '',
             qty_in_figures: '',
@@ -86,7 +97,7 @@ export function DataTable({ variant = 'header', items, setItems, showAddRow, ...
     };
 
     return (
-        <div className="w-full rounded border bg-white shadow">
+        <div className="w-full rounded bg-white">
             <div className="relative overflow-x-auto" {...props}>
                 <div className="">
                     <table className="min-w-full divide-y divide-gray-200 text-gray-900">

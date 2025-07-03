@@ -1,93 +1,77 @@
 import { PaginatedDt } from '@/components/paginated-dt';
+import { fetchPendingPurchaseRequisition } from '@/hooks/api';
 import { usePaginationService } from '@/hooks/use-pagination-service';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem, Paginated, PurchaseRequisition, Transactions } from '@/types';
-import { Inertia } from '@inertiajs/inertia';
-import { Head, usePage } from '@inertiajs/react';
-import axios from 'axios';
+import { type BreadcrumbItem, PurchaseRequisition } from '@/types';
+import { Head } from '@inertiajs/react';
 import { Edit } from 'lucide-react';
-import { useState } from 'react';
-
-const capitalizeFirstLetter = (str: string) => {
-    if (!str) return '';
-    return str.charAt(0).toUpperCase() + str.slice(1);
-};
+import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Pending for Approval',
-        href: '/transactions',
+        title: 'For Approval',
+        href: '/prpo/pending_approval',
+    },
+    {
+        title: 'PR for Approval',
+        href: '/prpo/pending_approval',
     },
 ];
 
 export default function PendingApproval() {
-    const { pendingForApproval } = usePage<{ pendingForApproval: Paginated<PurchaseRequisition> }>().props;
-    const [searchTerm, setSearchTerm] = useState('');
-    const [sortColumn, setSortColumn] = useState('');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedTransaction, setSelectedTransaction] = useState<Transactions | null>(null);
-    const [grNo, setGrNo] = useState<string>('');
-    const [isLoading, setIsLoading] = useState(false); // Add loading state
+    // const { pendingForApproval } = usePage<{ pendingForApproval: PurchaseRequisition }>().props;
 
-    const handleApprove = async () => {
-        if (!selectedTransaction) {
-            console.error('No transaction selected for approval.');
-            return;
-        }
+    const [purchaseRequisition, setPurchaseRequisition] = useState<PurchaseRequisition[]>([]);
 
-        setIsLoading(true);
-
-        const response = await axios.post(`/inbound/transaction/approve/${selectedTransaction.id}`, {
-            gr_no: grNo,
-        });
-
-        if (response) {
-            Inertia.reload({ only: ['transactions'] });
-        }
-    };
     const { loading, fetchData, handlePageChange } = usePaginationService('');
-    const capitalizeFirstLetter = (str: string) => {
-        if (!str) return '';
-        return str.charAt(0).toUpperCase() + str.slice(1);
-    };
-    function handleClick(event: React.MouseEvent<Element, MouseEvent>): void {
-        event.preventDefault();
+    useEffect(() => {
+        const fetchData = async () => {
+            const response = await fetchPendingPurchaseRequisition();
 
-        Inertia.visit('/prpo/create_pr');
-    }
+            console.log(response.data);
+            setPurchaseRequisition(response.data.purchaseRequisition.data || []);
+            console.log(response.data.purchaseRequisition);
+        };
+        fetchData();
+    }, []);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Pending for Approval" />
+
             <div className="flex h-full flex-1 flex-col rounded-xl">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto bg-white">
                     <PaginatedDt
                         columnNames={[
                             'id',
                             'Status',
+                            'PR No',
                             'Requestor',
                             'Date Issue',
                             'Date Needed',
-                            'Business Unit',
-                            'Department',
+                            // 'Business Unit',
+                            // 'Department',
                             'Product End User',
                             'Classification',
                             'Remarks',
                         ]}
-                        items={pendingForApproval.data.map((item) => ({
-                            id: item.id,
-                            status: item.status,
-                            requestor_id: `${item.requestor.fname} ${item.requestor.mname} ${item.requestor.lname}`,
-                            date_issue: item.date_issue,
-                            date_needed: item.date_needed,
-                            bu_id: item.bu.name || '',
-                            department_id: item.department.name,
-                            prod_end_user: item.prod_end_user,
-                            classification_id: item.classification.name,
-                            remarks: item.remarks,
-                        }))}
+                        items={
+                            purchaseRequisition?.map((item) => ({
+                                id: item.id,
+                                status: item.status,
+                                pr_no: item.pr_no,
+                                requestor_id: `${item.requestor.fname} ${item.requestor.lname}`,
+                                date_issue: item.date_issue,
+                                date_needed: item.date_needed,
+                                // bu_id: item.bu.name || '',
+                                // department_id: item.department.name,
+                                prod_end_user: item.prod_end_user,
+                                classification_id: item.classification.name,
+                                remarks: item.remarks,
+                            })) ?? []
+                        }
                         checkBox={false}
-                        data={pendingForApproval}
+                        data={purchaseRequisition}
                         hiddenColumns={[0]}
                         loading={loading}
                         handlePageChange={handlePageChange}
@@ -108,7 +92,7 @@ export default function PendingApproval() {
                         }}
                         fetchData={fetchData}
                         actions={(purchasePo: any) => {
-                            const fullItem = pendingForApproval.data.find((item) => item.id === purchasePo.id);
+                            const fullItem = purchaseRequisition.find((item) => item.id === purchasePo.id);
                             return [
                                 {
                                     type: 'link',

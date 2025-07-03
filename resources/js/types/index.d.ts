@@ -18,7 +18,7 @@ export interface NavGroup {
 export interface NavItem {
     title: string;
     href: string;
-    icon?: LucideIcon | null;
+    icon?: LucideIcon | IconType | null;
     isActive?: boolean;
     permissions?: string[] | null;
     subItems?: NavItem[];
@@ -298,6 +298,8 @@ export interface PurchaseRequisition {
     classification: Classification;
     purchase_requisition_items: PurchaseRequisitionItem[];
     bu: BusinessUnit;
+    requestor: Requestor;
+    department: Department;
 }
 
 export interface PurchaseRequisitionItem {

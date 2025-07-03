@@ -2,39 +2,48 @@ import { NavMain } from '@/components/nav-main';
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Folder } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { useState } from 'react';
+import { FcFolder } from 'react-icons/fc';
 
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'transactions',
+        title: 'Purchase Requisition',
+        href: '/prpo/purchase-request',
+        icon: FcFolder,
+
+        subItems: [],
+    },
+    {
+        title: 'For Approval',
         href: '/',
-        icon: Folder,
-        permissions: ['view_prpo'],
+        icon: FcFolder,
+
         subItems: [
             {
-                title: 'Purchase Request',
-                href: '/prpo/purchase-request',
-                permissions: ['view_my_pr'],
-            },
-            {
-                title: 'Purchase Request for Approval',
+                title: 'PR for Approval',
                 href: '/prpo/pending_approval',
-                permissions: ['view_pending_approval'],
             },
             {
-                title: 'Purchase Order for Approval',
+                title: 'PO for Approval',
                 href: '/prpo/po_pending_approval',
-                permissions: ['view_po_pending_approval'],
-            },
-            {
-                title: 'All Purchase Requests',
-                href: '/prpo/purchase-request/all',
-                permissions: ['view_all_pr'],
             },
         ],
+    },
+
+    {
+        title: 'All Purchase Requisitions',
+        href: '/prpo/purchase-request/all',
+        icon: FcFolder,
+        permissions: ['view_all_pr'],
+    },
+    {
+        title: 'All Purchase Order',
+        href: '/prpo/purchase-request/all',
+        icon: FcFolder,
+        permissions: ['view_all_pr'],
     },
 ];
 
@@ -53,26 +62,18 @@ export function AppSidebar({ userPermissions }: { userPermissions: string[] }) {
         setIsCollapsed(!isCollapsed);
     };
 
-    const hasPermission = (requiredPermissions?: string[]) => {
-        if (!requiredPermissions) return true;
-        return requiredPermissions.some((permission) => userPermissions.includes(permission));
-    };
+    const filteredNavItems = filterNavItemsByPermissions(mainNavItems, userPermissions);
 
-    const exemptedMenus = ['Purchase Request for Approval', 'Purchase Request'];
-
-    const filteredNavItems = mainNavItems
-        .map((item: any) => {
-            const filteredSubItems = item.subItems?.filter(
-                (subItem: any) => exemptedMenus.includes(subItem.title) || hasPermission(subItem.permissions),
-            );
-
-            if (filteredSubItems?.length || hasPermission(item.permissions)) {
-                return { ...item, subItems: filteredSubItems };
-            }
-
-            return null;
-        })
-        .filter(Boolean);
+    function filterNavItemsByPermissions(items: NavItem[], userPermissions: string[]): NavItem[] {
+        return items
+            .filter((item) => !item.permissions || item.permissions.some((p) => userPermissions.includes(p)))
+            .map((item) => ({
+                ...item,
+                subItems: item.subItems
+                    ? item.subItems.filter((sub) => !sub.permissions || sub.permissions.some((p) => userPermissions.includes(p)))
+                    : [],
+            }));
+    }
 
     return (
         <Sidebar collapsible="icon" variant="inset" className={` ${isCollapsed ? 'collapsed' : ''}`}>

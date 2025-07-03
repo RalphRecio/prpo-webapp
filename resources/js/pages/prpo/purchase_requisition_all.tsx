@@ -60,7 +60,7 @@ export default function PurchaseRequisitionAllPage() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Transaction" />
             <div className="flex h-full flex-1 flex-col rounded-xl">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto bg-white">
                     <PaginatedDt
                         columnNames={[
                             'id',

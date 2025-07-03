@@ -11,6 +11,7 @@ export const PermissionProvider = ({ children }: { children: React.ReactNode }) 
     useEffect(() => {
         const fetchPermissions = async () => {
             try {
+                // alert('Fetching permissions...');
                 // Check if permissions are already cached in localStorage
                 const cachedPermissions = localStorage.getItem('permissions');
                 if (cachedPermissions) {

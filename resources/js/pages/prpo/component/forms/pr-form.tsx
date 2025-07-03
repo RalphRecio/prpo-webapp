@@ -1,7 +1,8 @@
 import { SelectField } from '@/components/custom/selectField';
-import { TextAreaField, TextField } from '@/components/custom/textField';
+import { TextAreaField, TextDetails, TextField } from '@/components/custom/textField';
 import { Classification, PurchaseRequisition } from '@/types';
 import { useAuthBusinessUnit, useAuthDepartment, useAuthFullname } from '@/util/util';
+import { Info } from 'lucide-react';
 
 interface PrFormProps {
     purchaseRequestDetails: PurchaseRequisition;
@@ -27,66 +28,24 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
 
     return (
         <>
-            <div className="mt-2 flex w-full justify-end gap-4 rounded border bg-white px-6 py-4 shadow">
-                <TextField
-                    label="PR No"
-                    id="pr_no"
-                    type="text"
-                    name="pr_no"
-                    value={''}
-                    isReadOnly={true}
-                    placeholder="--Auto Generated--"
-                    customClass="max-w-2xs font-bold"
-                />
-            </div>
-
-            <div className="rounded border bg-white p-4 shadow">
-                <div className="flex w-full gap-4">
-                    <TextField
-                        label="Name of Requestor"
-                        id="name_of_requestor"
-                        type="text"
-                        name="name_of_requestor"
-                        value={useAuthFullname()}
-                        isReadOnly={true}
-                        placeholder="--Auto Generated--"
-                        customClass="max-w-2xs font-bold"
-                    />
-
-                    <TextField
-                        label="Date Issue"
-                        id="date_issue"
-                        type="text"
-                        name="date_issue"
-                        value={today}
-                        isReadOnly={true}
-                        placeholder="--Auto Generated--"
-                        customClass="max-w-2xs font-bold"
-                    />
-
-                    <TextField
-                        label="Business Unit"
-                        id="business_unit"
-                        type="text"
-                        name="business_unit"
-                        value={useAuthBusinessUnit()}
-                        isReadOnly={true}
-                        customClass="max-w-2xs font-bold"
-                    />
-
-                    <TextField
-                        label="Department"
-                        id="department"
-                        type="text"
-                        name="department"
-                        value={useAuthDepartment()}
-                        isReadOnly={true}
-                        customClass="max-w-2xs font-bold"
-                    />
+            <div className="mt-2 flex w-full flex-col space-y-6 rounded bg-white px-6 py-4">
+                <span className="text-md flex items-center gap-2 font-semibold text-blue-500">
+                    <Info className="h-4 w-4" />
+                    Purchase Requisition Info
+                </span>
+                <div className="flex w-full justify-between">
+                    <div className="flex flex-1 flex-col space-y-4">
+                        <TextDetails label="Name of Requestor" value={useAuthFullname()} />
+                        <TextDetails label="Date Issue" value={today} />
+                    </div>
+                    <div className="flex flex-1 flex-col space-y-4">
+                        <TextDetails label="Business Unit" value={useAuthBusinessUnit()} />
+                        <TextDetails label="Department" value={useAuthDepartment()} />
+                    </div>
                 </div>
             </div>
-
-            <div className="rounded border bg-white p-4 shadow">
+            <div className="mt-2 flex w-full flex-col space-y-6 rounded bg-white px-6 py-4">
+                <span className="flex items-center gap-2 text-sm font-semibold text-gray-500">Enter Details</span>
                 <div className="flex w-full gap-4">
                     <TextField
                         label="Date Needed"
@@ -129,7 +88,7 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
                 </div>
             </div>
 
-            <div className="flex w-full gap-4 rounded border bg-white p-4 shadow">
+            <div className="flex w-full gap-4 rounded bg-white p-4">
                 <TextAreaField
                     label="Remarks/Justification"
                     id="remarks"
