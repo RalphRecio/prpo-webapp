@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-        <title>Purchase Requisition for Approval ({{ $data['pr_no'] }})</title>
+        <title>Purchase Order for Approval ({{ $data['po_no'] }})</title>
     </head>
     <body style="font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px">
         <table
@@ -21,12 +21,12 @@
             <tr>
                 <td>
                     <h6 style="color: #333333; font-size: 12px; font-weight: 600; margin-bottom: 8px">
-                        Purchase Requisition for Approval ({{ $data['pr_no'] }})
+                        Purchase Order for Approval ({{ $data['po_no'] }})
                     </h6>
                     <p style="margin-bottom: 16px">Good day {{ $data['approver_name'] }},</p>
 
                     <p style="margin-bottom: 16px">
-                        We are notifying you of a Purchase Requisition Form made by {{ $data['submitted_by'] }} that requires your approval.
+                        We are notifying you of a Purchase Order made by {{ $data['submitted_by'] }} that requires your approval.
                     </p>
 
                     <a href="{{ $data['approver_link'] }}">Click here to view the full request details!</a>
@@ -45,8 +45,6 @@
                             </tbody>
                         </table>
                     @endif
-                 
-
                     <p style="margin-bottom: 16px">Thank you!</p>
                 </td>
             </tr>

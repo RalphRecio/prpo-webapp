@@ -17,7 +17,7 @@ export default function ApproverOverbudget({ purchaseRequisition }: ApproverOver
                 Inertia.reload(); // Rerender the component with updated data
             });
         } catch (error) {
-            // alert('Error saving data.');
+            Swal.fire('Error!', 'There was an error submitting your purchase request.', 'error');
         }
     };
     return (
@@ -60,6 +60,7 @@ export default function ApproverOverbudget({ purchaseRequisition }: ApproverOver
                                                     <DialogAlert
                                                         buttonName="Approve"
                                                         title="Approve Purchase Request"
+                                                        remarkFields={false}
                                                         handleSubmit={() => {
                                                             handleApproveOverbuget();
                                                         }}

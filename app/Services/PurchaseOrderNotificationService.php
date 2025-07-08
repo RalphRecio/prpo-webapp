@@ -1,44 +1,44 @@
 <?php
 namespace App\Services;
 
-use App\Mail\ApproveEmail;
+use App\Mail\PoApproveEmail;
 use App\Mail\DisapprovedEmail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\ApproverList;
+use App\Models\PoApproverList;
 
-class PurchaseRequisitionNotificationService
+
+class PurchaseOrderNotificationService
 {
-    public static function sendApprovalEmail($requestType, $prNo, $approverName, $submittedBy, $dateSubmitted, $prId, $recipient)
+    public static function sendApprovalEmail($poNo, $approverName, $submittedBy, $dateSubmitted, $poId, $recipient)
     {
          
         $data = [
-            'request_type' => $requestType,
-            'pr_no' => $prNo,
+            'po_no' => $poNo,
             'approver_name' => $approverName,
             'submitted_by' => $submittedBy,
             'date_submitted' => $dateSubmitted,
-            'approver_link' => url('/prpo/purchase-request/details/' . $prId),
-            'approver_history' =>  ApproverList::where('pr_id', $prId)
+            'approver_link' => url('/prpo/purchase-request/details/' . $poId),
+            'approver_history' =>  PoApproverList::where('po_id', $poId)
                 ->with('approver')
                 ->whereNot('is_approve',  0)
                 ->orderBy('created_at', 'desc')
                 ->get()
         ];
 
-        Mail::to($recipient)->send(new ApproveEmail($data));
+        Mail::to($recipient)->send(new PoApproveEmail($data));
     }
 
-    public static function senddisapprovedEmail($requestType, $prNo, $approverName, $submittedBy, $dateSubmitted, $prId, $recipient)
+    public static function senddisapprovedEmail($requestType, $poNo, $approverName, $submittedBy, $dateSubmitted, $prId, $recipient)
     {
          
         $data = [
-            'request_type' => $requestType,
-            'pr_no' => $prNo,
+            'po_no' => $poNo,
             'approver_name' => $approverName,
             'submitted_by' => $submittedBy,
             'date_submitted' => $dateSubmitted,
             'approver_link' => url('/prpo/purchase-request/details/' . $prId),
-            'approver_history' =>  ApproverList::where('pr_id', $prId)
+            'approver_history' =>  PoApproverList::where('pr_id', $prId)
                 ->with('approver')
                 ->whereNot('is_approve',  0)
                 ->orderBy('created_at', 'desc')

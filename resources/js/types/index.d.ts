@@ -327,6 +327,22 @@ export interface ApproverList {
     approve_date_formatted: string | null;
 }
 
+export interface PoApproverList {
+    id: number;
+    approver_id: string;
+    is_approve: string;
+    is_send_count: string;
+    po_id: string;
+    remarks: string | null;
+    approver_level: string;
+    approval_date: string;
+    created_at: string;
+    updated_at: string;
+    approver: Approver;
+
+    approve_date_formatted: string | null;
+}
+
 export interface Approver {
     id: number;
     fname: string;
@@ -381,6 +397,7 @@ export interface Vendor {
 
 export interface PurchaseOrder {
     id: number;
+    po_no: string;
     vendor_id: number;
     ship_via: string;
     terms: string;
@@ -390,7 +407,6 @@ export interface PurchaseOrder {
     pr_id: number;
     freight: string;
     remarks: string;
-    prepared_by: number;
     is_approve1: number;
     is_approve2: number;
     vendor_contact_person: string;
@@ -398,6 +414,18 @@ export interface PurchaseOrder {
     vendor_tel_no: string;
     vendor_name: string;
     vendor_address: string;
+    confirming_to_address: string;
+    ship_to: string;
+    ship_to_address: string;
+    purchase_request: PurchaseRequest;
+    vendors: Vendor;
+    purchase_order_details: PurchaseOrderDetails[];
+    po_approvers_list: PoApproverList[];
+    prepared_by: {
+        fname: string;
+        lname: string;
+    };
+    created_at: string | null;
 }
 
 export interface PurchaseOrderDetails {

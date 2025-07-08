@@ -30,11 +30,14 @@ return new class extends Migration
             $table->string('status');
             $table->string('buyer');
             $table->string('confirming_to');
+            $table->string('confirming_to_address');
+            $table->string('ship_to');
+            $table->string('ship_to_address');
             $table->foreignId('pr_id')->constrained('purchase_requisition');
             $table->string('freight');
             $table->text('remarks');
             $table->integer('department_id')->nullable();
-            $table->string('prepared_by')->nullable();
+            $table->integer('prepared_by_id')->nullable();
 
             $table->timestamps();
         });

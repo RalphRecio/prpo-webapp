@@ -9,16 +9,17 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class DisapprovedEmail extends Mailable
+class PoApproveEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public $data;
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct($data)
     {
-        //
+         $this->data = $data;
     }
 
     /**
@@ -27,7 +28,7 @@ class DisapprovedEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Purchase Requisition Disapproved',
+            subject: 'Po Approve Email',
         );
     }
 
@@ -37,7 +38,7 @@ class DisapprovedEmail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'email.disapproved',
+            view: 'email.poApprover',
         );
     }
 

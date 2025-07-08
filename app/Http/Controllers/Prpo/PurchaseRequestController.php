@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Exception;
 use Inertia\Inertia;
+use App\Models\ApproverList;
 
 class PurchaseRequestController extends Controller
 {
@@ -122,8 +123,29 @@ class PurchaseRequestController extends Controller
                 $isFirst = false;
             }
 
-            // Send email to the first approver
-            $this->sendInitialApprovalEmail($purchaseRequisition, $approverList, $generatedPrNo);
+            $firstApprover = $approverList->first();
+
+            if ($firstApprover) {
+                $isImmSupervisor = $firstApprover->approver_type === 'immsupervisor';
+
+                $approverName = $isImmSupervisor
+                    ? $purchaseRequisition->requestor->immediateHead->fname
+                    : $firstApprover->approver_name;
+
+                $approverEmail = $isImmSupervisor
+                    ? $purchaseRequisition->requestor->immediateHead->email
+                    : $firstApprover->approver_email;
+
+                PurchaseRequisitionNotificationService::sendApprovalEmail(
+                    'Purchase Requisition',
+                    $generatedPrNo,
+                    $approverName,
+                    $purchaseRequisition->requestor->fname,
+                    Carbon::now(),
+                    $purchaseRequisition->id,
+                    $approverEmail
+                );
+            }
 
             DB::commit();
 
@@ -141,25 +163,165 @@ class PurchaseRequestController extends Controller
         }
     }
 
-    private function sendInitialApprovalEmail($purchaseRequisition, $approverList, $generatedPrNo)
+    public function approve(Request $request, $id)
     {
-        // Send to the first approver in the list
-        $firstApprover = $approverList->first();
-        if (!$firstApprover) {
-            return;
+        $purchaseRequisition = PurchaseRequisiton::findOrFail($id);
+        DB::beginTransaction();
+        try {
+            if ($request->approver_level == "1") {
+                $firstApprover = ApproverList::where('pr_id', $id)
+                    ->where('approver_level', 1)
+                    ->where('approver_id', Auth::user()->id)
+                    ->first();
+    
+                if ($firstApprover) {
+                    $firstApprover->is_approve = 1;
+                    $firstApprover->is_send_count = 1;
+                    $firstApprover->approval_date = Carbon::now();
+                    $firstApprover->remarks = $request->remarks;
+                    $firstApprover->save();
+                }
+    
+                $purchaseRequisition->is_approve_it_manager = 1;
+                $purchaseRequisition->status = 'For approval of Immediate Head';
+                $purchaseRequisition->save();
+    
+                $secondApprover = ApproverList::where('pr_id', $id)
+                    ->where('approver_level', 2)
+                    ->first();
+    
+                if ($secondApprover) {
+                    $secondApprover->is_approve = 0;
+                    $secondApprover->is_send_count = 1;
+                    $secondApprover->remarks = '';
+                    $secondApprover->save();
+                }
+
+                PurchaseRequisitionNotificationService::sendApprovalEmail(
+                    'Purchase Requisition',
+                    $purchaseRequisition->pr_no,
+                    $secondApprover->approver_name,
+                    $purchaseRequisition->requestor->fname,
+                    Carbon::now(),
+                    $purchaseRequisition->id,
+                    $secondApprover->approver_email
+                );
+            }
+    
+            if ($request->approver_level == "2") {
+                $approverList = ApproverList::where('pr_id', $id)
+                    ->where('approver_level', 2)
+                    ->where('approver_id', Auth::user()->id)
+                    ->first();
+    
+                if ($approverList) {
+                    $approverList->is_approve = 1;
+                    $approverList->is_send_count = 1;
+                    $approverList->approval_date = Carbon::now();
+                    $approverList->remarks = $request->remarks;
+                    $approverList->save();
+                }
+    
+                $purchaseRequisition->is_approve_im_supervisor = 1;
+                $purchaseRequisition->status = 'For Finance Verification';
+                $purchaseRequisition->save();
+    
+                $financeApprovers = Approver::where('approver_level', "3")
+                    ->where('bu_id', $purchaseRequisition->bu_id)
+                    ->get();
+    
+                foreach ($financeApprovers as $financeApprover) {
+                    ApproverList::create([
+                        'pr_id'         => $id,
+                        'approver_id'   => $financeApprover->user_id,
+                        'is_approve'    => 0,
+                        'is_send_count' => 1,
+                        'remarks'       => null,
+                        'approver_level'=> $financeApprover->approver_level,
+                    ]);
+                    PurchaseRequisitionNotificationService::sendApprovalEmail(
+                        'Purchase Requisition',
+                        $purchaseRequisition->pr_no,
+                        $financeApprover->approver_name,
+                        $purchaseRequisition->requestor->fname,
+                        Carbon::now(),
+                        $purchaseRequisition->id,
+                        $financeApprover->approver_email
+                    );
+                }
+            }
+
+            DB::commit();
+    
+            return response()->json([
+                'purchaseRequisition' => $purchaseRequisition,
+                'message' => 'Purchase Requisition approved successfully.'
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Failed to approve Purchase Requisition.',
+                'message' => $e->getMessage()
+            ], 500);
         }
+    }
 
-        $to = $firstApprover->approver_type == 'immsupervisor'
-            ? $purchaseRequisition->requestor->immediateHead->email
-            : $firstApprover->approver_email;
+    public function disapprove(Request $request,$id){
+        $purchaseRequisition = PurchaseRequisiton::findOrFail($id);
 
-        PurchaseRequisitionNotificationService::sendApprovalEmail(
-            $to,
-            $purchaseRequisition,
-            $firstApprover->approver_type == 'immsupervisor' ? 'IT Manager' : $firstApprover->approver_type,
-            $firstApprover,
-            $approverList,
-            $generatedPrNo
-        );
+        $approver = ApproverList::where('pr_id', $id)
+            ->where('approver_id', Auth::user()->id)
+            ->where('approver_level', $request->input('approver_level'))
+            ->first();
+
+        $approver->is_approve = 2;
+        $approver->approval_date = Carbon::now();
+        $approver->remarks = $request->input('remarks', 'No remarks provided.');
+        $approver->save();
+
+        if($purchaseRequisition) {
+            switch ((int)$request->input('approver_level')) {
+                case 1:
+                    $purchaseRequisition->status = 'Disapproved By IT Manager';
+                    $purchaseRequisition->save();
+                    break;
+                case 2:
+                    $purchaseRequisition->status = 'Disapproved By Immediate Head';
+                    $purchaseRequisition->is_approve_it_manager = 2;
+                    break;
+                case 5:
+                    $purchaseRequisition->status = 'Disapproved by Business Unit Head (Unbudgeted)';
+                    break;
+                case 7:
+                    $purchaseRequisition->status = 'Disapproved by Business Unit Head (Overbudget)';
+                    break;
+                case 6:
+                    $purchaseRequisition->status = 'Disapproved by Comptroller (Unbudgeted)';
+                    break;
+                case 8:
+                    $purchaseRequisition->status = 'Disapproved by Comptroller (Overbudget)';
+                    break;
+            }
+            $purchaseRequisition->save();
+
+            $data = [
+                'request_type' => 'Purchase Request',
+                'pr_no' => $purchaseRequisition->pr_no,
+                'approver_name' => $request->input('approver_name'),
+                'submitted_by' => $purchaseRequisition->requestor->fname,
+                'date_submitted' => $purchaseRequisition->date_issue,
+                'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
+            ];
+
+            // PurchaseRequisitionNotificationService::sendApprovalEmail(
+            //     'Purchase Requisition',
+            //     $purchaseRequisition->pr_no,
+            //     $secondApprover->approver_name,
+            //     $purchaseRequisition->requestor->fname,
+            //     Carbon::now(),
+            //     $purchaseRequisition->id,
+            //     $secondApprover->approver_email
+            // );
+        }
     }
 }

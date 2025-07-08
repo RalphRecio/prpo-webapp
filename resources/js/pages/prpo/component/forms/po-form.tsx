@@ -2,10 +2,8 @@ import { PurchaseOrder, PurchaseRequisition, Vendor } from '@/types';
 import { useAuthFullname } from '@/util/util';
 
 import { SelectField } from '@/components/custom/selectField';
-import { TextAreaField, TextField } from '@/components/custom/textField';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { TextAreaField, TextDetails, TextField } from '@/components/custom/textField';
+import { Info } from 'lucide-react';
 import { useEffect } from 'react';
 
 interface PoFormProps extends React.ComponentProps<'div'> {
@@ -64,75 +62,41 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                 pr_id: purchaseRequest.id,
                 buyer: authFullname,
                 confirming_to: purchaseRequest.bu.name,
+                ship_to: purchaseRequest.bu.name,
+                ship_to_address: purchaseRequest.bu_id == 1 ? 'Paseo de Sta. Rosa, Greenfield City, Sta. Rosa, Laguna Philippines 4026' : '',
             });
         }
     }, [authFullname]);
 
     return (
         <>
-            <div className="mt-2 flex w-full justify-end gap-4 rounded border bg-white px-6 py-4 shadow">
-                {/* <div className="flex-1 justify-start">
-                    <img
-                        src={
-                            auth.user.bu_id == 1
-                                ? `${window.location.origin}/storage/suhay_logo.png`
-                                : auth.user.bu_id == 2
-                                  ? `${window.location.origin}/storage/alibata_logo.png`
-                                  : ''
-                        }
-                        alt=""
-                        style={{ width: '150px', objectFit: 'contain' }}
-                    />
-                </div> */}
-                <TextField
-                    label="PO No"
-                    id="po_no"
-                    type="text"
-                    name="po_no"
-                    value={''}
-                    isReadOnly={true}
-                    placeholder="--Auto Generated--"
-                    customClass="max-w-2xs"
-                />
-                <TextField
-                    label="PR No"
-                    id="pr_no"
-                    type="text"
-                    name="pr_no"
-                    value={purchaseRequest.pr_no}
-                    isReadOnly={true}
-                    placeholder="--Auto Generated--"
-                    customClass="max-w-2xs"
-                />
-            </div>
-            <div className="rounded border bg-white p-4 shadow">
-                <div className="flex w-full gap-4">
-                    <TextField
-                        label="Buyer"
-                        id="buyer"
-                        type="text"
-                        name="buyer"
-                        value={useAuthFullname()}
-                        customClass=" font-bold"
-                        placeholder="--Auto Generated--"
-                        isReadOnly={true}
-                    />
-
-                    <TextField
-                        label="Confirming To"
-                        id="confirming_to"
-                        type="text"
-                        name="confirming_to"
-                        value={purchaseRequest.bu.name}
-                        placeholder="Confirming to"
-                        customClass=" font-bold"
-                        isReadOnly={true}
-                    />
+            <div className="mt-2 flex w-full flex-col space-y-6 rounded bg-white px-6 py-4">
+                <span className="text-md flex items-center gap-2 font-semibold text-blue-500">
+                    <Info className="h-4 w-4" />
+                    Purchase Order Info
+                </span>
+                <div className="flex w-full justify-between">
+                    <div className="flex flex-1 flex-col space-y-4">
+                        <TextDetails label="Buyer" value={useAuthFullname()} />
+                        <TextDetails label="Confirming To" value={purchaseRequest.bu.name} />
+                    </div>
+                    <div className="flex flex-1 flex-col space-y-4">
+                        <TextDetails label="Ship To" value={purchaseRequest.bu.name} />
+                        <TextDetails
+                            label="Address"
+                            value={purchaseRequest.bu_id == 1 ? 'Paseo de Sta. Rosa, Greenfield City, Sta. Rosa, Laguna Philippines 4026' : ''}
+                        />
+                    </div>
+                    <div className="flex flex-1 flex-col space-y-4 font-semibold">
+                        <TextDetails label="PR No." value={purchaseRequest.pr_no} />
+                    </div>
                 </div>
             </div>
+
             <div className="rounded border bg-white p-4 shadow">
+                <span className="flex items-center gap-2 text-sm font-semibold text-gray-500">Enter Details</span>
                 <div className="flex w-full gap-4">
-                    <div className="flex-1">
+                    <div className="w-1/2">
                         <SelectField
                             id="vendor"
                             label="Vendor"
@@ -151,21 +115,15 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                                 });
                             }}
                         />
-                        <Textarea
-                            className="mt-2"
-                            value={purchaseOrderDetails?.vendor_address || ''}
-                            onChange={(e) => handlePurchaseOrderFieldChange('vendor_address', e.target.value)}
-                        />
                     </div>
-
-                    <div className="flex-1">
-                        <Label htmlFor="requestor_id" className="mb-1 mb-2 block font-bold text-gray-800">
-                            Ship To
-                        </Label>
-                        <Input className="mb-2" value={purchaseRequest.bu.name} readOnly />
-                        <Textarea
-                            value={purchaseRequest.bu_id == 1 ? 'Paseo de Sta. Rosa, Greenfield City, Sta. Rosa, Laguna Philippines 4026' : ''}
-                            readOnly
+                    <div className="w-1/2">
+                        <TextAreaField
+                            label="Vendor Address"
+                            id="vendor_address"
+                            name="vendor_address"
+                            value={purchaseOrderDetails?.vendor_address || ''}
+                            placeholder="Enter Vendor Address"
+                            onChange={(e) => handlePurchaseOrderFieldChange('vendor_address', e.target.value)}
                         />
                     </div>
                 </div>

@@ -225,6 +225,7 @@ export default function ApproverFinanceTable({ purchaseRequisition, handlePurcha
                                                 handleSubmit={() => {
                                                     handleVerify();
                                                 }}
+                                                remarkFields={false}
                                                 isDisabled={
                                                     !purchaseRequisition.budgeted ||
                                                     !purchaseRequisition.currency ||

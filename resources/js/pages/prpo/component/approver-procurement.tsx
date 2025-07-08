@@ -114,21 +114,35 @@ export default function ApproverProcurement({ purchaseRequisition, handlePurchas
                                 <td className="w-1/2 px-4 py-2 align-top">
                                     <span className="text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">Over Budget By</span>
                                     <span className="rounded-sm shadow-none">
-                                        <Input
-                                            value={(() => {
-                                                const budget = parseFloat(String(budgetedAmount || '0'));
-                                                const actual = parseFloat(String(actualAmount || '0'));
-                                                const diff = budget - actual;
-                                                return diff.toLocaleString('en-US', { style: 'currency', currency: purchaseRequisition.currency });
-                                            })()}
-                                            disabled={
-                                                !purchaseRequisition.approvers_list?.some(
-                                                    (approver: any) =>
-                                                        Number(approver.approver_id) === Number(useAuthId()) &&
-                                                        Number(purchaseRequisition.is_procurement_verified) !== 1, // not already approved
-                                                )
-                                            }
-                                        />
+                                        {(() => {
+                                            const budget = parseFloat(String(budgetedAmount || '0'));
+                                            const actual = parseFloat(String(actualAmount || '0'));
+                                            const diff = budget - actual;
+                                            const overBudgetValue =
+                                                diff < 0
+                                                    ? Math.abs(diff).toLocaleString('en-US', {
+                                                          style: 'currency',
+                                                          currency: purchaseRequisition.currency,
+                                                      })
+                                                    : (0).toLocaleString('en-US', {
+                                                          style: 'currency',
+                                                          currency: purchaseRequisition.currency,
+                                                      });
+
+                                            return (
+                                                <Input
+                                                    value={overBudgetValue}
+                                                    readOnly
+                                                    disabled={
+                                                        !purchaseRequisition.approvers_list?.some(
+                                                            (approver: any) =>
+                                                                Number(approver.approver_id) === Number(useAuthId()) &&
+                                                                Number(purchaseRequisition.is_procurement_verified) !== 1,
+                                                        )
+                                                    }
+                                                />
+                                            );
+                                        })()}
                                     </span>
                                 </td>
 
@@ -188,6 +202,7 @@ export default function ApproverProcurement({ purchaseRequisition, handlePurchas
                                                 <DialogAlert
                                                     buttonName="Verify"
                                                     title="Purchase Request"
+                                                    remarkFields={false}
                                                     handleSubmit={() => {
                                                         handleVerifyProcurement();
                                                     }}

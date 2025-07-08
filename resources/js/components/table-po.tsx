@@ -16,7 +16,7 @@ interface DataTableProps extends React.ComponentProps<'div'> {
 export function TablePo({ variant = 'header', items, setItems, showAddRow, ...props }: DataTableProps) {
     const path = window.location.pathname;
     const segments = path.split('/');
-    const id = segments[segments.length - 1];
+    const id = segments[segments.length - 2];
 
     const [itemDescription, setItemDescription] = useState<string>();
     const [itemDescriptionText, setItemDescriptionText] = useState<string>();
@@ -98,12 +98,12 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
 
     return (
         <>
-            <div className="rounded bg-white shadow">
-                <div className="border" {...props}>
+            <div className="rounded bg-white">
+                <div {...props}>
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="w-12 px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-900 uppercase">Line</th>
+                                <th className="w-12 px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-900 uppercase">#</th>
                                 <th className="w-24 px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-900 uppercase">Quantity</th>
                                 <th className="w-32 px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-900 uppercase">
                                     Unit of Measure
@@ -213,11 +213,8 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
 
                             {items.map((item, index) => (
                                 <tr key={item.id} className="hover:bg-gray-50">
-                                    <td className="px-4 py-2 font-bold">{0}</td>
-                                    <td className="px-4 py-2">{`
-                                   
-                                    
-                                    ${item.qty_ordered}`}</td>
+                                    <td className="px-4 py-2 font-bold">{index + 1}</td>
+                                    <td className="px-4 py-2">{item.qty_ordered}</td>
                                     <td className="px-4 py-2">{item.unit_of_measure}</td>
                                     <td className="px-4 py-2">{`${item.description1} ${item.description2}`}</td>
                                     <td className="px-4 py-2">{item.unit_price}</td>
@@ -235,6 +232,14 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
                             ))}
                         </tbody>
                     </table>
+                </div>
+                <div className="flex justify-end border-t bg-gray-50 px-6 py-4">
+                    <span className="text-sm font-bold text-gray-900">
+                        Total:&nbsp;
+                        {items
+                            .reduce((sum, item) => sum + Number(item.unit_price) * Number(item.qty_ordered), 0)
+                            .toLocaleString('en-US', { style: 'currency', currency: 'PHP' })}
+                    </span>
                 </div>
             </div>
         </>

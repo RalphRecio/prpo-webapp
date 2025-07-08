@@ -42,7 +42,7 @@ export function TextField({ label, id, name, type, value, placeholder, customCla
 export function TextAreaField({ label, id, name, value, placeholder, customClass, isReadOnly, onChange, isRequired, ...rest }: TextFieldProps) {
     return (
         <div className={`flex-1 ${customClass}`}>
-            <Label htmlFor={id} className="mb-1 block text-xs font-bold text-gray-500">
+            <Label htmlFor={id} className="block text-xs font-bold text-gray-500">
                 {label}
                 {isRequired && <span className="text-sm text-red-500"> * </span>}
             </Label>

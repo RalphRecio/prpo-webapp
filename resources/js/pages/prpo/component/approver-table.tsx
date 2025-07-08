@@ -40,11 +40,9 @@ export default function ApproverTable({ itRelated }: DataTableProps) {
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                     <tr>
-                        <td className="px-4 py-2 align-top">{`${auth.user.fname} ${auth.user.mname} ${auth.user.lname}`}</td>
+                        <td className="px-4 py-2 align-top">{`${auth.user.fname} ${auth.user.lname}`}</td>
                         {<td className="px-4 py-2 align-top">{itRelated == 1 ? 'Jerald Paghangaan' : ''}</td>}
-                        <td className="px-4 py-2 align-top">
-                            {`${auth.user.immediate_head?.fname} ${auth.user.immediate_head?.mname ?? ''} ${auth.user.immediate_head?.lname}`}
-                        </td>
+                        <td className="px-4 py-2 align-top">{`${auth.user.immediate_head?.fname} ${auth.user.immediate_head?.lname}`}</td>
                     </tr>
                 </tbody>
             </table>

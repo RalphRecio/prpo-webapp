@@ -90,6 +90,11 @@ export default function ApproverIMTable({ purchaseRequisition, loading, setLoadi
                                                     {approverItem.approver?.lname || ''}
                                                 </span>
                                             </div>
+                                            {approverItem.remarks && approverItem.remarks.length > 0 && (
+                                                <p className="rounded border p-2 text-sm text-gray-600 text-red-500">
+                                                    {approverItem.remarks || 'no remarks'}
+                                                </p>
+                                            )}
                                         </div>
 
                                         {!purchaseRequisition.status?.toLowerCase().includes('disapprove') &&
@@ -100,6 +105,7 @@ export default function ApproverIMTable({ purchaseRequisition, loading, setLoadi
                                                     <DialogAlert
                                                         buttonName="Approve"
                                                         title="Approve Purchase Request"
+                                                        remarkFields={false}
                                                         handleSubmit={(remarks) => {
                                                             handleApprove(approverItem.approver_level, remarks);
                                                         }}

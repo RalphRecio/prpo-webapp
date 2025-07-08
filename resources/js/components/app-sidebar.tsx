@@ -28,11 +28,10 @@ const mainNavItems: NavItem[] = [
             },
             {
                 title: 'PO for Approval',
-                href: '/prpo/po_pending_approval',
+                href: '/prpo/purchase-order/pending-approval',
             },
         ],
     },
-
     {
         title: 'All Purchase Requisitions',
         href: '/prpo/purchase-request/all',
@@ -41,9 +40,9 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'All Purchase Order',
-        href: '/prpo/purchase-request/all',
+        href: '/prpo/purchase-order/all',
         icon: FcFolder,
-        permissions: ['view_all_pr'],
+        permissions: ['view_all_po'],
     },
 ];
 

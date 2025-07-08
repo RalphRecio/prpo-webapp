@@ -7,9 +7,9 @@ import { BreadcrumbItem, PurchaseRequisition } from '@/types';
 import { useAuthId } from '@/util/util';
 import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
-import { Edit, Loader, Trash } from 'lucide-react';
+import { Loader } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { FcPlus } from 'react-icons/fc';
+import { FcFullTrash, FcPlus, FcViewDetails } from 'react-icons/fc';
 import Swal from 'sweetalert2';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -124,22 +124,25 @@ export default function PurchaseRequisitionPage() {
                         fetchData={fetchData}
                         actions={(purchaseReq: any) => {
                             const fullItem = purchaseRequisition?.find((item) => item.id === purchaseReq.id);
+
                             return [
                                 {
                                     type: 'link',
                                     label: 'View',
                                     variant: 'default',
-                                    icon: <Edit className="h-4 w-4" />,
+                                    icon: <FcViewDetails className="h-4 w-4" />,
                                     href: `/prpo/purchase-request/details/${fullItem?.id}`,
                                 },
 
-                                ...(fullItem && Number(fullItem.is_approve_it_manager) === 0 && Number(fullItem.requestor_id) == Number(useAuthId())
+                                ...(fullItem &&
+                                (fullItem.status === 'For approval of IT Manager' || fullItem.status === 'For approval of Immediate Head') &&
+                                Number(fullItem.requestor_id) === Number(useAuthId())
                                     ? [
                                           {
                                               type: 'button',
-                                              label: 'Remove',
+                                              label: 'Delete',
                                               variant: 'outline',
-                                              icon: <Trash className="h-4 w-4" />,
+                                              icon: <FcFullTrash className="h-4 w-4" />,
                                               onClick: () => {
                                                   setDialogOpen(true);
                                                   setPrId(fullItem?.id);
