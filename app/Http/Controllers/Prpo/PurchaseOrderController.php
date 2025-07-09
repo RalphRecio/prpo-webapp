@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 use \Exception;
 use App\Services\PurchaseOrderNotificationService;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class PurchaseOrderController extends Controller
 {
@@ -135,5 +137,33 @@ class PurchaseOrderController extends Controller
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function downloadPdf($id)
+    {
+
+        $purchaseOrder = PurchaseOrder::with(['purchaseOrderDetails', 'preparedBy','poApproversList.approver','purchaseRequest'])->findOrFail($id);
+        $data = [
+            'purchaseOrder' => $purchaseOrder,
+        ];
+
+
+        $purchaseOrder->purchase_order_details = $purchaseOrder->purchaseOrderDetails ? $purchaseOrder->purchaseOrderDetails->toArray() : [];
+        // return view('printable.po_print', compact('purchaseOrder'));
+        $pdf = Pdf::loadView('printable.po_print', $data);
+        return $pdf->download('purchase-order.pdf');
+    }
+
+
+    public function printPo($id)
+    {
+
+        $purchaseOrder = PurchaseOrder::with(['purchaseOrderDetails', 'preparedBy','poApproversList.approver','purchaseRequest'])->findOrFail($id);
+        $data = [
+            'purchaseOrder' => $purchaseOrder,
+        ];
+        $purchaseOrder->purchase_order_details = $purchaseOrder->purchaseOrderDetails ? $purchaseOrder->purchaseOrderDetails->toArray() : [];
+        return view('printable.po_print', compact('purchaseOrder'));
+    
     }
 };

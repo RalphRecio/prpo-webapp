@@ -13,7 +13,7 @@ export default function PoDetailsForm({ purchaseOrder }: PoFormProps) {
 
     return (
         <>
-            <div className="mt-2 flex w-full flex-col space-y-6 rounded bg-white px-6 py-4">
+            <div className="flex w-full flex-col space-y-6 rounded bg-white px-6 py-4">
                 <span className="text-md flex items-center gap-2 font-semibold text-blue-500">
                     <Info className="h-4 w-4" />
                     Purchase Order Info

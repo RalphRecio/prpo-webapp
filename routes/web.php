@@ -10,6 +10,7 @@ use App\Http\Controllers\Prpo\PendingPurchaseController;
 use App\Http\Controllers\Prpo\PurchaseRequestController;
 use App\Http\Controllers\Prpo\PendingPurchaseOrderController;
 
+
 Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
@@ -62,6 +63,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         //ALL PURCHASE REQUISITION 
         Route::get('purchase-order/all', [AllPurchaseOrderController::class, 'index'])->name('purchase-order.all-po');
         Route::get('purchase-order/all/list', [AllPurchaseOrderController::class, 'allPurchaseOrder'])->name('purchase-order.all-po-list');
+
+
+        //DOWNLOAD PDF PURCHASE ORDER
+        // Route::get('/purchase-order/download/{id}', [PurchaseOrderController::class, 'downloadPdf'])->name('purchase-order.download');
+        Route::get('/purchase-order/print-po/{id}', [PurchaseOrderController::class, 'printPo'])->name('purchase-order.print');
     });
 });
 
