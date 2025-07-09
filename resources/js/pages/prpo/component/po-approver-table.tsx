@@ -1,18 +1,46 @@
-import { usePage } from '@inertiajs/react';
-
 import { DialogAlert } from '@/components/dialogAlert';
-import { PoApproverList, SharedData, User } from '@/types';
+import { PoApproverList } from '@/types';
 import { useAuthId } from '@/util/util';
 
+import { Inertia } from '@inertiajs/inertia';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+
 interface PoApproverTableProps extends React.ComponentProps<'div'> {
+    PurchaseOrderId: number;
     PoApproverList: PoApproverList[];
     preparedBy?: string;
     datePrepared?: string | null;
 }
 
-export default function PoApproverTable({ PoApproverList, preparedBy, datePrepared }: PoApproverTableProps) {
-    const page = usePage<SharedData & { auth: { user: User } }>();
-    const { auth } = page.props;
+export default function PoApproverTable({ PurchaseOrderId, PoApproverList, preparedBy, datePrepared }: PoApproverTableProps) {
+    const handleApprove = async (approverLevel: any) => {
+        try {
+            await axios.post('/prpo/purchase-order/approve/' + PurchaseOrderId, {
+                approver_level: approverLevel,
+            });
+
+            Swal.fire('Success!', 'Your purchase order has been submitted.', 'success').then(() => {
+                Inertia.reload();
+            });
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error!', 'An error occurred while approving the purchase order.', 'error');
+        }
+    };
+    const handleDisapprove = async (approverItem: any, remarks: string) => {
+        try {
+            await axios.post('/prpo/purchase-order/disapprove/' + PurchaseOrderId, {
+                ...approverItem,
+                remarks,
+            });
+            Swal.fire('Success!', 'Purchase Order has been disapproved.', 'success');
+            Inertia.reload();
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error!', 'An error occurred while disapproving the purchase order.', 'error');
+        }
+    };
 
     return (
         <div className="flex w-full gap-4 rounded bg-white">
@@ -67,17 +95,17 @@ export default function PoApproverTable({ PoApproverList, preparedBy, datePrepar
                                     <div className="flex flex-row items-center justify-center text-center">
                                         <DialogAlert
                                             buttonName="Approve"
-                                            title="Approve Purchase Request"
+                                            title="Approve Purchase Order"
                                             remarkFields={false}
                                             handleSubmit={(remarks) => {
-                                                // handleApprove(approverItem.approver_level, remarks);
+                                                handleApprove(approverItem.approver_level);
                                             }}
                                         />
                                         <DialogAlert
                                             buttonName="Disapprove"
-                                            title="Disapprove Purchase Request"
+                                            title="Disapprove Purchase Order"
                                             handleSubmit={(remarks) => {
-                                                // handleDisapprove(approverItem, remarks);
+                                                handleDisapprove(approverItem, remarks);
                                             }}
                                         />
                                     </div>

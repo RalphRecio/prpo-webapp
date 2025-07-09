@@ -33,6 +33,7 @@ export default function PurchaseOrderDetailsPage() {
                 <TablePo items={items} setItems={setItems} showAddRow={false} />
 
                 <PoApproverTable
+                    PurchaseOrderId={purchaseOrder.id}
                     PoApproverList={purchaseOrder.po_approvers_list}
                     preparedBy={`${purchaseOrder.prepared_by.fname} ${purchaseOrder.prepared_by.lname}`}
                     datePrepared={purchaseOrder.created_at}

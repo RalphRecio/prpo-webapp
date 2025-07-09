@@ -86,7 +86,7 @@ class PurchaseOrderController extends Controller
             $validated['department_id'] = $deptId;
             $validated['pr_no'] = $purchaseRequest->pr_no;
             $validated['po_no'] = $generatedPoNo;
-            $validated['status'] = 'For approval of Business Unit Head';
+            $validated['status'] = 'For approval of HRA';
             $validated['prepared_by_id'] = Auth::user()->id;
 
             $purchaseOrder = PurchaseOrder::create($validated);
@@ -123,7 +123,7 @@ class PurchaseOrderController extends Controller
             PurchaseOrderNotificationService::sendApprovalEmail(
                 $generatedPoNo, 
                 $approverList->first()->approver_name , 
-                Auth::user()->name, 
+                Auth::user()->fname . ' ' . Auth::user()->lname, 
                 Carbon::now(), 
                 $purchaseOrder->id,
                 $approverList->first()->approver_email

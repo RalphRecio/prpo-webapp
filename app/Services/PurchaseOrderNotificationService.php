@@ -18,7 +18,7 @@ class PurchaseOrderNotificationService
             'approver_name' => $approverName,
             'submitted_by' => $submittedBy,
             'date_submitted' => $dateSubmitted,
-            'approver_link' => url('/prpo/purchase-request/details/' . $poId),
+            'approver_link' => url('/prpo/purchase-order/view-pending-approval/' . $poId),
             'approver_history' =>  PoApproverList::where('po_id', $poId)
                 ->with('approver')
                 ->whereNot('is_approve',  0)
@@ -37,7 +37,7 @@ class PurchaseOrderNotificationService
             'approver_name' => $approverName,
             'submitted_by' => $submittedBy,
             'date_submitted' => $dateSubmitted,
-            'approver_link' => url('/prpo/purchase-request/details/' . $prId),
+            'approver_link' => url('/prpo/purchase-order/view-pending-approval/' . $prId),
             'approver_history' =>  PoApproverList::where('pr_id', $prId)
                 ->with('approver')
                 ->whereNot('is_approve',  0)

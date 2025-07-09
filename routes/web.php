@@ -55,6 +55,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('purchase-order/pending-approval', [PendingPurchaseOrderController::class, 'index'])->name('purchase-order.pending');
         Route::get('purchase-order/pending-approval/list', [PendingPurchaseOrderController::class, 'pendingForApproval'])->name('purchase-order.pending-all');
         Route::get('purchase-order/view-pending-approval/{id}', [PendingPurchaseOrderController::class, 'viewPoDetails'])->name('purchase-order.show');
+        //APPROVE AND DISAPPROVE
+        Route::post('purchase-order/approve/{id}', [PendingPurchaseOrderController::class, 'approve'])->name('purchase-order.approve');
+        Route::post('purchase-order/disapprove/{id}', [PendingPurchaseOrderController::class, 'disapprove'])->name('purchase-order.disapprove');
 
         //ALL PURCHASE REQUISITION 
         Route::get('purchase-order/all', [AllPurchaseOrderController::class, 'index'])->name('purchase-order.all-po');

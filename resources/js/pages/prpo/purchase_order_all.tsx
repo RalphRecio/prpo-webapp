@@ -52,7 +52,13 @@ export default function PurchaseOrderAll() {
                         return (
                             <strong
                                 className={`rounded-xl border border-1 px-2 py-1 ${
-                                    value == 0 ? 'bg-gray-100 text-yellow-800' : 'bg-gray-100 text-gray-800'
+                                    value === 'open'
+                                        ? 'bg-green-100 text-green-800'
+                                        : value.toLowerCase().includes('disapprove')
+                                          ? 'bg-red-100 text-xs text-red-800'
+                                          : value.toLowerCase().includes('completed')
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-gray-200 text-xs text-gray-500'
                                 }`}
                             >
                                 {value}
