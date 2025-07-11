@@ -46,6 +46,7 @@ class PurchaseRequisitionNotificationService
             }
         }
 
+        $recipient = app()->environment('local') ? 'jrecio@suhay.com.ph' : $recipient;
       
         Mail::to($recipient)->send(new ApproveEmail($data));
     }
@@ -72,6 +73,8 @@ class PurchaseRequisitionNotificationService
             'creator_name' => $approverList->first()->purchaseRequest->requestor->fname . ' ' . $approverList->first()->purchaseRequest->requestor->lname
         ];
 
+        $recipient = app()->environment('local') ? 'jrecio@suhay.com.ph' : $recipient;
+
         Mail::to($approverList->first()->purchaseRequest->requestor->email)->send(new ApprovedEmail($data));
         Mail::to($recipient)->send(new ReviewerEmail($data));
     }
@@ -94,6 +97,8 @@ class PurchaseRequisitionNotificationService
             'approver_history' =>  $approverList
         ];
 
+        $recipient = app()->environment('local') ? 'jrecio@suhay.com.ph' : $recipient;
+        
         Mail::to($recipient)->send(new DisapprovedEmail($data));
     }
 }

@@ -26,6 +26,8 @@ class PurchaseOrderNotificationService
                 ->get()
         ];
 
+        $recipient = app()->environment('local') ? 'jrecio@suhay.com.ph' : $recipient;
+
         Mail::to($recipient)->send(new PoApproveEmail($data));
     }
 
@@ -44,6 +46,8 @@ class PurchaseOrderNotificationService
                 ->orderBy('created_at', 'desc')
                 ->get()
         ];
+
+        $recipient = app()->environment('local') ? 'jrecio@suhay.com.ph' : $recipient;
 
         Mail::to($recipient)->send(new DisapprovedEmail($data));
     }
