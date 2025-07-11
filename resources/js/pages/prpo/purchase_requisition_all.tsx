@@ -105,7 +105,7 @@ export default function PurchaseRequisitionAllPage() {
                                 href: `/prpo/purchase-request/details/${fullItem?.id}`,
                             },
 
-                            ...(fullItem && fullItem.status.toLowerCase() === 'open' && fullItem.purchase_requisition_items.length > 0
+                            ...(fullItem && fullItem.status.toLowerCase() === 'open'
                                 ? [
                                       {
                                           type: 'link',
