@@ -38,8 +38,9 @@ export default function PurchaseRequisitionAllPage() {
                     loading={loading}
                     columnNames={[
                         'id',
-                        'Status',
                         'PR No',
+                        'Status',
+
                         'Requestor',
                         'Date Issue',
                         'Date Needed',
@@ -52,8 +53,9 @@ export default function PurchaseRequisitionAllPage() {
                     items={
                         purchaseRequisition?.map((item) => ({
                             id: item.id,
-                            status: item.status,
                             pr_no: item.pr_no,
+                            status: item.status,
+
                             requestor_id: `${item.requestor.fname} ${item.requestor.lname}`,
                             date_issue: item.date_issue,
                             date_needed: item.date_needed,
@@ -71,6 +73,9 @@ export default function PurchaseRequisitionAllPage() {
                     handlePageChange={handlePageChange}
                     renderCell={(column, value) => {
                         if (column === 1) {
+                            return <strong>{value}</strong>;
+                        }
+                        if (column === 2) {
                             return (
                                 <strong
                                     className={`rounded-xl border border-1 px-2 py-1 ${

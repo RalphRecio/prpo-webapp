@@ -52,14 +52,14 @@ export default function PurchaseRequisitionPage() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Transaction" />
             <div className="flex h-full flex-1 flex-col rounded-xl">
-                <div className="m-4"></div>
                 <div className="m-4 overflow-x-auto bg-white">
                     <PaginatedDt
                         loading={loading}
                         columnNames={[
                             'id',
-                            'Status',
                             'PR No',
+                            'Status',
+
                             'Requestor',
                             'Date Issue',
                             'Date Needed',
@@ -72,8 +72,9 @@ export default function PurchaseRequisitionPage() {
                         items={
                             purchaseRequisition?.map((item) => ({
                                 id: item.id,
-                                status: item.status,
                                 pr_no: item.pr_no,
+                                status: item.status,
+
                                 requestor_id: `${item.requestor.fname} ${item.requestor.lname}`,
                                 date_issue: item.date_issue,
                                 date_needed: item.date_needed,
@@ -91,10 +92,13 @@ export default function PurchaseRequisitionPage() {
                         handlePageChange={handlePageChange}
                         renderCell={(column, value) => {
                             if (column === 1) {
+                                return <strong>{value}</strong>;
+                            }
+                            if (column === 2) {
                                 return (
                                     <strong
                                         className={`rounded-xl border border-1 px-2 py-1 ${
-                                            value.toLowerCase() === 'open'
+                                            value === 'open'
                                                 ? 'bg-green-100 text-green-800'
                                                 : value.toLowerCase().includes('disapprove')
                                                   ? 'bg-red-100 text-xs text-red-800'
@@ -115,7 +119,7 @@ export default function PurchaseRequisitionPage() {
                         headerActions={[
                             <Link
                                 href="/prpo/create_pr"
-                                className="animate inline-flex items-center rounded-md bg-gray-100 px-2 text-center text-sm font-bold text-gray-800 hover:bg-gray-200"
+                                className="animate inline-flex items-center rounded-md bg-gray-100 px-2 py-2 text-center text-sm font-bold text-gray-800 hover:bg-gray-200"
                                 // onClick={handleClick}
                             >
                                 {isLoading ? <Loader className="mr-2 h-4 w-4 animate-spin" /> : <FcPlus className="mr-2 h-4 w-4" />} New Purchase

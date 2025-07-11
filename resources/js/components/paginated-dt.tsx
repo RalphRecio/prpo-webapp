@@ -1,8 +1,8 @@
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
-import { FcSearch, FcSynchronize } from 'react-icons/fc';
+import { FcSearch } from 'react-icons/fc';
 import Swal from 'sweetalert2';
 
 type Item = {
@@ -39,6 +39,7 @@ export type PaginatedDtProps = {
     isDateColumn?: (col: string, idx: number) => boolean;
     itemsPerPage?: number; // Optional: to control items per page
     loading?: boolean;
+    hiddenColumns?: number[];
 };
 
 export function PaginatedDt({
@@ -54,6 +55,7 @@ export function PaginatedDt({
     loading = true,
     headerActions,
     itemsPerPage = 5, // Default to 10 items per page
+    hiddenColumns = [],
     ...props
 }: PaginatedDtProps) {
     const [currentPage, setCurrentPage] = useState(1);
@@ -95,7 +97,7 @@ export function PaginatedDt({
                 <button
                     key={i}
                     onClick={() => handlePageChange(i)}
-                    className={`mx-1 rounded-md border px-3 py-1 ${currentPage === i ? 'bg-gray-300' : 'bg-white'} text-sm font-medium text-gray-700 hover:bg-gray-50`}
+                    className={`mx-1 rounded-md border px-3 py-1 ${currentPage === i ? 'bg-gray-200' : 'bg-white'} text-sm font-medium text-gray-700 hover:bg-gray-50`}
                 >
                     {i}
                 </button>,
@@ -134,23 +136,29 @@ export function PaginatedDt({
                 <div className="mb-2 flex flex-col">
                     <div className="flex w-full flex-row items-center justify-between">
                         <div className="flex flex-row gap-1">
-                            <Button title="Refresh" variant={'secondary'}>
+                            {/* <Button title="Refresh" variant={'secondary'} onClick={() => fetchData(data.current_page, searchTerm, filters)}>
                                 <FcSynchronize />
-                            </Button>
+                            </Button> */}
+                            {/* <Button title="Export to Excel">
+                            <FileSpreadsheet />
+                        </Button> */}
+
+                            {headerActions}
                         </div>
-                        <div className="flex w-full max-w-md flex-row items-center md:w-auto md:min-w-[350px]">
+
+                        <div className="flex w-full max-w-md flex-row items-center md:w-auto md:min-w-[200px]">
                             <Input
                                 type="text"
                                 placeholder="Search across all columns"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="border-input file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground focus-visible:border-ring focus-visible:ring-ring/50 block h-9 w-full min-w-0 rounded-l-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm"
+                                className="border-input file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground block h-9 w-full min-w-0 rounded-l-md border bg-transparent px-3 py-1 outline-none md:text-sm"
                                 style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
                             />
                             <button
                                 type="button"
                                 onClick={() => handlePageChange(1)}
-                                className="flex h-9 items-center justify-center rounded-r-md border border-l-0 bg-blue-600 px-4 py-1.5 text-white transition hover:bg-blue-700"
+                                className="flex h-9 items-center justify-center rounded-r-md border border-l-0 px-4 py-1.5 text-white transition hover:bg-gray-100"
                                 style={{ minWidth: '44px', borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
                             >
                                 <FcSearch />
@@ -176,14 +184,20 @@ export function PaginatedDt({
                                             />
                                         </th>
                                     )}
-                                    {columnNames.map((column, index) => (
-                                        <th
-                                            key={column}
-                                            className="cursor-pointer px-6 py-3 text-left text-xs tracking-wider whitespace-nowrap text-gray-500 uppercase select-none"
-                                        >
-                                            {column.toUpperCase()}
-                                        </th>
-                                    ))}
+                                    {columnNames.map((column, index) =>
+                                        hiddenColumns.includes(index) ? null : (
+                                            <th
+                                                key={column}
+                                                className="cursor-pointer px-6 py-3 text-left text-xs tracking-wider whitespace-nowrap text-gray-500 uppercase select-none"
+                                                // onClick={() => handleSort(column)}
+                                            >
+                                                <span className="flex items-center gap-1">
+                                                    {column.toUpperCase()}
+                                                    {/* {sortColumn === column && <span>{sortDirection === 'asc' ? '▲' : '▼'}</span>} */}
+                                                </span>
+                                            </th>
+                                        ),
+                                    )}
                                     {((actions && (typeof actions === 'function' || actions.length > 0)) || canDelete || canEdit) && (
                                         <th className="w-24 bg-gray-100 px-6 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500 uppercase">
                                             Actions
@@ -207,11 +221,19 @@ export function PaginatedDt({
                                                     />
                                                 </td>
                                             )}
-                                            {Object.values(item).map((value, colIndex) => (
-                                                <td key={colIndex} className="px-6 py-4 text-xs whitespace-nowrap text-gray-500">
-                                                    {renderCell ? renderCell(colIndex, value, item) : String(value || '-')}
-                                                </td>
-                                            ))}
+                                            {Object.values(item).map((value, colIndex) =>
+                                                hiddenColumns.includes(colIndex) ? null : (
+                                                    <td key={colIndex} className="px-6 py-4 text-xs whitespace-nowrap text-gray-500">
+                                                        {renderCell ? (
+                                                            renderCell(colIndex, value, item) // Use custom render function if provided
+                                                        ) : typeof value === 'object' && value !== null ? (
+                                                            <span>{JSON.stringify(value)}1</span> // Handle nested objects
+                                                        ) : (
+                                                            <span>{String(value || '-')}</span>
+                                                        )}
+                                                    </td>
+                                                ),
+                                            )}
                                             {(((actions && typeof actions === 'function' ? actions(item) : actions) ?? []).length > 0 ||
                                                 canDelete ||
                                                 canEdit) && (
@@ -274,6 +296,22 @@ export function PaginatedDt({
                         </button>
                     </div>
                 </div>
+                {loading && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-black/50" style={{ backdropFilter: 'blur(2px)' }}>
+                        <div className="flex flex-col items-center">
+                            <svg
+                                className="mb-4 h-12 w-12 animate-spin text-white"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                            </svg>
+                            <span className="text-lg font-semibold text-white">Loading...</span>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
