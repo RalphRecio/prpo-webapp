@@ -20,9 +20,9 @@
         >
             <tr>
                 <td>
-                    <h6 style="color: #333333; font-size: 12px; font-weight: 600; margin-bottom: 8px">
+                    {{-- <h6 style="color: #333333; font-size: 12px; font-weight: 600; margin-bottom: 8px">
                         Purchase Requisition for Approval ({{ $data['pr_no'] }})
-                    </h6>
+                    </h6> --}}
                     <p style="margin-bottom: 16px">Good day {{ $data['approver_name'] }},</p>
 
                     <p style="margin-bottom: 16px">
@@ -31,7 +31,7 @@
 
                     <a href="{{ $data['approver_link'] }}">Click here to view the full request details!</a>
 
-                    @if ($data['approver_history'])
+                    @if (!empty($data['approver_history']) && count($data['approver_history']) > 0)
                         <table cellpadding="5" cellspacing="0" style="margin: 15px 0; width: 100%; border-collapse: collapse;">
                             <thead>
                                 <tr style="background-color: #f0f0f0;">
@@ -45,7 +45,7 @@
                                 @foreach($data['approver_history'] as $item)
                               
                                     <tr>
-                                        <td style="border-bottom: 1px solid #eee;">{{ $item['approver2']['approver_type'] == 'finance' || $item['approver2']['approver_type'] =='procurement' ?  $item['is_approve'] == 1 ? 'Approved' : 'Disapproved' : 'Reviewed' }} by</td>
+                                        <td style="border-bottom: 1px solid #eee;">{{ $item['approver2']['approver_type'] == 'finance' || $item['approver2']['approver_type'] =='procurement' ? 'Reviewed' : ($item['is_approve'] == 1 ? 'Approved' : 'Disapproved')  }} by</td>
                                         <td style="border-bottom: 1px solid #eee;">{{ $item['approver2']['job_title'] }}</td>
                                         <td style="border-bottom: 1px solid #eee;">{{ $item['approver']['fname'] }} {{ $item['approver']['lname'] }}</td>
                                         <td style="border-bottom: 1px solid #eee;">{{ $item['approval_date'] }}</td>

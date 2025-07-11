@@ -13,7 +13,7 @@ class PurchaseRequisitionNotificationService
     public static function sendApprovalEmail($requestType, $prNo, $approverName, $submittedBy, $dateSubmitted, $prId, $recipient)
     {
         $approverList = ApproverList::where('pr_id', $prId)
-        ->with(['approver','approver2','purchaseRequest'])
+        ->with(['approver','approver2','purchaseRequest.requestor'])
         ->whereNot('is_approve',  0)
         ->orderBy('created_at', 'desc')
         ->get();
@@ -25,13 +25,29 @@ class PurchaseRequisitionNotificationService
             'submitted_by' => $submittedBy,
             'date_submitted' => $dateSubmitted,
             'approver_link' => url('/prpo/purchase-request/details/' . $prId),
-            'approver_history' => $approverList
+            'approver_history' => $approverList,
+
+            'creator_name' => $approverList->first()->purchaseRequest->requestor->fname . ' ' . $approverList->first()->purchaseRequest->requestor->lname
         ];
 
         // $requestorEmail = $approverList->first()->purchaseRequest ? $approverList->first()->purchaseRequest->requestor->email : null;
         // if($requestorEmail){
         //     Mail::to($approverList->first()->purchaseRequest->requestor->email)->send(new ApprovedEmail($data));
         // }
+
+        $validRequest = $approverList->firstWhere(fn($item) => $item->purchaseRequest && $item->purchaseRequest->requestor);
+
+        if ($validRequest) {
+            $requestorEmail = $validRequest->purchaseRequest->requestor->email;
+            $requestorName = $validRequest->purchaseRequest->requestor;
+
+            $data['creator_name'] = $requestorName->fname . ' ' . $requestorName->lname;
+
+            if ($requestorEmail) {
+                Mail::to($requestorEmail)->send(new ApprovedEmail($data));
+            }
+        }
+
       
         Mail::to($recipient)->send(new ApproveEmail($data));
     }
