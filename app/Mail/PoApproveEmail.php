@@ -28,7 +28,7 @@ class PoApproveEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Po Approve Email',
+            subject: ' Purchase Order for Approval ('.$this->data['po_no'].')',
         );
     }
 

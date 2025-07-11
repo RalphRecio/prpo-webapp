@@ -20,9 +20,9 @@
         >
             <tr>
                 <td>
-                    <h6 style="color: #333333; font-size: 12px; font-weight: 600; margin-bottom: 8px">
+                    {{-- <h6 style="color: #333333; font-size: 12px; font-weight: 600; margin-bottom: 8px">
                         Purchase Order for Approval ({{ $data['po_no'] }})
-                    </h6>
+                    </h6> --}}
                     <p style="margin-bottom: 16px">Good day {{ $data['approver_name'] }},</p>
 
                     <p style="margin-bottom: 16px">
