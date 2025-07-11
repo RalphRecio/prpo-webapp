@@ -13,7 +13,7 @@ class PurchaseRequisitionNotificationService
     public static function sendApprovalEmail($requestType, $prNo, $approverName, $submittedBy, $dateSubmitted, $prId, $recipient)
     {
         $approverList = ApproverList::where('pr_id', $prId)
-        ->with(['approver','purchaseRequest'])
+        ->with(['approver','approver2','purchaseRequest'])
         ->whereNot('is_approve',  0)
         ->orderBy('created_at', 'desc')
         ->get();
@@ -28,7 +28,11 @@ class PurchaseRequisitionNotificationService
             'approver_history' => $approverList
         ];
 
-        Mail::to($approverList->first()->purchaseRequest->requestor->email)->send(new ApprovedEmail($data));
+        // $requestorEmail = $approverList->first()->purchaseRequest ? $approverList->first()->purchaseRequest->requestor->email : null;
+        // if($requestorEmail){
+        //     Mail::to($approverList->first()->purchaseRequest->requestor->email)->send(new ApprovedEmail($data));
+        // }
+      
         Mail::to($recipient)->send(new ApproveEmail($data));
     }
 
