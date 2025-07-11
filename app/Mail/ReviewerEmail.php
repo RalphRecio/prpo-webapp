@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ApprovedEmail extends Mailable
+class ReviewerEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -22,13 +22,14 @@ class ApprovedEmail extends Mailable
          $this->data = $data;
     }
 
+
     /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Purchase Requisition Approved ('. $this->data['pr_no'].')',
+            subject: 'Purchase Requisition for Review ('. $this->data['pr_no'].')',
         );
     }
 
@@ -38,7 +39,7 @@ class ApprovedEmail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'email.approved',
+            view: 'email.reviewer',
         );
     }
 

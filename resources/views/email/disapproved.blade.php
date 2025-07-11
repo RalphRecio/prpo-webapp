@@ -36,8 +36,8 @@
                             <tbody>
                                 @foreach($data['approver_history'] as $item)
                                     <tr>
-                                        <td style="border-bottom: 1px solid #eee;">{{ $item['is_approve'] == 1 ? 'Approved' : 'Disapproved' }} by</td>
-                                        <td style="border-bottom: 1px solid #eee;">{{ $item['approver']['job_title'] }}</td>
+                                        <td style="border-bottom: 1px solid #eee;">{{ $item['approver2']['approver_type'] == 'finance' || $item['approver2']['approver_type'] =='procurement' ?  $item['is_approve'] == 1 ? 'Approved' : 'Disapproved' : 'Reviewed' }} by</td>
+                                        <td style="border-bottom: 1px solid #eee;">{{ $item['approver2']['job_title'] }}</td>
                                         <td style="border-bottom: 1px solid #eee;">{{ $item['approver']['fname'] }} {{ $item['approver']['lname'] }}</td>
                                         <td style="border-bottom: 1px solid #eee;">{{ $item['approval_date'] }}</td>
                                     </tr>

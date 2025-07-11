@@ -107,7 +107,7 @@ class PrpoController extends Controller
             $purchaseRequisition->currency = $request->currency;
             $purchaseRequisition->finance_remarks = $request->finance_remarks;
             $purchaseRequisition->is_finance_verified = 1;
-            $purchaseRequisition->budget_amount = $request->budget_amount;
+            $purchaseRequisition->budget_amount = preg_replace('/[^\d.]/', '', $request->budget_amount);
             $purchaseRequisition->isCapexOpex = $request->isCapexOpex;
             $purchaseRequisition->save();
 
@@ -142,7 +142,7 @@ class PrpoController extends Controller
                     $purchaseRequisition->status = "For Procurement Sourcing";
                     $purchaseRequisition->save();
 
-                    PurchaseRequisitionNotificationService::sendApprovalEmail(
+                    PurchaseRequisitionNotificationService::sendReviewerEmail(
                         'Purchase Requisition',
                         $purchaseRequisition->pr_no,
                         $financeApprover->approver_name,
@@ -229,7 +229,8 @@ class PrpoController extends Controller
                     'approver_level'=> $procurementApprover->approver_level,
                 ]);
 
-                PurchaseRequisitionNotificationService::sendApprovalEmail(
+                //TO SEND EMAIL TO POCUREMENT REVIEWER
+                PurchaseRequisitionNotificationService::sendReviewerEmail(
                     'Purchase Requisition',
                     $purchaseRequisition->pr_no,
                     $procurementApprover->approver_name,

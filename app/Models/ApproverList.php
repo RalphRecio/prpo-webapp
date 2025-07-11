@@ -27,6 +27,11 @@ class ApproverList extends Model
         return $this->belongsTo(User::class, 'approver_id', 'id');
     }
 
+    public function approver2()
+    {
+        return $this->belongsTo(Approver::class, 'approver_id', 'user_id');
+    }
+
     public function getApprovalDateAttribute()
     {
         return $this->attributes['approval_date']
@@ -35,7 +40,7 @@ class ApproverList extends Model
     }
 
     public function purchaseRequest(){
-        return $this->belongsTo(User::class, 'purchase_requisition', 'pr_id');
+        return $this->belongsTo(PurchaseRequisiton::class, 'pr_id', 'id');
     }
 
     // protected static function booted()

@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8" />
-        <title>Purchase Requisition Approved ({{ $data['pr_no'] }})</title>
+        <title>Purchase Requisition for Review ({{ $data['pr_no'] }})</title>
     </head>
     <body style="font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px">
         <table
@@ -21,15 +21,15 @@
             <tr>
                 <td>
                     {{-- <h6 style="color: #333333; font-size: 12px; font-weight: 600; margin-bottom: 8px">
-                        Purchase Requisition Approved ({{ $data['pr_no'] }})
+                        Purchase Requisition for Review ({{ $data['pr_no'] }})
                     </h6> --}}
-                    <p style="margin-bottom: 16px">Good day {{ $data['creator_name'] }},</p>
+                    <p style="margin-bottom: 16px">Good day {{ $data['approver_name'] }},</p>
 
                     <p style="margin-bottom: 16px">
-                        Your Purchase Requisition Form (PR No. {{ $data['pr_no'] }}) has been approved.
+                        We are notifying you of a Purchase Requisition Form made by {{ $data['submitted_by'] }} that requires your review.
                     </p>
 
-                    <a href="{{ $data['approver_link'] }}">Click here to view the approved request.</a>
+                    <a href="{{ $data['approver_link'] }}">Click here to view the full request details!</a>
 
                     @if ($data['approver_history'])
                         <table cellpadding="5" cellspacing="0" style="margin: 15px 0; width: 100%; border-collapse: collapse;">
@@ -44,24 +44,16 @@
                             <tbody>
                                 @foreach($data['approver_history'] as $item)
                                     <tr>
-                                    
                                         <td style="border-bottom: 1px solid #eee;">{{ $item['approver2']['approver_type'] == 'finance' || $item['approver2']['approver_type'] =='procurement' ?  $item['is_approve'] == 1 ? 'Approved' : 'Disapproved' : 'Reviewed' }} by</td>
-                                       
-                                        <td style="border-bottom: 1px solid #eee;">
-                                            {{ $item['approver2']['job_title'] }}
-                                        </td>
-                                        <td style="border-bottom: 1px solid #eee;">
-                                            {{ $item['approver']['fname'] }} {{ $item['approver']['lname'] }}
-                                        </td>
-                                        <td style="border-bottom: 1px solid #eee;">
-                                            {{ $item['approval_date'] }}
-                                        </td>
+                                        <td style="border-bottom: 1px solid #eee;">{{ $item['approver2']['job_title'] }}</td>
+                                        <td style="border-bottom: 1px solid #eee;">{{ $item['approver']['fname'] }} {{ $item['approver']['lname'] }}</td>
+                                        <td style="border-bottom: 1px solid #eee;">{{ $item['approval_date'] }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     @endif
-
+                 
                     <p style="margin-bottom: 16px">Thank you!</p>
                 </td>
             </tr>

@@ -239,7 +239,7 @@ class PurchaseRequestController extends Controller
                         'remarks'       => null,
                         'approver_level'=> $financeApprover->approver_level,
                     ]);
-                    PurchaseRequisitionNotificationService::sendApprovalEmail(
+                    PurchaseRequisitionNotificationService::sendReviewerEmail(
                         'Purchase Requisition',
                         $purchaseRequisition->pr_no,
                         $financeApprover->approver_name,

@@ -28,7 +28,7 @@ class ApproveEmail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Approve Email',
+            subject: 'Purchase Requisition for Approval ('. $this->data['pr_no'].')',
         );
     }
 
