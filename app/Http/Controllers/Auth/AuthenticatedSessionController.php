@@ -29,11 +29,25 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+
+        if (app()->environment('local')) {
+            // Just find user by email (no password check)
+            $user = \App\Models\User::where('email', $request->input('email'))->first();
+    
+            if (!$user) {
+                return back()->withErrors(['email' => 'User not found.']);
+            }
+    
+            Auth::login($user);
+    
+            $request->session()->regenerate();
+    
+            return redirect()->intended(route('purchase-request', absolute: false));
+        }
+        
         $request->authenticate();
 
         $request->session()->regenerate();
-
-        
 
         return redirect()->intended(route('purchase-request', absolute: false));
     }

@@ -26,8 +26,6 @@ class PurchaseRequisitionNotificationService
             'date_submitted' => $dateSubmitted,
             'approver_link' => url('/prpo/purchase-request/details/' . $prId),
             'approver_history' => $approverList,
-
-            'creator_name' => $approverList->first()->purchaseRequest->requestor->fname . ' ' . $approverList->first()->purchaseRequest->requestor->lname
         ];
 
         // $requestorEmail = $approverList->first()->purchaseRequest ? $approverList->first()->purchaseRequest->requestor->email : null;

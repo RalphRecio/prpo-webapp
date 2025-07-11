@@ -72,7 +72,7 @@ export default function CreatePr() {
             setErrors(error.response?.data?.errors || []);
         } finally {
             setSubmitting(false);
-            setLoading(false);
+            // setLoading(false);
         }
     };
 
