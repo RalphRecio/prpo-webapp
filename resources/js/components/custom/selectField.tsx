@@ -12,7 +12,7 @@ interface SelectFieldProps {
     isClearable?: boolean;
     isDisabled?: boolean;
     onChange: (selectedOption: any) => void;
-
+    isError?: boolean;
     isRequired?: boolean;
 }
 
@@ -28,6 +28,7 @@ export function SelectField({
     isDisabled = false,
     onChange,
     isRequired,
+    isError,
 }: SelectFieldProps) {
     return (
         <div className={`flex-1 ${customClass || ''}`}>
@@ -45,6 +46,7 @@ export function SelectField({
                 onChange={onChange}
                 isDisabled={isDisabled}
             />
+            {isError && <p className="mt-1 text-sm text-red-500">This field is required.</p>}
         </div>
     );
 }

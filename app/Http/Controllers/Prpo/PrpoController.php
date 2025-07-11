@@ -97,162 +97,6 @@ class PrpoController extends Controller
             'classification' => $classifications
         ]);
     }
-    public function approve(Request $request, $id)
-    {
-        $purchaseRequisition = PurchaseRequisiton::findOrFail($id);
-
-        if ($request->approver_level == "1") {
-
-            $approverList = ApproverList::where('pr_id', $id)
-                ->where('approver_level',   1)
-                ->where('approver_id', auth()->user()->id)
-                ->first();
-
-            if ($approverList) {
-                $approverList->is_approve = 1;
-                $approverList->is_send_count = 1;
-                $approverList->approval_date = \Carbon\Carbon::now();
-                $approverList->remarks = '';
-                $approverList->save();
-            }
-                    
-            $purchaseRequisition->is_approve_it_manager = 1;
-            $purchaseRequisition->status = 'For approval of Immediate Head';
-            $purchaseRequisition->save();
-
-            $approverList2 = ApproverList::where('pr_id', $id)
-                ->where('approver_level', 2)
-                ->first();
-
-            if ($approverList2) {
-                $approverList2->is_approve = 0;
-                $approverList2->is_send_count = 1;
-                $approverList2->approval_date = \Carbon\Carbon::now();
-                $approverList2->remarks = '';
-                $approverList2->save();
-            }
-
-            $data = [
-                'request_type' => 'Purchase Request',
-                'pr_no' => $purchaseRequisition->pr_no,
-                'approver_name' => $approverList->first()->approver_name,
-                'submitted_by' => $purchaseRequisition->requestor->fname,
-                'date_submitted' => $purchaseRequisition->date_issue,
-    
-               'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
-            ];
-
-            Mail::to($approverList->approver->email)->send(new ApproveEmail($data));
-        }
-
- 
-
-        if ($request->approver_level == "2") {
-
-            $approverList = ApproverList::where('pr_id', $id)
-                ->where('approver_level', 2)
-                ->where('approver_id', auth()->user()->id)
-                ->first();
-            if ($approverList) {
-                $approverList->is_approve = 1;
-                $approverList->is_send_count = 1;
-                $approverList->approval_date = \Carbon\Carbon::now();
-                $approverList->remarks = '';
-                $approverList->save();
-            }
-
-            $purchaseRequisition->is_approve_im_supervisor = 1;
-            $purchaseRequisition->status = 'For Finance Verification';
-            $purchaseRequisition->save();
-
-            $financeApprovers = Approver::where('approver_level', "3")
-            ->where('bu_id',$purchaseRequisition->bu_id)
-            ->get();
-            foreach ($financeApprovers as $financeApprover) {
-                ApproverList::create([
-                    'pr_id'         => $id,
-                    'approver_id'   => $financeApprover->user_id,
-                    'is_approve'    => 0,
-                    'is_send_count' => 1,
-                    'remarks'       => null,
-                    'approver_level'=> $financeApprover->approver_level,
-                ]);
-
-                $data = [
-                    'request_type' => 'Purchase Request',
-                    'pr_no' => $purchaseRequisition->pr_no,
-                    'approver_name' => $financeApprover->approver_name,
-                    'submitted_by' => $purchaseRequisition->requestor->fname,
-                    'date_submitted' => $purchaseRequisition->date_issue,
-        
-                   'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
-                ];
-
-                Mail::to($financeApprover->approver_email)->send(new ApproveEmail($data));
-            }
-
-          
-        }
-
-        if ($request->approver_level == "3") {
-
-            $approverList = ApproverList::where('pr_id', $id)
-                ->where('approver_level', 3)
-                ->where('approver_id', auth()->user()->id)
-                ->first();
-            if ($approverList) {
-                $approverList->is_approve = 1;
-                $approverList->is_send_count = 1;
-                $approverList->approval_date = \Carbon\Carbon::now();
-                $approverList->remarks = '';
-                $approverList->save();
-            }
-
-            $purchaseRequisition->budgeted = $request->budgeted;
-            $purchaseRequisition->isCapexOpex = $request->budgeted;
-            $purchaseRequisition->budgeted_amount =  $request->budgeted_amount;
-            $purchaseRequisition->save();
-
-            if($request->budgeted == "1") {
-                $financeApprovers = Approver::where('approver_level', '4')
-                ->where('bu_id',$purchaseRequisition->bu_id)
-                ->get();
-
-                foreach ($financeApprovers as $financeApprover) {
-                    ApproverList::create([
-                        'pr_id'         => $id,
-                        'approver_id'   => $financeApprover->user_id,
-                        'is_approve'    => 0,
-                        'is_send_count' => 0,
-                        'remarks'       => null,
-                        'approver_level'=> $financeApprover->approver_level,
-                    ]);
-
-                  
-                }
-            }else{
-                $financeApprovers = Approver::where('approver_level', '5')
-                ->where('bu_id',$purchaseRequisition->bu_id)
-                ->get();
-
-                foreach ($financeApprovers as $financeApprover) {
-                    ApproverList::create([
-                        'pr_id'         => $id,
-                        'approver_id'   => $financeApprover->user_id,
-                        'is_approve'    => 0,
-                        'is_send_count' => 0,
-                        'remarks'       => null,
-                        'approver_level'=> $financeApprover->approver_level,
-                    ]);
-
-        
-                }
-
-            }
-        }
-
-        return response()->json(['purchaseRequisition' => $purchaseRequisition, 'message' => 'Purchase Requisition approved successfully.']);
-    }
     public function verifyFinance(Request $request, $id)
     {
         DB::beginTransaction();
@@ -261,21 +105,21 @@ class PrpoController extends Controller
 
             $purchaseRequisition->budgeted = $request->budgeted;
             $purchaseRequisition->currency = $request->currency;
-            $purchaseRequisition->finance_remarks = $request->remarks;
+            $purchaseRequisition->finance_remarks = $request->finance_remarks;
             $purchaseRequisition->is_finance_verified = 1;
             $purchaseRequisition->budget_amount = $request->budget_amount;
             $purchaseRequisition->isCapexOpex = $request->isCapexOpex;
             $purchaseRequisition->save();
 
             $approverList = ApproverList::where('pr_id', $id)
-                ->where('approver_id', auth()->user()->id)
+                ->where('approver_id', Auth::user()->id)
                 ->first();
 
             if ($approverList) {
                 $approverList->is_approve = 1;
                 $approverList->is_send_count = 1;
                 $approverList->remarks = $request->remarks;
-                $approverList->approval_date = \Carbon\Carbon::now();
+                $approverList->approval_date = Carbon::now();
                 $approverList->save();
             }
 
@@ -298,15 +142,6 @@ class PrpoController extends Controller
                     $purchaseRequisition->status = "For Procurement Sourcing";
                     $purchaseRequisition->save();
 
-                    $data = [
-                        'request_type' => 'Purchase Request',
-                        'pr_no' => $purchaseRequisition->pr_no,
-                        'approver_name' => $financeApprover->approver_name,
-                        'submitted_by' => $purchaseRequisition->requestor->fname,
-                        'date_submitted' => $purchaseRequisition->date_issue,
-                        'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
-                    ];
-
                     PurchaseRequisitionNotificationService::sendApprovalEmail(
                         'Purchase Requisition',
                         $purchaseRequisition->pr_no,
@@ -319,47 +154,37 @@ class PrpoController extends Controller
                 }
             } else {
                 // Unbudgeted: Next approvers are level 5 and 6
-                $financeApprovers = Approver::whereIn('approver_level', [5, 6])
+                $unbudgetedApprovers= Approver::whereIn('approver_level', [5, 6])
                     ->orderBy('approver_level')
                     ->get();
 
                 $isFirst = true;
-                foreach ($financeApprovers as $financeApprover) {
+                foreach ($unbudgetedApprovers as $unbudgetedApprover) {
                     ApproverList::create([
                         'pr_id'         => $id,
-                        'approver_id'   => $financeApprover->approver_type == 'buhead'
+                        'approver_id'   => $unbudgetedApprover->approver_type == 'buhead'
                             ? $purchaseRequisition->bu->buHead->id
-                            : $financeApprover->user_id,
+                            : $unbudgetedApprover->user_id,
                         'is_approve'    => 0,
                         'is_send_count' => $isFirst ? 1 : 0,
                         'remarks'       => null,
-                        'approver_level'=> $financeApprover->approver_level,
+                        'approver_level'=> $unbudgetedApprover->approver_level,
                     ]);
                     $isFirst = false;
                 }
 
-                // Send email to BU Head (first unbudgeted approver)
-                $buHead = $purchaseRequisition->bu->buHead ?? null;
-                if ($buHead) {
-                    $data = [
-                        'request_type' => 'Purchase Request',
-                        'pr_no' => $purchaseRequisition->pr_no,
-                        'approver_name' => $buHead->fname . ' ' . $buHead->lname,
-                        'submitted_by' => $purchaseRequisition->requestor->fname,
-                        'date_submitted' => $purchaseRequisition->date_issue,
-                        'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
-                    ];
+                $buHeadApprover = $purchaseRequisition->bu->buHead;
 
-                    PurchaseRequisitionNotificationService::sendApprovalEmail(
-                        'Purchase Requisition',
-                        $purchaseRequisition->pr_no,
-                        $financeApprover->first()->approver_name,
-                        $purchaseRequisition->requestor->fname,
-                        Carbon::now(),
-                        $purchaseRequisition->id,
-                        $financeApprover->first()->approver_email
-                    );
-                }
+                // Send email to BU Head (first unbudgeted approver)
+                PurchaseRequisitionNotificationService::sendApprovalEmail(
+                    'Purchase Requisition',
+                    $purchaseRequisition->pr_no,
+                    $buHeadApprover->fname . ' ' . $buHeadApprover->lname,
+                    $purchaseRequisition->requestor->fname . ' ' . $purchaseRequisition->requestor->lname,
+                    Carbon::now(),
+                    $purchaseRequisition->id,
+                    $buHeadApprover->email
+                );
 
                 $purchaseRequisition->status = "For approval of Business Unit Head (Unbudgeted)";
                 $purchaseRequisition->save();
@@ -372,51 +197,87 @@ class PrpoController extends Controller
             return response()->json(['error' => 'Finance verification failed.', 'message' => $e->getMessage()], 500);
         }
     }
-    public function approveUnbudget($id){
+    public function approveUnbudget(Request $request, $id){
         $purchaseRequisition = PurchaseRequisiton::findOrFail($id);
 
-        if($purchaseRequisition->is_approve1_unbudgeted == 1){
-            $purchaseRequisition->is_approve2_unbudgeted = 1;
-            $purchaseRequisition->status = "For approval of Comptroller (Unbudgeted)";
-            $purchaseRequisition->save();
+        DB::beginTransaction();
 
-            $financeApprover = Approver::where('approver_level', '4')
-            ->where('bu_id',$purchaseRequisition->bu_id)
-            ->first();
+        try{
+            //IF BU HEAD ALREADY APPROVE - COMPTROLLER APPROVING 
+            if($purchaseRequisition->is_approve1_unbudgeted == 1){
+                $purchaseRequisition->is_approve2_unbudgeted = 1;
+                $purchaseRequisition->status = "For Procurement Sourcing";
+                $purchaseRequisition->save();
 
-            ApproverList::create([
-                'pr_id'         => $id,
-                'approver_id'   => $financeApprover->user_id,
-                'is_approve'    => 0,
-                'is_send_count' => 1,
-                'remarks'       => null,
-                'approver_level'=> $financeApprover->approver_level,
-            ]);
-            $data = [
-                'request_type' => 'Purchase Request',
-                'pr_no' => $purchaseRequisition->pr_no,
-                'approver_name' => $financeApprover->approver_name,
-                'submitted_by' => $purchaseRequisition->requestor->fname,
-                'date_submitted' => $purchaseRequisition->date_issue,
-                'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
-            ];
+                $comptrollerApproved = ApproverList::where('pr_id', $id)
+                    ->where('approver_id', Auth::user()->id)
+                    ->first();
+                $comptrollerApproved->is_approve = 1;
+                $comptrollerApproved->approval_date = Carbon::now();
+                $comptrollerApproved->save();
 
-            Mail::to($financeApprover->approver_email)->send(new ApproveEmail($data));
-        }
-
-        $purchaseRequisition->is_approve1_unbudgeted = 1;
-        $purchaseRequisition->save();
-
-        $approverList = ApproverList::where('pr_id', $id)
-                ->where('approver_id', Auth::user()->id)
+                $procurementApprover = Approver::where('approver_level', '4')
+                ->where('bu_id',$purchaseRequisition->bu_id)
                 ->first();
 
-        if ($approverList) {
-            $approverList->is_approve = 1;
-            $approverList->is_send_count = 1;
-            $approverList->remarks =  '';
-            $approverList->approval_date = \Carbon\Carbon::now();
-            $approverList->save();
+                ApproverList::create([
+                    'pr_id'         => $id,
+                    'approver_id'   => $procurementApprover->user_id,
+                    'is_approve'    => 0,
+                    'is_send_count' => 1,
+                    'remarks'       => $request->remarks,
+                    'approver_level'=> $procurementApprover->approver_level,
+                ]);
+
+                PurchaseRequisitionNotificationService::sendApprovalEmail(
+                    'Purchase Requisition',
+                    $purchaseRequisition->pr_no,
+                    $procurementApprover->approver_name,
+                    $purchaseRequisition->requestor->fname . ' ' . $purchaseRequisition->requestor->lname,
+                    Carbon::now(),
+                    $purchaseRequisition->id,
+                    $procurementApprover->approver_email
+                );
+            }
+
+            $purchaseRequisition->is_approve1_unbudgeted = 1;
+            $purchaseRequisition->save();
+
+            $approverList = ApproverList::where('pr_id', $id)
+                    ->where('approver_id', Auth::user()->id)
+                    ->first();
+
+            if ($approverList) {
+                $approverList->is_approve = 1;
+                $approverList->is_send_count = 1;
+                $approverList->remarks =  '';
+                $approverList->approval_date = Carbon::now();
+                $approverList->save();
+            }
+
+            //GET THE COMPTROLLER APPROVER
+            $comptrollerApprover = ApproverList::where('approver_level', '6')
+                ->where('pr_id', $purchaseRequisition->id)
+                ->first();
+            $comptrollerApprover->is_send_count = 1;
+            $comptrollerApprover->save();
+
+            PurchaseRequisitionNotificationService::sendApprovalEmail(
+                'Purchase Requisition',
+                $purchaseRequisition->pr_no,
+                $comptrollerApprover->approver->fname . ' ' . $comptrollerApprover->approver->lname,
+                $purchaseRequisition->requestor->fname . ' ' . $purchaseRequisition->requestor->lname,
+                Carbon::now(),
+                $purchaseRequisition->id,
+                $comptrollerApprover->approver->email
+            );
+
+            DB::commit();
+            return response()->json(['message' => 'Unbudgeted approval successful.'], 200);
+
+        }catch(Exception $e){
+            DB::rollBack();
+            return response()->json(['error' => 'Unbudgeted approval failed.', 'message' => $e->getMessage()], 500);
         }
     }
     public function verifyProcurement(Request $request, $id)
@@ -438,7 +299,7 @@ class PrpoController extends Controller
             if ($approverList) {
                 $approverList->is_approve = 1;
                 $approverList->remarks = $request->remarks;
-                $approverList->approval_date = \Carbon\Carbon::now();
+                $approverList->approval_date = Carbon::now();
                 $approverList->save();
             }
 
@@ -468,18 +329,18 @@ class PrpoController extends Controller
                     $isFirst = false;
                 }
 
-                $firstOverBudgetApprover = $overBudgetApprovers->first();
-                if ($firstOverBudgetApprover) {
-                    PurchaseRequisitionNotificationService::sendApprovalEmail(
-                        'Purchase Request',
-                        $purchaseRequisition->pr_no,
-                        $firstOverBudgetApprover->approver_name,
-                        $purchaseRequisition->requestor->fname,
-                        Carbon::now(),
-                        $purchaseRequisition->id,
-                        $firstOverBudgetApprover->approver_email
-                    );
-                }
+            
+                //TO SEND EMAIL TO FIRST APPROVER - BU HEAD
+                PurchaseRequisitionNotificationService::sendApprovalEmail(
+                    'Purchase Request',
+                    $purchaseRequisition->pr_no,
+                    $purchaseRequisition->bu->buHead->fname . ' ' . $purchaseRequisition->bu->buHead->lname,
+                    $purchaseRequisition->requestor->fname,
+                    Carbon::now(),
+                    $purchaseRequisition->id,
+                    $purchaseRequisition->bu->buHead->email
+                );
+
             } else {
                 $purchaseRequisition->status = 'Open';
                 $purchaseRequisition->save();
@@ -489,7 +350,7 @@ class PrpoController extends Controller
             return response()->json(['message' => 'Purchase Requisition approved successfully.']);
         } catch (Exception $exception) {
             DB::rollBack();
-            return response()->json(['message' => 'Error approving purchase requisition.'], 500);
+            return response()->json(['message' => $exception->getMessage()], 500);
         }
     }
     public function approveOverBudget($id)
@@ -561,7 +422,7 @@ class PrpoController extends Controller
 
             DB::commit();
             return response()->json(['message' => 'Overbudget approval completed.']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'Error in overbudget approval.', 'error' => $e->getMessage()], 500);
         }

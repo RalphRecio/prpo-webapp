@@ -13,11 +13,24 @@ interface TextFieldProps {
     onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     customClass?: string;
     [key: string]: any; // Allow any other prop
-
+    isError?: boolean;
     isRequired?: boolean;
 }
 
-export function TextField({ label, id, name, type, value, placeholder, customClass, isReadOnly, onChange, isRequired, ...rest }: TextFieldProps) {
+export function TextField({
+    label,
+    id,
+    name,
+    type,
+    value,
+    placeholder,
+    customClass,
+    isReadOnly,
+    onChange,
+    isRequired,
+    isError,
+    ...rest
+}: TextFieldProps) {
     return (
         <div className={`flex-1 ${customClass}`}>
             <Label htmlFor={id} className="mb-1 block text-xs font-bold text-gray-500">
@@ -35,11 +48,24 @@ export function TextField({ label, id, name, type, value, placeholder, customCla
                 readOnly={isReadOnly}
                 {...rest} // Spread any additional props here
             />
+            {isError && <p className="mt-1 text-sm text-red-500">This field is required.</p>}
         </div>
     );
 }
 
-export function TextAreaField({ label, id, name, value, placeholder, customClass, isReadOnly, onChange, isRequired, ...rest }: TextFieldProps) {
+export function TextAreaField({
+    label,
+    id,
+    name,
+    value,
+    placeholder,
+    customClass,
+    isReadOnly,
+    onChange,
+    isRequired,
+    isError,
+    ...rest
+}: TextFieldProps) {
     return (
         <div className={`flex-1 ${customClass}`}>
             <Label htmlFor={id} className="block text-xs font-bold text-gray-500">
@@ -56,6 +82,7 @@ export function TextAreaField({ label, id, name, value, placeholder, customClass
                 onChange={onChange}
                 {...rest} // Spread any additional props here
             />
+            {isError && <p className="mt-1 text-sm text-red-500">This field is required.</p>}
         </div>
     );
 }

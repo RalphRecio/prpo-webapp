@@ -34,6 +34,8 @@ export default function CreatePr() {
     const [submitting, setSubmitting] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
 
+    const [errors, setErrors] = useState<any>([]);
+
     function hasEmptyRequiredFields(requiredFields: string[], details: Record<string, any>): boolean {
         return requiredFields.some(
             (field) => details[field] === '' || details[field] === null || details[field] === undefined || details[field] === 0,
@@ -64,8 +66,10 @@ export default function CreatePr() {
             Swal.fire('Success!', 'Your purchase request has been submitted.', 'success');
             setPurchaseRequestDetails(defaultPurchaseRequisitionDetails);
             setItems([]);
-        } catch (error) {
+            setErrors([]);
+        } catch (error: any) {
             Swal.fire('Error!', 'There was an error submitting your purchase request.', 'error');
+            setErrors(error.response?.data?.errors || []);
         } finally {
             setSubmitting(false);
             setLoading(false);
@@ -87,13 +91,15 @@ export default function CreatePr() {
         <div className="flex h-screen flex-col">
             <AppLayout breadcrumbs={breadcrumbs}>
                 <Head title="Create PR" />
+                {/* {JSON.stringify(errors.items)} */}
                 <div className="mx-auto flex h-full max-w-[900px] flex-1 flex-col gap-4 px-4">
                     <PrForm
                         classification={classification}
                         purchaseRequestDetails={purchaseRequestDetails}
                         handlePurchaseRequestFieldChange={handlePurchaseRequestFieldChange}
+                        errors={errors}
                     />
-                    <DataTable items={items} setItems={setItems} showAddRow={true}></DataTable>
+                    <DataTable items={items} setItems={setItems} showAddRow={true} isError={errors.items}></DataTable>
                     <TotalItem total={items.length} />
                     <ApproverTable itRelated={purchaseRequestDetails.is_it_related} />
                     <DialogAlert loading={submitting} handleSubmit={handleSubmit} remarkFields={false} />

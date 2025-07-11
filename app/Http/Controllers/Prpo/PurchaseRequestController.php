@@ -59,10 +59,10 @@ class PurchaseRequestController extends Controller
         $validated = $request->validate([
             'date_needed' => 'required|date',
             'prod_end_user' => 'required|max:255',
-            'classification_id' => 'required|integer',
+            'classification_id' => 'required|integer|not_in:0',
             'is_it_related' => 'integer',
-            'remarks' => 'nullable|string',
-            'items' => 'nullable|array',
+            'remarks' => 'required|string',
+            'items' => 'required|array',
             'im_supervisor_id' => 'required|integer',
             'items.*.qty_in_figures' => 'required_with:items|numeric',
             'items.*.uom' => 'required_with:items|string|max:50',
@@ -129,7 +129,7 @@ class PurchaseRequestController extends Controller
                 $isImmSupervisor = $firstApprover->approver_type === 'immsupervisor';
 
                 $approverName = $isImmSupervisor
-                    ? $purchaseRequisition->requestor->immediateHead->fname
+                    ? $purchaseRequisition->requestor->immediateHead->fname . ' ' . $purchaseRequisition->requestor->immediateHead->lname
                     : $firstApprover->approver_name;
 
                 $approverEmail = $isImmSupervisor
@@ -140,7 +140,7 @@ class PurchaseRequestController extends Controller
                     'Purchase Requisition',
                     $generatedPrNo,
                     $approverName,
-                    $purchaseRequisition->requestor->fname,
+                    $purchaseRequisition->requestor->fname . ' ' . $purchaseRequisition->requestor->lname,
                     Carbon::now(),
                     $purchaseRequisition->id,
                     $approverEmail
@@ -200,11 +200,11 @@ class PurchaseRequestController extends Controller
                 PurchaseRequisitionNotificationService::sendApprovalEmail(
                     'Purchase Requisition',
                     $purchaseRequisition->pr_no,
-                    $secondApprover->approver_name,
-                    $purchaseRequisition->requestor->fname,
+                    $secondApprover->approver->fname . ' ' . $secondApprover->approver->lname,
+                    $purchaseRequisition->requestor->fname . ' ' . $purchaseRequisition->requestor->lname,
                     Carbon::now(),
                     $purchaseRequisition->id,
-                    $secondApprover->approver_email
+                    $secondApprover->approver->email
                 );
             }
     
@@ -268,60 +268,68 @@ class PurchaseRequestController extends Controller
 
     public function disapprove(Request $request,$id){
         $purchaseRequisition = PurchaseRequisiton::findOrFail($id);
+        DB::beginTransaction();
+        try{
+            $approver = ApproverList::where('pr_id', $id)
+                ->where('approver_id', Auth::user()->id)
+                ->where('approver_level', $request->input('approver_level'))
+                ->first();
 
-        $approver = ApproverList::where('pr_id', $id)
-            ->where('approver_id', Auth::user()->id)
-            ->where('approver_level', $request->input('approver_level'))
-            ->first();
+            $approver->is_approve = 2;
+            $approver->approval_date = Carbon::now();
+            $approver->remarks = $request->input('remarks', 'No remarks provided.');
+            $approver->save();
 
-        $approver->is_approve = 2;
-        $approver->approval_date = Carbon::now();
-        $approver->remarks = $request->input('remarks', 'No remarks provided.');
-        $approver->save();
+            if($purchaseRequisition) {
+                switch ((int)$request->input('approver_level')) {
+                    case 1:
+                        $purchaseRequisition->status = 'Disapproved By IT Manager';
+                        $purchaseRequisition->save();
+                        break;
+                    case 2:
+                        $purchaseRequisition->status = 'Disapproved By Immediate Head';
+                        $purchaseRequisition->is_approve_it_manager = 2;
+                        break;
+                    case 5:
+                        $purchaseRequisition->status = 'Disapproved by Business Unit Head (Unbudgeted)';
+                        $purchaseRequisition->is_approve1_unbudgeted = 2;
+                        break;
+                    case 7:
+                        $purchaseRequisition->status = 'Disapproved by Business Unit Head (Overbudget)';
+                        $purchaseRequisition->is_approve1_overbudgeted = 2;
+                        break;
+                    case 6:
+                        $purchaseRequisition->status = 'Disapproved by Comptroller (Unbudgeted)';
+                        $purchaseRequisition->is_approve2_unbudgeted = 2;
+                        break;
+                    case 8:
+                        $purchaseRequisition->status = 'Disapproved by Comptroller (Overbudget)';
+                        $purchaseRequisition->is_approve2_overbudgeted = 2;
+                        break;
+                }
+                $purchaseRequisition->save();
 
-        if($purchaseRequisition) {
-            switch ((int)$request->input('approver_level')) {
-                case 1:
-                    $purchaseRequisition->status = 'Disapproved By IT Manager';
-                    $purchaseRequisition->save();
-                    break;
-                case 2:
-                    $purchaseRequisition->status = 'Disapproved By Immediate Head';
-                    $purchaseRequisition->is_approve_it_manager = 2;
-                    break;
-                case 5:
-                    $purchaseRequisition->status = 'Disapproved by Business Unit Head (Unbudgeted)';
-                    break;
-                case 7:
-                    $purchaseRequisition->status = 'Disapproved by Business Unit Head (Overbudget)';
-                    break;
-                case 6:
-                    $purchaseRequisition->status = 'Disapproved by Comptroller (Unbudgeted)';
-                    break;
-                case 8:
-                    $purchaseRequisition->status = 'Disapproved by Comptroller (Overbudget)';
-                    break;
+                PurchaseRequisitionNotificationService::sendDisapprovedEmail(
+                    'Purchase Requisition',
+                    $purchaseRequisition->pr_no,
+                    $approver->approver->fname . ' ' . $approver->approver->lname,
+                    $purchaseRequisition->requestor->fname . ' ' . $purchaseRequisition->requestor->lname,
+                    Carbon::now(),
+                    $purchaseRequisition->id,
+                    $purchaseRequisition->requestor->email
+                );
             }
-            $purchaseRequisition->save();
 
-            $data = [
-                'request_type' => 'Purchase Request',
-                'pr_no' => $purchaseRequisition->pr_no,
-                'approver_name' => $request->input('approver_name'),
-                'submitted_by' => $purchaseRequisition->requestor->fname,
-                'date_submitted' => $purchaseRequisition->date_issue,
-                'approver_link' => url('/prpo/purchase-request/details/' . $purchaseRequisition->id)
-            ];
-
-            // PurchaseRequisitionNotificationService::sendApprovalEmail(
-            //     'Purchase Requisition',
-            //     $purchaseRequisition->pr_no,
-            //     $secondApprover->approver_name,
-            //     $purchaseRequisition->requestor->fname,
-            //     Carbon::now(),
-            //     $purchaseRequisition->id,
-            //     $secondApprover->approver_email
-            // );
+            DB::commit();
+            return response()->json([
+                'message' => 'Purchase Requisition disapproved successfully.'
+            ]);
+        }catch(Exception $e){
+            DB::rollBack();
+            return response()->json([
+                'error' => 'Failed to disapprove Purchase Requisition.',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 }

@@ -51,7 +51,7 @@ export const defaultPurchaseOrderDetails: PurchaseOrder = {
     buyer: '',
     freight: '',
     remarks: '',
-    prepared_by: 0,
+    prepared_by: '0',
     vendor_contact_person: '',
     vendor_email_address: '',
     vendor_tel_no: '',

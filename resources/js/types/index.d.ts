@@ -275,7 +275,7 @@ export interface PurchaseRequisition {
     budgeted: number;
     isCapexOpex: string | null;
     budget_amount: number | null;
-    finance_remarks: string | null;
+    finance_remarks: string;
     is_finance_verified: number;
     finance_verified_id: number;
     is_approve1_unbudgeted: number;
@@ -291,7 +291,7 @@ export interface PurchaseRequisition {
     procurement_verified_id: number;
     supplier_name: string | null;
     actual_amount: number | null;
-    procurement_remarks: string | null;
+    procurement_remarks: string;
     status: string;
 
     approvers_list: ApproverList[];

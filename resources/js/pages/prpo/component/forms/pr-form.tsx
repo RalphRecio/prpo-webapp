@@ -7,11 +7,11 @@ import { Info } from 'lucide-react';
 interface PrFormProps {
     purchaseRequestDetails: PurchaseRequisition;
     handlePurchaseRequestFieldChange: (field: string, value: any) => void;
-
+    errors: any;
     classification: Classification[];
 }
 
-export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFieldChange, classification }: PrFormProps) {
+export default function PrForm({ purchaseRequestDetails, errors, handlePurchaseRequestFieldChange, classification }: PrFormProps) {
     const today = (() => {
         const d = new Date();
         const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -54,11 +54,13 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
                         name="date_needed"
                         value={purchaseRequestDetails.date_needed}
                         placeholder="--Auto Generated--"
-                        customClass="max-w-2xs"
                         min={new Date().toISOString().split('T')[0]}
                         onChange={(e) => handlePurchaseRequestFieldChange('date_needed', e.target.value)}
                         isRequired
+                        customClass="max-w-2xs"
+                        isError={errors.date_needed}
                     />
+
                     <TextField
                         label="Product End User"
                         id="product_end_user"
@@ -71,6 +73,7 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
                             handlePurchaseRequestFieldChange('prod_end_user', e.target.value);
                         }}
                         isRequired
+                        isError={errors.prod_end_user}
                     />
                     <SelectField
                         id="classification"
@@ -84,6 +87,7 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
                             handlePurchaseRequestFieldChange('is_it_related', selected ? selected.is_it_related : '');
                         }}
                         isRequired
+                        isError={errors.classification_id}
                     />
                 </div>
             </div>
@@ -99,6 +103,7 @@ export default function PrForm({ purchaseRequestDetails, handlePurchaseRequestFi
                         handlePurchaseRequestFieldChange('remarks', e.target.value);
                     }}
                     isRequired
+                    isError={errors.remarks}
                 />
             </div>
         </>

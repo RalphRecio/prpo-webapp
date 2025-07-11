@@ -20,7 +20,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::prefix('prpo')->group(function () {
         Route::get('purchase-request/details/{id}', [PrpoController::class, 'viewDetails'])->name('purchase-request.show');
-        Route::post('purchase-request/approve-unbudget/{id}', [PrpoController::class, 'approveUnbudget'])->name('purchase-request.approveUnbudget');
+        
+        
+        
         Route::post('purchase-request/approve-overbudget/{id}', [PrpoController::class, 'approveOverBudget'])->name('purchase-request.approveOverBudget');
         Route::post('purchase-request/verify-finance/{id}', [PrpoController::class, 'verifyFinance'])->name('purchase-request.verifyFinance');
         Route::post('purchase-request/verify-procurement/{id}', [PrpoController::class, 'verifyProcurement'])->name('purchase-request.verifyProcurement');
@@ -64,10 +66,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('purchase-order/all', [AllPurchaseOrderController::class, 'index'])->name('purchase-order.all-po');
         Route::get('purchase-order/all/list', [AllPurchaseOrderController::class, 'allPurchaseOrder'])->name('purchase-order.all-po-list');
 
-
         //DOWNLOAD PDF PURCHASE ORDER
         // Route::get('/purchase-order/download/{id}', [PurchaseOrderController::class, 'downloadPdf'])->name('purchase-order.download');
         Route::get('/purchase-order/print-po/{id}', [PurchaseOrderController::class, 'printPo'])->name('purchase-order.print');
+
+        //PURCHASE REQUEST DISAPPROVAL
+        Route::post('purchase-request/approve-unbudget/{id}', [PrpoController::class, 'approveUnbudget'])->name('purchase-request.approveUnbudget');
+        Route::post('purchase-request/disapprove-unbudgeted/{id}', [PrpoController::class, 'disapproveUnbudgeted'])->name('purchase-request.disapproveUnbudgeted');
+
     });
 });
 

@@ -28,16 +28,16 @@ class PurchaseRequisitionNotificationService
         Mail::to($recipient)->send(new ApproveEmail($data));
     }
 
-    public static function senddisapprovedEmail($requestType, $prNo, $approverName, $submittedBy, $dateSubmitted, $prId, $recipient)
+    public static function sendDisapprovedEmail($requestType, $prNo, $approverName, $requestorName, $dateSubmitted, $prId, $recipient)
     {
          
         $data = [
             'request_type' => $requestType,
             'pr_no' => $prNo,
             'approver_name' => $approverName,
-            'submitted_by' => $submittedBy,
+            'requestor_name' => $requestorName,
             'date_submitted' => $dateSubmitted,
-            'approver_link' => url('/prpo/purchase-request/details/' . $prId),
+            'view_link' => url('/prpo/purchase-request/details/' . $prId),
             'approver_history' =>  ApproverList::where('pr_id', $prId)
                 ->with('approver')
                 ->whereNot('is_approve',  0)

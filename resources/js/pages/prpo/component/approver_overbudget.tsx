@@ -20,6 +20,22 @@ export default function ApproverOverbudget({ purchaseRequisition }: ApproverOver
             Swal.fire('Error!', 'There was an error submitting your purchase request.', 'error');
         }
     };
+
+    const handleDisapproveOverbudget = async (approver: any, remarks: string) => {
+        try {
+            await axios.post('/prpo/purchase-request/disapprove/' + purchaseRequisition.id, {
+                ...approver,
+                remarks: remarks,
+            });
+
+            Swal.fire('Success!', 'Purchase request disapproved.', 'success').then(() => {
+                Inertia.reload(); // Rerender the component with updated data
+            });
+        } catch (error) {
+            Swal.fire('Error!', 'There was an error submitting your purchase request.', 'error');
+        }
+    };
+
     return (
         <>
             {/* OVERBUDGET APPROVING */}
@@ -43,26 +59,48 @@ export default function ApproverOverbudget({ purchaseRequisition }: ApproverOver
                                             <div className="flex flex-col text-center">
                                                 {approver.is_approve == 1 ? (
                                                     <>
-                                                        <span className="text-sm text-gray-800">Approve {approver.approval_date}</span>
+                                                        <span className="text-sm font-semibold text-green-700">
+                                                            Approved {approver.approval_date}
+                                                        </span>
+                                                        <span className="text-xs text-gray-700 italic">System Generated</span>
+                                                    </>
+                                                ) : approver.is_approve == 2 ? (
+                                                    <>
+                                                        <span className="text-sm font-semibold text-red-700">
+                                                            Disapproved {approver.approval_date}
+                                                        </span>
                                                         <span className="text-xs text-gray-700 italic">System Generated</span>
                                                     </>
                                                 ) : (
                                                     <span className="text-sm text-gray-800">Pending</span>
                                                 )}
-
                                                 <span className="font-bold">
                                                     {approver.approver?.fname || ''} {approver.approver?.mname || ''} {approver.approver?.lname || ''}
                                                 </span>
+
+                                                {approver.remarks && approver.remarks.length > 0 && (
+                                                    <p className="rounded p-2 text-sm text-gray-500 text-gray-600">
+                                                        Remarks:
+                                                        {approver.remarks || 'no remarks'}
+                                                    </p>
+                                                )}
                                             </div>
 
                                             {approver.approver_id == useAuthId() && approver.is_approve == 0 && (
-                                                <div className="flex flex-col text-center">
+                                                <div className="flex flex-row items-center justify-center text-center">
                                                     <DialogAlert
                                                         buttonName="Approve"
                                                         title="Approve Purchase Request"
                                                         remarkFields={false}
                                                         handleSubmit={() => {
                                                             handleApproveOverbuget();
+                                                        }}
+                                                    />
+                                                    <DialogAlert
+                                                        buttonName="Disapprove"
+                                                        title="Disapprove Purchase Request"
+                                                        handleSubmit={(remarks) => {
+                                                            handleDisapproveOverbudget(approver, remarks);
                                                         }}
                                                     />
                                                 </div>

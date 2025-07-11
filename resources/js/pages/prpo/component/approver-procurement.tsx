@@ -169,7 +169,7 @@ export default function ApproverProcurement({ purchaseRequisition, handlePurchas
                                         label="Remarks"
                                         id="remarks"
                                         name="remarks"
-                                        value={purchaseRequisition.remarks}
+                                        value={purchaseRequisition.procurement_remarks}
                                         placeholder="Enter Remarks"
                                         customClass="mt-4"
                                         onChange={(e) => {

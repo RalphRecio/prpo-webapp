@@ -20,13 +20,12 @@ export default function ApproverIMTable({ purchaseRequisition, loading, setLoadi
                 remarks,
             });
 
-            Swal.fire('Success!', 'Your purchase request has been submitted.', 'success').then(() => {
+            Swal.fire('Success!', 'Purchase Request Approved.', 'success').then(() => {
                 Inertia.reload();
             });
-
-            setLoading(false);
         } catch (error) {
             console.error(error);
+            Swal.fire('Error!', 'Failed to submit your purchase request.', 'error');
         }
     };
 

@@ -14,7 +14,7 @@ export default function ApproverUnbudgeted({ purchaseRequisition }: ApproverFina
         try {
             await axios.post('/prpo/purchase-request/approve-unbudget/' + purchaseRequisition.id);
 
-            Swal.fire('Success!', 'Purchase request reviewed.', 'success').then(() => {
+            Swal.fire('Success!', 'Purchase request Approved.', 'success').then(() => {
                 Inertia.reload(); // Rerender the component with updated data
             });
         } catch (error) {
@@ -22,20 +22,17 @@ export default function ApproverUnbudgeted({ purchaseRequisition }: ApproverFina
         }
     };
 
-    const handleDisapprove = async (approverItem: any, remarks: string) => {
-        // setLoading(true);
+    const handleDisapproveUnbudgeted = async (approver: any, remarks: string) => {
         try {
             await axios.post('/prpo/purchase-request/disapprove/' + purchaseRequisition.id, {
-                ...approverItem,
+                ...approver,
                 remarks,
             });
             Swal.fire('Success!', 'Purchase request has been disapproved.', 'success').then(() => {
                 Inertia.reload();
             });
         } catch (error) {
-            console.error(error);
-        } finally {
-            // setLoading(false);
+            Swal.fire('Error!', 'Failed to disapprove purchase request.', 'error');
         }
     };
 
@@ -61,7 +58,16 @@ export default function ApproverUnbudgeted({ purchaseRequisition }: ApproverFina
                                             <div className="flex flex-col text-center">
                                                 {approver.is_approve == 1 ? (
                                                     <>
-                                                        <span className="text-sm text-gray-800">Approve {approver.approval_date}</span>
+                                                        <span className="text-sm font-semibold text-green-700">
+                                                            Approved {approver.approval_date}
+                                                        </span>
+                                                        <span className="text-xs text-gray-700 italic">System Generated</span>
+                                                    </>
+                                                ) : approver.is_approve == 2 ? (
+                                                    <>
+                                                        <span className="text-sm font-semibold text-red-700">
+                                                            Disapproved {approver.approval_date}
+                                                        </span>
                                                         <span className="text-xs text-gray-700 italic">System Generated</span>
                                                     </>
                                                 ) : (
@@ -70,6 +76,13 @@ export default function ApproverUnbudgeted({ purchaseRequisition }: ApproverFina
                                                 <span className="font-bold">
                                                     {approver.approver?.fname || ''} {approver.approver?.mname || ''} {approver.approver?.lname || ''}
                                                 </span>
+
+                                                {approver.remarks && approver.remarks.length > 0 && (
+                                                    <p className="rounded p-2 text-sm text-gray-500 text-gray-600">
+                                                        Remarks:
+                                                        {approver.remarks || 'no remarks'}
+                                                    </p>
+                                                )}
                                             </div>
 
                                             {approver.approver_id == useAuthId() &&
@@ -83,6 +96,7 @@ export default function ApproverUnbudgeted({ purchaseRequisition }: ApproverFina
                                                         <DialogAlert
                                                             buttonName="Approve"
                                                             title="Approve Purchase Request"
+                                                            remarkFields={false}
                                                             handleSubmit={() => {
                                                                 handleApproveUnbugeted();
                                                             }}
@@ -91,7 +105,7 @@ export default function ApproverUnbudgeted({ purchaseRequisition }: ApproverFina
                                                             buttonName="Disapprove"
                                                             title="Disapprove Purchase Request"
                                                             handleSubmit={(remarks) => {
-                                                                // handleDisapprove(approverItem, remarks);
+                                                                handleDisapproveUnbudgeted(approver, remarks);
                                                             }}
                                                         />
                                                     </div>

@@ -68,7 +68,7 @@ export default function ApproverFinanceTable({ purchaseRequisition, handlePurcha
                                         onValueChange={(value) => {
                                             handlePurchaseRequestFieldChange('budgeted', value);
                                             if (value === '0') {
-                                                handlePurchaseRequestFieldChange('budget_amount', '0.00');
+                                                handlePurchaseRequestFieldChange('budget_amount', '0');
                                             }
                                         }}
                                         disabled={
@@ -196,10 +196,10 @@ export default function ApproverFinanceTable({ purchaseRequisition, handlePurcha
                                         id="remarks"
                                         name="remarks"
                                         className="rounded-sm shadow-none"
-                                        value={purchaseRequisition.remarks}
+                                        value={purchaseRequisition.finance_remarks}
                                         placeholder="Remarks"
                                         onChange={(e) => {
-                                            handlePurchaseRequestFieldChange('remarks', e.target.value);
+                                            handlePurchaseRequestFieldChange('finance_remarks', e.target.value);
                                         }}
                                         disabled={
                                             !purchaseRequisition.approvers_list?.some(
@@ -221,16 +221,13 @@ export default function ApproverFinanceTable({ purchaseRequisition, handlePurcha
                                         <td colSpan={3} className="text-center">
                                             <DialogAlert
                                                 buttonName="Verify"
-                                                title="Approve Purchase Request"
+                                                title="Review Purchase Request"
                                                 handleSubmit={() => {
                                                     handleVerify();
                                                 }}
                                                 remarkFields={false}
                                                 isDisabled={
-                                                    !purchaseRequisition.budgeted ||
-                                                    !purchaseRequisition.currency ||
-                                                    !purchaseRequisition.budget_amount ||
-                                                    !purchaseRequisition.isCapexOpex
+                                                    !purchaseRequisition.budgeted || !purchaseRequisition.currency || !purchaseRequisition.isCapexOpex
                                                 }
                                             />
                                         </td>
