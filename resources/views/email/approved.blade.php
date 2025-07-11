@@ -45,7 +45,7 @@
                                 @foreach($data['approver_history'] as $item)
                                     <tr>
                                     
-                                        <td style="border-bottom: 1px solid #eee;">{{ $item['approver2']['approver_type'] == 'finance' || $item['approver2']['approver_type'] =='procurement' ? 'Reviewed' : ($item['is_approve'] == 1 ? 'Approved' : 'Disapproved' ) }} by</td>
+                                        <td style="border-bottom: 1px solid #eee;">{{ $item['approver2']['approver_type'] == 'finance' || $item['approver2']['approver_type'] =='procurement' ? 'Reviewed' : ($item['is_approve'] == 1 ? 'Approved' : 'Disapproved') }} by</td>
                                        
                                         <td style="border-bottom: 1px solid #eee;">
                                             {{ $item['approver2']['job_title'] }}
