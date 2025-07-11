@@ -52,6 +52,7 @@ export default function PurchaseRequisitionPage() {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Transaction" />
             <div className="flex h-full flex-1 flex-col rounded-xl">
+                <div className="m-4"></div>
                 <div className="m-4 overflow-x-auto bg-white">
                     <PaginatedDt
                         loading={loading}
