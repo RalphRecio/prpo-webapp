@@ -64,6 +64,7 @@ trait PurchaseRequisitionQuery
                 'is_approve_im_supervisor',
                 'status'
             )
+
             ->with(['requestor', 'bu', 'department', 'classification','approversList']);
     }
 }

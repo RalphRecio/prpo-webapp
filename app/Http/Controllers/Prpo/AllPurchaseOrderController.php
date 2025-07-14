@@ -22,7 +22,8 @@ class AllPurchaseOrderController extends Controller
         $poQuery = $this->buildPurchaseOrderQuery($request)
             ->whereHas('purchaseRequest', function ($q) {
                 $q->where('bu_id', Auth::user()->bu_id);
-            });
+            })
+            ->orderByDesc('id');
 
         $purchaseOrders = $poQuery->get();
 

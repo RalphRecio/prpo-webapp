@@ -22,7 +22,8 @@ class AllPurchaseRequesitionController extends Controller
     public function allRequests(Request $request)
     {
         $prQuery = $this->buildPurchaseRequisitionQuery($request)
-        ->where('bu_id', Auth::user()->bu_id);
+        ->where('bu_id', Auth::user()->bu_id)
+        ->orderByDesc('id');
 
         $purchaseRequisitions = $prQuery->get();
 

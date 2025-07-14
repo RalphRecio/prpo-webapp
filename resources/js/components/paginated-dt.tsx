@@ -199,7 +199,7 @@ export function PaginatedDt({
                                         ),
                                     )}
                                     {((actions && (typeof actions === 'function' || actions.length > 0)) || canDelete || canEdit) && (
-                                        <th className="w-24 bg-gray-100 px-6 py-3 text-left text-xs font-medium tracking-wider whitespace-nowrap text-gray-500 uppercase">
+                                        <th className="z-10w-24 sticky right-0 bg-gray-100 px-6 py-3 text-center text-xs font-bold font-medium tracking-wider whitespace-nowrap text-gray-500 uppercase">
                                             Actions
                                         </th>
                                     )}
@@ -237,7 +237,7 @@ export function PaginatedDt({
                                             {(((actions && typeof actions === 'function' ? actions(item) : actions) ?? []).length > 0 ||
                                                 canDelete ||
                                                 canEdit) && (
-                                                <td className="item-center flex flex-col gap-2 bg-white px-6 py-4 text-sm whitespace-nowrap text-gray-500">
+                                                <td className="shadow-left sticky right-0 z-10 flex flex-col gap-2 bg-white px-6 py-4 text-sm whitespace-nowrap text-gray-500">
                                                     {(typeof actions === 'function' ? actions(item) : actions)?.map((action, actionIndex) => {
                                                         if (action.type === 'link') {
                                                             return (

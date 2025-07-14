@@ -30,7 +30,8 @@ class PurchaseRequestController extends Controller
     public function myPurchaseRequest(Request $request)
     {
         $prQuery = $this->buildPurchaseRequisitionQuery($request)
-            ->where('department_id', Auth::user()->dept_id);
+            ->where('department_id', Auth::user()->dept_id)
+            ->orderByDesc('id');
             
             if ((string) $request->input('requestedByMe') === "true") {
                 $prQuery->where('requestor_id', Auth::id());

@@ -1,6 +1,5 @@
 import { PaginatedDt } from '@/components/paginated-dt';
 import { fetchAllPurchaseOrders } from '@/hooks/api';
-import { usePaginationService } from '@/hooks/use-pagination-service';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, PurchaseOrder } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -17,12 +16,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function PurchaseOrderAll() {
     const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([]);
 
-    const { loading, fetchData, handlePageChange } = usePaginationService('');
+    const [isLoading, setIsLoading] = useState(false); // Add loading state
 
     useEffect(() => {
         const fetchData = async () => {
+            setIsLoading(true);
             const response = await fetchAllPurchaseOrders();
             setPurchaseOrders(response.data.purchaseOrders.data || []);
+            setIsLoading(false);
             console.log(response.data.purchaseOrders);
         };
         fetchData();
@@ -45,8 +46,7 @@ export default function PurchaseOrderAll() {
                 checkBox={false}
                 data={purchaseOrders}
                 hiddenColumns={[0]}
-                loading={loading}
-                handlePageChange={handlePageChange}
+                loading={isLoading}
                 renderCell={(column, value) => {
                     if (column === 1) {
                         return (
@@ -68,7 +68,6 @@ export default function PurchaseOrderAll() {
 
                     return value;
                 }}
-                fetchData={fetchData}
                 actions={(purchasePo: any) => {
                     const fullItem = purchaseOrders.find((item) => item.id === purchasePo.id);
                     return [

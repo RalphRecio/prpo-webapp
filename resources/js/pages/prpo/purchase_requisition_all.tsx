@@ -1,6 +1,5 @@
 import { PaginatedDt } from '@/components/paginated-dt';
 import { fetchAllPurchaseRequisition } from '@/hooks/api';
-import { usePaginationService } from '@/hooks/use-pagination-service';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem, PurchaseRequisition } from '@/types';
 import { Head } from '@inertiajs/react';
@@ -19,12 +18,12 @@ export default function PurchaseRequisitionAllPage() {
 
     const [isLoading, setIsLoading] = useState(false); // Add loading state
 
-    const { loading, fetchData, handlePageChange } = usePaginationService('');
-
     useEffect(() => {
         const fetchData = async () => {
+            setIsLoading(true);
             const response = await fetchAllPurchaseRequisition();
             setPurchaseRequisition(response.data.purchaseRequisition.data || []);
+            setIsLoading(false);
             console.log(response.data.purchaseRequisition);
         };
         fetchData();
@@ -35,7 +34,6 @@ export default function PurchaseRequisitionAllPage() {
             <Head title="Transaction" />
             <div className="flex h-full flex-1 flex-col rounded-xl">
                 <PaginatedDt
-                    loading={loading}
                     columnNames={[
                         'id',
                         'PR No',
@@ -68,9 +66,8 @@ export default function PurchaseRequisitionAllPage() {
                     }
                     checkBox={false}
                     data={purchaseRequisition}
-                    loading={loading}
+                    loading={isLoading}
                     hiddenColumns={[0]}
-                    handlePageChange={handlePageChange}
                     renderCell={(column, value) => {
                         if (column === 1) {
                             return <strong>{value}</strong>;
@@ -97,7 +94,6 @@ export default function PurchaseRequisitionAllPage() {
 
                         return value;
                     }}
-                    fetchData={fetchData}
                     actions={(purchaseReq: any) => {
                         const fullItem = purchaseRequisition?.find((item) => item.id === purchaseReq.id);
 

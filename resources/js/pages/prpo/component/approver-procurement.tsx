@@ -172,6 +172,7 @@ export default function ApproverProcurement({ purchaseRequisition, handlePurchas
 
                                 <td className="w-1/2 px-4 py-2 align-top">
                                     <span className="text-left text-xs font-semibold tracking-wider text-gray-700 uppercase">Attachment</span>
+
                                     <Input
                                         id="attachment"
                                         type="file"
@@ -180,11 +181,11 @@ export default function ApproverProcurement({ purchaseRequisition, handlePurchas
                                         placeholder="Budgeted Amount"
                                         readOnly
                                         disabled={
-                                            !purchaseRequisition.approvers_list?.some(
-                                                (approver: any) =>
-                                                    Number(approver.approver_id) === Number(useAuthId()) &&
-                                                    Number(purchaseRequisition.is_procurement_verified) !== 1,
+                                            purchaseRequisition.approvers_list?.some(
+                                                (approver: any) => Number(approver.approver_id) === Number(useAuthId()),
                                             )
+                                                ? true
+                                                : false
                                         }
                                     />
                                 </td>

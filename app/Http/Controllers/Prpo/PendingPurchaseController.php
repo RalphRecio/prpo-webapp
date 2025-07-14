@@ -24,7 +24,7 @@ class PendingPurchaseController extends Controller
             $query->where('approver_id', auth()->user()->id)
                 ->where('is_send_count', 1)
                   ->where('is_approve', 0);
-        });
+        })->orderByDesc('id');
 
         return response()->json([
             'purchaseRequisition' => [

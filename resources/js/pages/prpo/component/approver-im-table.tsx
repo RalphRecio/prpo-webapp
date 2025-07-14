@@ -52,7 +52,7 @@ export default function ApproverIMTable({ purchaseRequisition, loading, setLoadi
                             {purchaseRequisition.approvers_list?.some((approverItem: any) => Number(approverItem.approver_level) == 1) && (
                                 <th className="px-4 py-2 text-center text-xs font-semibold tracking-wider uppercase">For IT Related Request</th>
                             )}
-                            <th className="px-4 py-2 text-center text-xs font-semibold tracking-wider uppercase">Requestor Immediate Head</th>
+                            <th className="px-4 py-2 text-center text-xs font-semibold tracking-wider uppercase">Immediate Head</th>
                         </tr>
                     </thead>
 
