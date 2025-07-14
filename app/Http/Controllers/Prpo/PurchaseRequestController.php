@@ -61,6 +61,9 @@ class PurchaseRequestController extends Controller
 
     public function store(Request $request)
     {
+
+        $user = Auth::user();
+
         $validated = $request->validate([
             'date_needed' => 'required|date',
             'prod_end_user' => 'required|max:255',
@@ -74,11 +77,11 @@ class PurchaseRequestController extends Controller
             'items.*.description' => 'required_with:items|string|max:255',
         ]);
 
-        // DB::beginTransaction();
+        DB::beginTransaction();
         try {
             $year = now()->year;
-            $deptId = Auth::user()->department->id;
-            $deptCode = Auth::user()->department->code;
+            $deptId = $user->department->id;
+            $deptCode = $user->department->code;
 
             $latestPR = PurchaseRequisiton::whereYear('created_at', $year)
                 ->where('department_id', $deptId)
@@ -92,9 +95,9 @@ class PurchaseRequestController extends Controller
 
             $generatedPrNo = "PR-{$deptCode}-{$year}-{$nextNumber}";
             $validated['pr_no'] = $generatedPrNo;
-            $validated['department_id'] = Auth::user()->dept_id;
-            $validated['requestor_id'] = Auth::user()->id;
-            $validated['bu_id'] = Auth::user()->bu_id;
+            $validated['department_id'] = $user->dept_id;
+            $validated['requestor_id'] = $user->id;
+            $validated['bu_id'] = $user->bu_id;
             $validated['date_issue'] = Carbon::now();
 
             $purchaseRequisition = PurchaseRequisiton::create($validated);
@@ -141,18 +144,18 @@ class PurchaseRequestController extends Controller
                     ? $purchaseRequisition->requestor->immediateHead->email
                     : $firstApprover->approver_email;
 
-                PurchaseRequisitionNotificationService::sendApprovalEmail(
-                    'Purchase Requisition',
-                    $generatedPrNo,
-                    $approverName,
-                    $purchaseRequisition->requestor->fname . ' ' . $purchaseRequisition->requestor->lname,
-                    Carbon::now(),
-                    $purchaseRequisition->id,
-                    $approverEmail
-                );
+                // PurchaseRequisitionNotificationService::sendApprovalEmail(
+                //     'Purchase Requisition',
+                //     $generatedPrNo,
+                //     $approverName,
+                //     $purchaseRequisition->requestor->fname . ' ' . $purchaseRequisition->requestor->lname,
+                //     Carbon::now(),
+                //     $purchaseRequisition->id,
+                //     $approverEmail
+                // );
             }
 
-            // DB::commit();
+            DB::commit();
 
             return response()->json([
                 'message' => 'Purchase Requisition created successfully.',
@@ -160,7 +163,7 @@ class PurchaseRequestController extends Controller
             ], 201);
 
         } catch (Exception $e) {
-            // DB::rollBack();
+            DB::rollBack();
             return response()->json([
                 'message' => 'Failed to create Purchase Requisition.',
                 'error' => $e->getMessage()
