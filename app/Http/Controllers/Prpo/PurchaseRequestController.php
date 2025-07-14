@@ -30,7 +30,12 @@ class PurchaseRequestController extends Controller
     {
         $prQuery = $this->buildPurchaseRequisitionQuery($request)
             ->where('department_id', Auth::user()->dept_id);
-    
+            
+            if ((string) $request->input('requestedByMe') === "true") {
+                $prQuery->where('requestor_id', Auth::id());
+
+            }
+
         $purchaseRequisitions = $prQuery->get();
     
         return response()->json([

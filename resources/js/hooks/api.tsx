@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-export function fetchPurchaseRequisition() {
-    return axios.get('/prpo/purchase-request/my-purchase-request');
+export function fetchPurchaseRequisition(Payload: any) {
+    return axios.get('/prpo/purchase-request/my-purchase-request', { params: Payload });
 }
 
 export function fetchAllPurchaseRequisition() {
