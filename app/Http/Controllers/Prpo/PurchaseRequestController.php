@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Exception;
 use Inertia\Inertia;
 use App\Models\ApproverList;
+use App\Jobs\SendPurchaseRequisitionEmail;
 
 class PurchaseRequestController extends Controller
 {
@@ -153,6 +154,15 @@ class PurchaseRequestController extends Controller
                 //     $purchaseRequisition->id,
                 //     $approverEmail
                 // );
+
+                SendPurchaseRequisitionEmail::dispatch(
+                    $generatedPrNo,
+                    $approverName,
+                    $purchaseRequisition->requestor->fname . ' ' . $purchaseRequisition->requestor->lname,
+                    Carbon::now(),
+                    $purchaseRequisition->id,
+                    $approverEmail
+                );
             }
 
             DB::commit();
