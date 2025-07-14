@@ -90,13 +90,23 @@ export function TextAreaField({
     );
 }
 
-export function TextDetails({ label, value, onClick }: { label: string; value: string | number | undefined; onClick?: () => void }) {
+export function TextDetails({
+    label,
+    value,
+    customClass,
+    onClick,
+}: {
+    label: string;
+    value: string | number | undefined;
+    customClass?: string;
+    onClick?: () => void;
+}) {
     return (
         <div className="flex flex-col space-y-1">
             <label htmlFor="pr_no" className="text-xs font-medium text-gray-500">
                 {label}
             </label>
-            <span className="cursor-pointer text-sm text-gray-800 transition-colors duration-150 hover:text-blue-600" onClick={onClick}>
+            <span className={`cursor-pointer text-sm text-gray-800 ${customClass}`} onClick={onClick}>
                 {value}
             </span>
         </div>

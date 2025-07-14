@@ -24,7 +24,7 @@ class PurchaseOrderController extends Controller
 {
     public function index(Request $reqeust, $id ){
 
-        $purchaseRequest = PurchaseRequisiton::with(['bu'])->findOrFail($id);
+        $purchaseRequest = PurchaseRequisiton::with(['bu','purchaseRequisitionItems'])->findOrFail($id);
 
         $vendorList = Vendor::get();
 
@@ -176,5 +176,9 @@ class PurchaseOrderController extends Controller
         $purchaseOrder->purchase_order_details = $purchaseOrder->purchaseOrderDetails ? $purchaseOrder->purchaseOrderDetails->toArray() : [];
         return view('printable.po_print', compact('purchaseOrder'));
     
+    }
+
+    public function getPrItems(){
+
     }
 };

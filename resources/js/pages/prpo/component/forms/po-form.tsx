@@ -3,10 +3,10 @@ import { useAuthFullname } from '@/util/util';
 
 import { SelectField } from '@/components/custom/selectField';
 import { TextAreaField, TextDetails, TextField } from '@/components/custom/textField';
-import { Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import Modal from '@/components/ui/modal';
+import PrItems from '../pr-items';
 
 interface PoFormProps extends React.ComponentProps<'div'> {
     purchaseRequest: PurchaseRequisition;
@@ -76,7 +76,7 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
         <>
             <div className="mt-2 flex w-full flex-col space-y-6 rounded bg-white px-6 py-4">
                 <span className="text-md flex items-center gap-2 font-semibold text-blue-500">
-                    <Info className="h-4 w-4" />
+                    {/* <Info className="h-4 w-4" /> */}
                     Purchase Order Info
                 </span>
                 <div className="flex w-full justify-between">
@@ -92,7 +92,12 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                         />
                     </div>
                     <div className="flex flex-1 flex-col space-y-4 font-semibold">
-                        <TextDetails label="PR No." value={purchaseRequest.pr_no} onClick={() => console.log(purchaseRequest.pr_no)} />
+                        <TextDetails
+                            customClass="transition-colors duration-150 hover:text-blue-600 text-blue-800"
+                            label="PR No."
+                            value={purchaseRequest.pr_no}
+                            onClick={() => setIsModalOpen(true)}
+                        />
                     </div>
                 </div>
             </div>
@@ -208,10 +213,7 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
             </div>
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Purchase Order Details">
-                <div className="p-4">
-                    <h2 className="text-lg font-bold">Modal Title</h2>
-                    <p className="mt-2">Modal content goes here.</p>
-                </div>
+                <PrItems purchaseRequestItems={purchaseRequest?.purchase_requisition_items} />
             </Modal>
         </>
     );

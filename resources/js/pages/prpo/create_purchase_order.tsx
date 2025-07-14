@@ -45,7 +45,7 @@ export default function PurchaseOrderPage() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create PR" />
+            <Head title="Create Purchase Order" />
             <div className="mx-auto flex h-full max-w-[900px] flex-1 flex-col gap-4 px-4">
                 <PoForm
                     purchaseRequest={purchaseRequest}
