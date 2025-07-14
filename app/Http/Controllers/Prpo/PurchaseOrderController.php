@@ -16,6 +16,8 @@ use \Exception;
 use App\Services\PurchaseOrderNotificationService;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Jobs\SendPurchaseOrderEmail;
+
 
 
 class PurchaseOrderController extends Controller
@@ -122,11 +124,20 @@ class PurchaseOrderController extends Controller
                 $isFirst = false;
             }
 
-            PurchaseOrderNotificationService::sendApprovalEmail(
-                $generatedPoNo, 
-                $approverList->first()->approver_name , 
-                Auth::user()->fname . ' ' . Auth::user()->lname, 
-                Carbon::now(), 
+            // PurchaseOrderNotificationService::sendApprovalEmail(
+            //     $generatedPoNo, 
+            //     $approverList->first()->approver_name , 
+            //     Auth::user()->fname . ' ' . Auth::user()->lname, 
+            //     Carbon::now(), 
+            //     $purchaseOrder->id,
+            //     $approverList->first()->approver_email
+            // );
+
+            SendPurchaseOrderEmail::dispatch(
+                $generatedPoNo,
+                $approverList->first()->approver_name,
+                Auth::user()->fname . ' ' . Auth::user()->lname,
+                Carbon::now(),
                 $purchaseOrder->id,
                 $approverList->first()->approver_email
             );
