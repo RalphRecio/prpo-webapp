@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Services\PurchaseRequisitionNotificationService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SendPurchaseRequisitionEmail implements ShouldQueue
 {
@@ -28,6 +29,9 @@ class SendPurchaseRequisitionEmail implements ShouldQueue
 
     public function handle()
     {
+
+        Log::info('[Job Started] SendPurchaseRequisitionEmail at ' . now());
+           
         PurchaseRequisitionNotificationService::sendApprovalEmail(
             'Purchase Requisition',
             $this->prNo,
