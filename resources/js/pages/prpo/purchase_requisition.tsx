@@ -21,22 +21,21 @@ export default function PurchaseRequisitionPage() {
     const [purchaseRequisition, setPurchaseRequisition] = useState<PurchaseRequisition[]>([]);
 
     // const { loading, fetchData, handlePageChange } = usePaginationService('');
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [prId, setPrId] = useState<number | undefined>();
 
     const [requestedByMe, setRequestedByMe] = useState<boolean>(true);
 
-    const fetchData = async () => {
-        setIsLoading(true);
-        const response = await fetchPurchaseRequisition({
-            requestedByMe,
-        });
-        setPurchaseRequisition(response.data.purchaseRequisition.data || []);
-        setIsLoading(false);
-    };
-
     useEffect(() => {
+        setIsLoading(true);
+        const fetchData = async () => {
+            const res = await fetchPurchaseRequisition({ requestedByMe });
+            setPurchaseRequisition(res.data.purchaseRequisition.data || []);
+
+            setIsLoading(false);
+        };
+
         fetchData();
     }, [requestedByMe]);
 
