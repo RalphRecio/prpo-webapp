@@ -11,6 +11,7 @@ interface TextFieldProps {
     placeholder?: string;
     isReadOnly?: boolean;
     onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+    onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     customClass?: string;
     [key: string]: any; // Allow any other prop
     isError?: boolean;
@@ -27,6 +28,7 @@ export function TextField({
     customClass,
     isReadOnly,
     onChange,
+    onKeyDown,
     isRequired,
     isError,
     ...rest
@@ -47,6 +49,7 @@ export function TextField({
                 onChange={onChange}
                 readOnly={isReadOnly}
                 {...rest} // Spread any additional props here
+                onKeyDown={onKeyDown}
             />
             {isError && <p className="mt-1 text-sm text-red-500">This field is required.</p>}
         </div>
@@ -87,13 +90,15 @@ export function TextAreaField({
     );
 }
 
-export function TextDetails({ label, value }: { label: string; value: string | number | undefined }) {
+export function TextDetails({ label, value, onClick }: { label: string; value: string | number | undefined; onClick?: () => void }) {
     return (
         <div className="flex flex-col space-y-1">
             <label htmlFor="pr_no" className="text-xs font-medium text-gray-500">
                 {label}
             </label>
-            <span className="text-black-800 text-sm">{value}</span>
+            <span className="cursor-pointer text-sm text-gray-800 transition-colors duration-150 hover:text-blue-600" onClick={onClick}>
+                {value}
+            </span>
         </div>
     );
 }

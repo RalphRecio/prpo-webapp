@@ -13,7 +13,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/prpo/po_pending_approval',
     },
     {
-        title: 'PO for Approval',
+        title: 'Purchase Order',
         href: '/prpo/po_pending_approval',
     },
 ];

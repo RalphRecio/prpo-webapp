@@ -7,8 +7,8 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 
 interface PoApproverTableProps extends React.ComponentProps<'div'> {
-    PurchaseOrderId: number;
-    PoApproverList: PoApproverList[];
+    PurchaseOrderId?: number;
+    PoApproverList?: PoApproverList[];
     preparedBy?: string;
     datePrepared?: string | null;
 }

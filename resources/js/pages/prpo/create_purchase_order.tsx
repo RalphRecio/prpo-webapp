@@ -9,7 +9,6 @@ import axios from 'axios';
 import { useState } from 'react';
 import Swal from 'sweetalert2';
 import PoForm from './component/forms/po-form';
-import PoApproverTable from './component/po-approver-table';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -54,8 +53,9 @@ export default function PurchaseOrderPage() {
                     purchaseOrderDetails={purchaseOrderDetails}
                     setPurchaseOrderDetails={setPurchaseOrderDetails}
                 />
+
                 <TablePo items={items} setItems={setItems} showAddRow={true} />
-                <PoApproverTable />
+                {/* <PoApproverTable /> */}
                 <DialogAlert
                     remarkFields={false}
                     handleSubmit={() => {

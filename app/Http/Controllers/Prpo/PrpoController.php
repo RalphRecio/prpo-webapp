@@ -288,7 +288,7 @@ class PrpoController extends Controller
             $purchaseRequisition = PurchaseRequisiton::findOrFail($id);
 
             $purchaseRequisition->supplier_name = $request->supplier_name;
-            $purchaseRequisition->actual_amount = $request->actual_amount;
+            $purchaseRequisition->actual_amount = preg_replace('/[^\d.]/', '', $request->actual_amount);
             $purchaseRequisition->procurement_remarks = $request->procurement_remarks;
             $purchaseRequisition->is_procurement_verified = 1;
             $purchaseRequisition->save();

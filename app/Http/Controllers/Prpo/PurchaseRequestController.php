@@ -74,7 +74,7 @@ class PurchaseRequestController extends Controller
             'items.*.description' => 'required_with:items|string|max:255',
         ]);
 
-        DB::beginTransaction();
+        // DB::beginTransaction();
         try {
             $year = now()->year;
             $deptId = Auth::user()->department->id;
@@ -152,7 +152,7 @@ class PurchaseRequestController extends Controller
                 );
             }
 
-            DB::commit();
+            // DB::commit();
 
             return response()->json([
                 'message' => 'Purchase Requisition created successfully.',
@@ -160,7 +160,7 @@ class PurchaseRequestController extends Controller
             ], 201);
 
         } catch (Exception $e) {
-            DB::rollBack();
+            // DB::rollBack();
             return response()->json([
                 'message' => 'Failed to create Purchase Requisition.',
                 'error' => $e->getMessage()

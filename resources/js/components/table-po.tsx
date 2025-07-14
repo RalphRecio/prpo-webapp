@@ -105,18 +105,18 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
                             <tr>
                                 <th className="w-12 px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-900 uppercase">#</th>
                                 <th className="w-24 px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-900 uppercase">Quantity</th>
-                                <th className="w-32 px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-900 uppercase">
+                                <th className="w-24 px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-900 uppercase">
                                     Unit of Measure
                                 </th>
                                 <th className="w-64 px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-900 uppercase">
                                     Item Description
                                 </th>
                                 <th className="w-24 px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-900 uppercase">Unit Price</th>
-                                <th className="w-32 px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-900 uppercase">
+                                <th className="w-18 px-4 py-2 text-left text-xs font-medium tracking-wider text-gray-900 uppercase">
                                     Extended Price
                                 </th>
                                 {showAddRow && (
-                                    <th className="w-24 px-4 py-2 text-center text-xs font-medium tracking-wider text-gray-900 uppercase">Actions</th>
+                                    <th className="w-20 px-4 py-2 text-center text-xs font-medium tracking-wider text-gray-900 uppercase">Actions</th>
                                 )}
                             </tr>
                         </thead>
@@ -125,12 +125,18 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
                                 <tr className="hover:bg-gray-50">
                                     <td></td>
                                     <td className="px-4 py-2">
-                                        <span className="text-xs">{qtyInFigures ? `Requested Qty: ${qtyInFigures}` : ''}</span>
+                                        {/* <span className="text-xs">{qtyInFigures ? `Avail Qty: ${qtyInFigures}` : ''}</span> */}
                                         <input
                                             name="quantity"
                                             type="number"
                                             value={newRow.qty_ordered}
                                             onChange={(e) => {
+                                                if (Number(e.target.value) < 0) {
+                                                    return;
+                                                }
+                                                if (Number(e.target.value) > Number(qtyInFigures)) {
+                                                    return;
+                                                }
                                                 setNewRow({
                                                     ...newRow,
                                                     qty_ordered: Number(e.target.value),
@@ -182,7 +188,7 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
                                     <td className="px-4 py-2">
                                         <input
                                             name="unit_price"
-                                            type="number"
+                                            type="text"
                                             value={newRow.unit_price}
                                             onChange={(e) => {
                                                 setNewRow({
@@ -195,13 +201,14 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
                                         />
                                     </td>
                                     <td className="px-4 py-2">
-                                        <input
+                                        <span>{Number(newRow.unit_price) * Number(newRow.qty_ordered) || 0}</span>
+                                        {/* <input
                                             name="extended_price"
-                                            value={Number(newRow.unit_price) * Number(newRow.qty_ordered) || 0}
+                                            value=
                                             readOnly
                                             className="w-full rounded border bg-gray-100 px-2 py-1 focus:ring-2 focus:ring-blue-400 focus:outline-none"
                                             placeholder="Extended Price"
-                                        />
+                                        /> */}
                                     </td>
                                     <td className="px-4 py-2 text-center">
                                         <Button onClick={handleAddRow} type="button" variant="outline" size="sm">

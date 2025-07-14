@@ -2,7 +2,7 @@ import { TextAreaField, TextField } from '@/components/custom/textField';
 import { DialogAlert } from '@/components/dialogAlert';
 import { Input } from '@/components/ui/input';
 import { PurchaseRequisition } from '@/types';
-import { useAuthId } from '@/util/util';
+import { formatWithCommas, useAuthId } from '@/util/util';
 
 import { ApproverStamp } from './approver-stamp';
 
@@ -90,7 +90,11 @@ export default function ApproverProcurement({ purchaseRequisition, handlePurchas
                                         id="actual_amount"
                                         type="text"
                                         name="actual_amount"
-                                        value={purchaseRequisition.actual_amount ?? undefined}
+                                        value={
+                                            String(purchaseRequisition.actual_amount) === '0'
+                                                ? '0'
+                                                : formatWithCommas(String(purchaseRequisition.actual_amount ?? ''))
+                                        }
                                         placeholder="Actual Amount"
                                         isReadOnly={
                                             !purchaseRequisition.approvers_list?.some(
@@ -106,6 +110,26 @@ export default function ApproverProcurement({ purchaseRequisition, handlePurchas
                                                     Number(purchaseRequisition.is_procurement_verified) !== 1, // not already approved
                                             )
                                         }
+                                        onKeyDown={(e) => {
+                                            if (
+                                                !(
+                                                    (e.key >= '0' && e.key <= '9') ||
+                                                    [
+                                                        'Backspace',
+                                                        'Delete',
+                                                        'Tab',
+                                                        'Escape',
+                                                        'Enter',
+                                                        'ArrowLeft',
+                                                        'ArrowRight',
+                                                        'Home',
+                                                        'End',
+                                                    ].includes(e.key)
+                                                )
+                                            ) {
+                                                e.preventDefault();
+                                            }
+                                        }}
                                     />
                                 </td>
                             </tr>
@@ -155,6 +179,13 @@ export default function ApproverProcurement({ purchaseRequisition, handlePurchas
                                         className="rounded-sm shadow-none"
                                         placeholder="Budgeted Amount"
                                         readOnly
+                                        disabled={
+                                            !purchaseRequisition.approvers_list?.some(
+                                                (approver: any) =>
+                                                    Number(approver.approver_id) === Number(useAuthId()) &&
+                                                    Number(purchaseRequisition.is_procurement_verified) !== 1,
+                                            )
+                                        }
                                     />
                                 </td>
                             </tr>

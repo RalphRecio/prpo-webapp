@@ -23,11 +23,11 @@ const mainNavItems: NavItem[] = [
 
         subItems: [
             {
-                title: 'PR for Approval',
+                title: 'Purchase Requisition',
                 href: '/prpo/pending_approval',
             },
             {
-                title: 'PO for Approval',
+                title: 'Purchase Order',
                 href: '/prpo/purchase-order/pending-approval',
             },
         ],

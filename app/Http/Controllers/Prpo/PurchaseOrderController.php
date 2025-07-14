@@ -61,7 +61,7 @@ class PurchaseOrderController extends Controller
             'items.*.qty_ordered' => 'required_with:items|numeric',
             'items.*.unit_of_measure' => 'required_with:items|string|max:50',
             'items.*.description1' => 'required_with:items|string|max:255',
-            'items.*.description2' => 'string|max:255',
+            'items.*.description2' => 'max:255',
             'items.*.unit_price' => 'required_with:items|decimal:0,2',
             'items.*.extended_price' => 'required_with:items|decimal:0,2',
         ]);
