@@ -16,6 +16,7 @@
         <div class="flex-1"></div>
     </div>
     <div class="mb-2 text-[10px] leading-tight">
+        {{ $purchaseOrder->company_name ?? 'Suhay' }}<br>
         <div class="font-bold">Unit 18, 2/F Paseo 4B, Paseo de Sta. Rosa, Brgy. Don Jose, Sta. Rosa City, Laguna</div>
         <div class="font-bold">T - 632.809.0155 | F - 632.807.7419</div>
         <div class="font-bold">TIN : 753-162-707 VAT</div>

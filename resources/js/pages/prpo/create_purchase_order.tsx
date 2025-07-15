@@ -26,6 +26,8 @@ export default function PurchaseOrderPage() {
     const [items, setItems] = useState<PurchaseOrderDetails[]>([]);
     const [purchaseOrderDetails, setPurchaseOrderDetails] = useState<PurchaseOrder>(defaultPurchaseOrderDetails);
 
+    const [errors, setErrors] = useState<any>([]);
+
     const handleSubmit = async () => {
         try {
             const payload = {
@@ -39,7 +41,11 @@ export default function PurchaseOrderPage() {
                 Inertia.reload(); // Rerender the component with updated data
             });
         } catch (error: any) {
-            Swal.fire('Error!', error.message, 'error');
+            // Swal.fire('Error!', error.message, 'error');
+            // Swal.fire('Error!', 'There was an error submitting your purchase request.', 'error');
+            setErrors(error.response?.data?.errors || []);
+
+            // console.log(error.response?.data?.errors);
         }
     };
 
@@ -52,9 +58,10 @@ export default function PurchaseOrderPage() {
                     vendorList={vendorList}
                     purchaseOrderDetails={purchaseOrderDetails}
                     setPurchaseOrderDetails={setPurchaseOrderDetails}
+                    errors={errors}
                 />
 
-                <TablePo items={items} setItems={setItems} showAddRow={true} />
+                <TablePo items={items} setItems={setItems} showAddRow={true} isError={errors.items} />
                 {/* <PoApproverTable /> */}
                 <DialogAlert
                     remarkFields={false}

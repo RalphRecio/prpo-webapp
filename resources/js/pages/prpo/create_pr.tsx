@@ -68,7 +68,7 @@ export default function CreatePr() {
             setItems([]);
             setErrors([]);
         } catch (error: any) {
-            Swal.fire('Error!', 'There was an error submitting your purchase request.', 'error');
+            // Swal.fire('Error!', 'There was an error submitting your purchase request.', 'error');
             setErrors(error.response?.data?.errors || []);
         } finally {
             setSubmitting(false);

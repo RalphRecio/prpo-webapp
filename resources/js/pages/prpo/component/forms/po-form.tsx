@@ -12,10 +12,11 @@ interface PoFormProps extends React.ComponentProps<'div'> {
     purchaseRequest: PurchaseRequisition;
     vendorList: Vendor[];
     purchaseOrderDetails: PurchaseOrder | undefined;
+    errors: any;
     setPurchaseOrderDetails: (order: PurchaseOrder) => void;
 }
 
-export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetails, setPurchaseOrderDetails }: PoFormProps) {
+export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetails, setPurchaseOrderDetails, errors }: PoFormProps) {
     const authFullname = useAuthFullname();
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -88,7 +89,18 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                         <TextDetails label="Ship To" value={purchaseRequest.bu.name} />
                         <TextDetails
                             label="Address"
-                            value={purchaseRequest.bu_id == 1 ? 'Paseo de Sta. Rosa, Greenfield City, Sta. Rosa, Laguna Philippines 4026' : ''}
+                            value={(() => {
+                                switch (Number(purchaseRequest.bu_id)) {
+                                    case 1:
+                                        return 'Paseo de Sta. Rosa, Greenfield City, Sta. Rosa, Laguna Philippines 4026';
+                                    case 2:
+                                        return 'KKM Address';
+                                    case 3:
+                                        return 'Alibata Address';
+                                    default:
+                                        return '';
+                                }
+                            })()}
                         />
                     </div>
                     <div className="flex flex-1 flex-col space-y-4 font-semibold">
@@ -123,6 +135,7 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                                     vendor_tel_no: selected.contact_number,
                                 });
                             }}
+                            isError={errors.vendor_id}
                         />
                     </div>
                     <div className="w-1/2">
@@ -133,6 +146,7 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                             value={purchaseOrderDetails?.vendor_address || ''}
                             placeholder="Enter Vendor Address"
                             onChange={(e) => handlePurchaseOrderFieldChange('vendor_address', e.target.value)}
+                            isError={errors.vendor_address}
                         />
                     </div>
                 </div>
@@ -145,6 +159,7 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                         value={purchaseOrderDetails?.vendor_contact_person || ''}
                         placeholder="Vendor Contact Person"
                         onChange={(e) => handlePurchaseOrderFieldChange('vendor_contact_person', e.target.value)}
+                        isError={errors.vendor_contact_person}
                     />
 
                     <TextField
@@ -155,6 +170,7 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                         value={purchaseOrderDetails?.vendor_email_address || ''}
                         placeholder="Vendor Email Address"
                         onChange={(e) => handlePurchaseOrderFieldChange('vendor_email_address', e.target.value)}
+                        isError={errors.vendor_email_address}
                     />
 
                     <TextField
@@ -165,6 +181,7 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                         value={purchaseOrderDetails?.vendor_tel_no || ''}
                         placeholder="Vendor Tel. No."
                         onChange={(e) => handlePurchaseOrderFieldChange('vendor_tel_no', e.target.value)}
+                        isError={errors.vendor_tel_no}
                     />
                 </div>
             </div>
@@ -179,6 +196,7 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                         options={shipViaOptions}
                         placeholder="Ship Via"
                         onChange={(selected) => handlePurchaseOrderFieldChange('ship_via', selected ? selected.value : '')}
+                        isError={errors.ship_via}
                     />
                     <SelectField
                         id="freight"
@@ -188,6 +206,7 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                         options={freightOptions}
                         placeholder="Freight"
                         onChange={(selected) => handlePurchaseOrderFieldChange('freight', selected ? selected.value : '')}
+                        isError={errors.freight}
                     />
 
                     <TextField
@@ -198,6 +217,7 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                         value={purchaseOrderDetails?.terms || ''}
                         placeholder="Enter Terms"
                         onChange={(e) => handlePurchaseOrderFieldChange('terms', e.target.value)}
+                        isError={errors.terms}
                     />
                 </div>
 
@@ -209,6 +229,7 @@ export default function PoForm({ purchaseRequest, vendorList, purchaseOrderDetai
                     placeholder="Enter Remarks"
                     customClass="mt-4"
                     onChange={(e) => handlePurchaseOrderFieldChange('remarks', e.target.value)}
+                    isError={errors.remarks}
                 />
             </div>
 

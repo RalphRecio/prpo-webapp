@@ -62,8 +62,7 @@ trait PurchaseRequisitionQuery
                 'is_it_related',
                 'is_approve_it_manager',
                 'is_approve_im_supervisor',
-                'status'
-            )
+                'status')
 
             ->with(['requestor', 'bu', 'department', 'classification','approversList']);
     }

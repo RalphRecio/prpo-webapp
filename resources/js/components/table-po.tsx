@@ -11,9 +11,10 @@ interface DataTableProps extends React.ComponentProps<'div'> {
     items: PurchaseOrderDetails[];
     setItems: React.Dispatch<React.SetStateAction<PurchaseOrderDetails[]>>;
     showAddRow: boolean;
+    isError: any;
 }
 
-export function TablePo({ variant = 'header', items, setItems, showAddRow, ...props }: DataTableProps) {
+export function TablePo({ variant = 'header', items, setItems, showAddRow, isError, ...props }: DataTableProps) {
     const path = window.location.pathname;
     const segments = path.split('/');
     const id = segments[segments.length - 2];
@@ -240,6 +241,7 @@ export function TablePo({ variant = 'header', items, setItems, showAddRow, ...pr
                         </tbody>
                     </table>
                 </div>
+                {isError && <p className="mt-1 px-2 text-sm text-red-500">Add atleast one item.</p>}
                 <div className="flex justify-end border-t bg-gray-50 px-6 py-4">
                     <span className="text-sm font-bold text-gray-900">
                         Total:&nbsp;

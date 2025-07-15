@@ -48,15 +48,15 @@ export function DialogAlert({
                     <DialogContent className="z-99999">
                         <DialogTitle>{title || 'Purchase Request'}</DialogTitle>
                         <DialogDescription>
-                            <div className="flex flex-col">
-                                {body ?? 'Are you sure you want to proceed?'}
+                            <>
+                                <span> {body ?? 'Are you sure you want to proceed?'}</span>
                                 {remarkFields && (
                                     <>
                                         <span className="mt-2 p-2">Remarks</span>
                                         <Textarea value={remarks} onChange={(e) => setRemarks(e.target.value)} placeholder="Enter remarks here" />
                                     </>
                                 )}
-                            </div>
+                            </>
                         </DialogDescription>
                         <DialogFooter className="gap-2">
                             <DialogClose asChild>
